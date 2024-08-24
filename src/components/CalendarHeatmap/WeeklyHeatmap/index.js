@@ -1,55 +1,71 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import Svg, { Rect } from "react-native-svg";
 import moment from "moment";
-import HeatMapModal from "../HeatMapModal";
+import { useDispatch } from "react-redux";
 
 const daysOfWeek = [
+  { label: "D", value: "dom" },
   { label: "S", value: "seg" },
   { label: "T", value: "ter" },
   { label: "Q", value: "qua" },
   { label: "Q", value: "qui" },
   { label: "S", value: "sex" },
-  { label: "D", value: "dom" },
+  { label: "S", value: "sab" },
 ];
 
-const WeeklyHeatmap = ({ completedDates, color }) => {
-  // Formatando as datas recebidas para a semana atual
-  const completedDays = completedDates.map(
-    (date) => moment(date, "DD/MM/YYYY").format("ddd") // Usando 'dd' e pegando o primeiro caractere
-  );
+const WeeklyHeatmap = ({ habit: { completedDates, id }, color }) => {
+  const dispatch = useDispatch();
 
-  const [modalVisible, setModalVisible] = useState(false);
+  const isCheckedOut = (date) => {
+    return completedDates.includes(
+      moment(date, "DD/MM/YYYY").format("DD/MM/YYYY")
+    );
+  };
 
-  const hideModal = () => setModalVisible(false);
+  const handleToggleDate = (date) => {
+    dispatch({
+      type: "TOGGLE_COMPLETE_HABIT",
+      payload: {
+        id: id,
+        date: date,
+      },
+    });
+  };
 
   return (
-    <TouchableOpacity onPress={() => setModalVisible(true)}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {daysOfWeek.map((day, index) => (
-          <View key={index} style={{ alignItems: "center", margin: 2 }}>
-            <Text style={{ textAlign: "center" }}>{day.label}</Text>
-            <Svg width="35" height="35">
-              <Rect
-                width="35"
-                height="35"
-                rx="10"
-                ry="10"
-                fill={completedDays.includes(day.value) ? color : "lightgrey"}
-              />
-            </Svg>
-
-            <HeatMapModal visible={modalVisible} onClose={hideModal} />
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      {daysOfWeek.map((day, index) => {
+        const currentDate = moment()
+          .startOf("week")
+          .add(index, "days")
+          .format("DD/MM/YYYY");
+        return (
+          <View key={index} style={{ alignItems: "center", margin: 3 }}>
+            <Text style={{ textAlign: "center", marginBottom: 3 }}>
+              {day.value}
+            </Text>
+            <TouchableOpacity onPress={() => handleToggleDate(currentDate)}>
+              <Svg width="35" height="35">
+                <Rect
+                  width="35"
+                  height="35"
+                  rx="10"
+                  ry="10"
+                  fill={isCheckedOut(currentDate) ? color : "lightgray"}
+                />
+              </Svg>
+            </TouchableOpacity>
           </View>
-        ))}
-      </View>
-    </TouchableOpacity>
+        );
+      })}
+    </View>
   );
 };
 

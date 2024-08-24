@@ -5,8 +5,6 @@ import { useSelector, useDispatch } from "react-redux";
 import WeeklyHeatmap from "../../components/CalendarHeatmap/WeeklyHeatmap";
 import AnnualHeatmap from "../../components/CalendarHeatmap/AnnualHeatmap";
 import MonthlyHeatmap from "../../components/CalendarHeatmap/MonthlyHeatmap";
-import HeatMap from "../../components/CalendarHeatmap";
-import moment from "moment";
 
 export function Home() {
   const habits = useSelector((state) => state.habits.habits);
@@ -18,10 +16,10 @@ export function Home() {
   };
 
   const handleCompletedDates = (id) => {
-    // dispatch({
-    //   type: "ADD_CONCLUIDO_DATA",
-    //   payload: id,
-    // });
+    dispatch({
+      type: "TOGGLE_COMPLETE_HABIT",
+      payload: { id },
+    });
   };
 
   return (
@@ -103,10 +101,7 @@ export function Home() {
                 />
               )}
               {selectedView === "Semanal" && (
-                <WeeklyHeatmap
-                  completedDates={habit.completedDates}
-                  color={habit.color}
-                />
+                <WeeklyHeatmap habit={habit} color={habit.color} />
               )}
             </View>
           </Card>
