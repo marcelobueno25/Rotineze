@@ -29,7 +29,7 @@ export function Home() {
       rowGap={15}
       style={{
         flex: 1,
-        marginBottom: 70,
+        marginBottom: 80,
         padding: 10,
       }}
     >

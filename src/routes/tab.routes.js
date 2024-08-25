@@ -16,7 +16,7 @@ const customTabStyle = {
 };
 
 const tabScreenOptions = ({ navigation }) => ({
-  headerShown: true,
+  headerShown: false,
   tabBarStyle: customTabStyle,
   tabBarShowLabel: false,
   headerRight: ({ color }) => (
