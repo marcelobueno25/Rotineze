@@ -98,16 +98,10 @@ export function Home() {
                 }}
               >
                 {selectedView === "Anual" && (
-                  <AnnualHeatmap
-                    completedDates={habit.completedDates}
-                    color={habit.color}
-                  />
+                  <AnnualHeatmap habit={habit} color={habit.color} />
                 )}
                 {selectedView === "Mensal" && (
-                  <MonthlyHeatmap
-                    completedDates={habit.completedDates}
-                    color={habit.color}
-                  />
+                  <MonthlyHeatmap habit={habit} color={habit.color} />
                 )}
                 {selectedView === "Semanal" && (
                   <WeeklyHeatmap habit={habit} color={habit.color} />

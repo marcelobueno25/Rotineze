@@ -59,6 +59,10 @@ const WeeklyHeatmap = ({ habit: { completedDates, id }, color }) => {
                   rx="10"
                   ry="10"
                   fill={isCheckedOut(currentDate) ? color : "lightgray"}
+                  stroke={
+                    currentDate === moment().format("DD/MM/YYYY") ? `#888` : ""
+                  }
+                  strokeWidth={"5"}
                 />
               </Svg>
             </TouchableOpacity>
