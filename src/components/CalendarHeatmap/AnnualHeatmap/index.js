@@ -61,8 +61,6 @@ const AnnualHeatMap = ({ habit: { completedDates, id }, color }) => {
                   rx="3"
                   ry="3"
                   fill={isCompleted ? color : "lightgrey"}
-                  stroke={date === moment().format("DD/MM/YYYY") ? `#888` : ""}
-                  strokeWidth={"5"}
                 />
               </Svg>
             </TouchableOpacity>
