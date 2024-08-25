@@ -51,13 +51,16 @@ const WeeklyHeatmap = ({ habit: { completedDates, id }, color }) => {
             <Text style={{ textAlign: "center", marginBottom: 3 }}>
               {day.value}
             </Text>
-            <TouchableOpacity onPress={() => handleToggleDate(currentDate)}>
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleToggleDate(currentDate)}
+            >
               <Svg width="35" height="35">
                 <Rect
                   width="35"
                   height="35"
-                  rx="10"
-                  ry="10"
+                  rx="35"
+                  ry="35"
                   fill={isCheckedOut(currentDate) ? color : "lightgray"}
                 />
               </Svg>

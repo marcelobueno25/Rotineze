@@ -1,6 +1,5 @@
-// /components/AnnualHeatMap.js
-import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 import Svg, { Rect } from "react-native-svg";
 import moment from "moment";
 import { useDispatch } from "react-redux";
@@ -10,26 +9,44 @@ const AnnualHeatMap = ({ habit: { completedDates, id }, color }) => {
   const currentYear = moment().year(); // Ano atual
 
   // Converter datas concluídas para o formato 'YYYY-MM-DD'
-  const completedDays = completedDates.map((date) =>
-    moment(date, "DD/MM/YYYY").format("DD/MM/YYYY")
+  const completedDaysSet = useMemo(
+    () =>
+      new Set(
+        completedDates.map((date) =>
+          moment(date, "DD/MM/YYYY").format("DD/MM/YYYY")
+        )
+      ),
+    [completedDates]
   );
 
   // Obter todos os dias do ano atual
-  const daysInYear = Array.from({ length: 12 }, (_, monthIndex) => {
-    const daysInMonth = moment(
-      `${monthIndex + 1}/${currentYear}`,
-      "MM-YYYY"
-    ).daysInMonth();
-    return Array.from({ length: daysInMonth }, (_, dayIndex) => {
-      return moment(
-        `${dayIndex + 1}/${monthIndex + 1}/${currentYear}`,
-        "DD/MM/YYYY"
-      );
-    });
-  }).flat();
+  const daysInYear = useMemo(() => {
+    const days = [];
+    for (let month = 0; month < 12; month++) {
+      const daysInMonth = moment({ year: currentYear, month }).daysInMonth();
+      for (let day = 1; day <= daysInMonth; day++) {
+        days.push(moment({ year: currentYear, month, day }));
+      }
+    }
+    return days;
+  }, [currentYear]);
+
+  const [renderedDays, setRenderedDays] = useState(0); // Estado para controlar a quantidade de dias renderizados
+  const [loading, setLoading] = useState(true); // Estado para controlar o carregamento
+
+  useEffect(() => {
+    if (renderedDays < daysInYear.length) {
+      const timeoutId = setTimeout(() => {
+        setRenderedDays((prev) => Math.min(prev + 50, daysInYear.length));
+      }, 100); // Incrementa o número de dias renderizados a cada 100ms
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setLoading(false); // Quando todos os dias são renderizados, para o carregamento
+    }
+  }, [renderedDays, daysInYear.length]);
 
   const handleToggleDate = (date) => {
-    console.log("ANO", date);
     dispatch({
       type: "TOGGLE_COMPLETE_HABIT",
       payload: {
@@ -41,32 +58,39 @@ const AnnualHeatMap = ({ habit: { completedDates, id }, color }) => {
 
   return (
     <View style={{ alignItems: "center" }}>
-      <View
-        style={{
-          flexWrap: "wrap",
-          flexDirection: "row",
-          justifyContent: "center",
-        }}
-      >
-        {daysInYear.map((day, index) => {
-          const date = day.format("DD/MM/YYYY");
-          const isCompleted = completedDays.includes(date);
+      {loading ? (
+        <ActivityIndicator size="large" color={color} />
+      ) : (
+        <View
+          style={{
+            flexWrap: "wrap",
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
+        >
+          {daysInYear.slice(0, renderedDays).map((day, index) => {
+            const date = day.format("DD/MM/YYYY");
+            const isCompleted = completedDaysSet.has(date);
 
-          return (
-            <TouchableOpacity onPress={() => handleToggleDate(date)}>
-              <Svg key={index} width="15" height="15" style={{ margin: 1 }}>
-                <Rect
-                  width="15"
-                  height="15"
-                  rx="3"
-                  ry="3"
-                  fill={isCompleted ? color : "lightgrey"}
-                />
-              </Svg>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+            return (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleToggleDate(date)}
+              >
+                <Svg width="13" height="13" style={{ margin: 1 }}>
+                  <Rect
+                    width="13"
+                    height="13"
+                    rx="13"
+                    ry="13"
+                    fill={isCompleted ? color : "lightgrey"}
+                  />
+                </Svg>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 };

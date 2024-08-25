@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import WeeklyHeatmap from "../../components/CalendarHeatmap/WeeklyHeatmap";
 import AnnualHeatmap from "../../components/CalendarHeatmap/AnnualHeatmap";
 import MonthlyHeatmap from "../../components/CalendarHeatmap/MonthlyHeatmap";
+import HabitCard from "../../components/CardHabit";
 
 export function Home() {
   const habits = useSelector((state) => state.habits.habits);
@@ -48,45 +49,13 @@ export function Home() {
         ]}
       />
       <ScrollView>
-        {habits.map((habit) => (
-          <Card key={habit.id} style={{ margin: 8 }}>
-            <Card.Title
-              title={habit.name}
-              left={(props) => (
-                <IconButton
-                  {...props}
-                  icon={habit.icon}
-                  iconColor="#fff"
-                  size={26}
-                  style={{
-                    backgroundColor: habit.color,
-                    borderRadius: 10,
-                  }}
-                />
-              )}
-              right={(props) => (
-                <View
-                  style={{
-                    flexDirection: "row",
-                  }}
-                >
-                  <IconButton
-                    {...props}
-                    icon="check-circle-outline"
-                    size={24}
-                    onPress={() => handleCompletedDates(habit.id)}
-                    style={{ marginRight: 0 }}
-                  />
-                  <IconButton
-                    {...props}
-                    icon="delete"
-                    size={24}
-                    onPress={() => handleRemoveHabit(habit.id)}
-                    style={{ marginLeft: 0 }}
-                  />
-                </View>
-              )}
-            />
+        {habits.map((habit, index) => (
+          <HabitCard
+            key={index}
+            habit={habit}
+            onRemoveHabit={handleRemoveHabit}
+            onToggleComplete={handleCompletedDates}
+          >
             {selectedView !== "Diário" && (
               <View
                 style={{
@@ -108,7 +77,7 @@ export function Home() {
                 )}
               </View>
             )}
-          </Card>
+          </HabitCard>
         ))}
       </ScrollView>
     </View>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, memo } from "react";
 import {
   Text,
   Button,
@@ -10,6 +10,98 @@ import uuid from "react-native-uuid";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch } from "react-redux";
+import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
+
+const NomeForm = memo(({ control, errors }) => (
+  <>
+    <Controller
+      control={control}
+      rules={{ required: true }}
+      render={({ field: { onChange, onBlur, value } }) => (
+        <TextInput
+          label="Nome"
+          mode="outlined"
+          onBlur={onBlur}
+          onChangeText={onChange}
+          value={value}
+          error={!!errors.name}
+        />
+      )}
+      name="name"
+      defaultValue=""
+    />
+    {errors.name && (
+      <Text style={{ color: MD3Colors.error50 }}>
+        Este campo é obrigatório.
+      </Text>
+    )}
+  </>
+));
+
+const DescricaoForm = memo(({ control, errors }) => (
+  <>
+    <Controller
+      control={control}
+      render={({ field: { onChange, onBlur, value } }) => (
+        <TextInput
+          label="Descrição"
+          mode="outlined"
+          onBlur={onBlur}
+          onChangeText={onChange}
+          value={value}
+          error={!!errors.description}
+        />
+      )}
+      name="description"
+      defaultValue=""
+    />
+    {errors.description && (
+      <Text style={{ color: MD3Colors.error50 }}>
+        Este campo é obrigatório.
+      </Text>
+    )}
+  </>
+));
+
+const CorForm = memo(({ selectedColor, setSelectedColor }) => (
+  <>
+    <Text>Cor</Text>
+    <View style={styles.colorContainer}>
+      {COLORS_NEW_HABIT.map((color, index) => (
+        <IconButton
+          key={index}
+          icon="circle"
+          iconColor={color}
+          size={25}
+          onPress={() => setSelectedColor(color)}
+          style={
+            selectedColor === color ? { backgroundColor: color + "55" } : {}
+          }
+        />
+      ))}
+    </View>
+  </>
+));
+
+const IconeForm = memo(({ selectedIcon, setSelectedIcon, selectedColor }) => (
+  <>
+    <Text>Ícone</Text>
+    <View style={styles.iconContainer}>
+      {ICONS_NEW_HABIT.map((icon, index) => (
+        <IconButton
+          key={index}
+          icon={icon}
+          iconColor={selectedIcon === icon ? "#fff" : "#888"}
+          size={22}
+          onPress={() => setSelectedIcon(icon)}
+          style={
+            selectedIcon === icon ? { backgroundColor: selectedColor } : {}
+          }
+        />
+      ))}
+    </View>
+  </>
+));
 
 export function CreateHabits({ navigation }) {
   const {
@@ -19,73 +111,8 @@ export function CreateHabits({ navigation }) {
   } = useForm();
   const dispatch = useDispatch();
 
-  const colors = [
-    "#4682B4",
-    "#FF6347",
-    "#32CD32",
-    "#FFD700",
-    "#8A2BE2",
-    "#C84281",
-    "#9E005D",
-    "#00A99D",
-    "#F15A24",
-    "#8CC63F",
-    "#25C6D4",
-    "#004A98",
-  ]; // Cores predefinidas
-  const icons = [
-    "newspaper-variant-outline",
-    "book-open-blank-variant",
-    "notebook-outline",
-    "baby-face-outline",
-    "briefcase-outline",
-    "soccer",
-    "bag-suitcase-outline",
-    "cellphone",
-    "camera-outline",
-    "cart-outline",
-    "candy-outline",
-    "coffee-outline",
-    "tea-outline",
-    "beer-outline",
-    "tooth-outline",
-    "shopping-outline",
-    "paw-outline",
-    "piggy-bank-outline",
-    "cigar",
-    "credit-card-outline",
-    "food-apple-outline",
-    "vacuum-outline",
-    "wallet-outline",
-    "glass-cocktail",
-    "alarm-check",
-    "arm-flex-outline",
-    "bag-personal-outline",
-    "car-outline",
-    "truck-outline",
-    "moped-outline",
-    "bed-outline",
-    "bowl-mix-outline",
-    "candelabra-fire",
-    "cards-heart-outline",
-    "cross-outline",
-    "gamepad-variant-outline",
-    "forum-outline",
-    "key-outline",
-    "monitor",
-    "music-note-outline",
-    "bacteria-outline",
-    "needle",
-    "office-building-outline",
-    "palette-outline",
-    "pencil-outline",
-    "sleep",
-    "sprout-outline",
-    "television-classic",
-  ];
-
-  const [selectedColor, setSelectedColor] = useState(colors[0]); // Cor padrão
-  const [selectedIcon, setSelectedIcon] = useState(icons[0]); // Ícone padrão
+  const [selectedColor, setSelectedColor] = useState(COLORS_NEW_HABIT[0]); // Cor padrão
+  const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]); // Ícone padrão
 
   const onSubmit = (data) => {
     if (!selectedColor || !selectedIcon) {
@@ -108,120 +135,27 @@ export function CreateHabits({ navigation }) {
     navigation.goBack(); // Retorna à tela anterior (lista de hábitos)
   };
 
-  const NomeForm = () => (
-    <>
-      <Controller
-        control={control}
-        rules={{ required: true }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            label="Nome"
-            mode="outlined"
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-            error={!!errors.name}
-          />
-        )}
-        name="name"
-        defaultValue=""
-      />
-      {errors.name && (
-        <Text style={{ color: MD3Colors.error50 }}>
-          Este campo é obrigatório.
-        </Text>
-      )}
-    </>
-  );
-
-  const DescricaoForm = () => (
-    <Controller
-      control={control}
-      render={({ field: { onChange, onBlur, value } }) => (
-        <TextInput
-          label="Descrição"
-          mode="outlined"
-          onBlur={onBlur}
-          onChangeText={onChange}
-          value={value}
-          error={!!errors.description}
-        />
-      )}
-      name="description"
-      defaultValue=""
-    />
-  );
-
-  const CorForm = () => (
-    <>
-      <Text>Cor</Text>
-      <View style={styles.colorContainer}>
-        {colors.map((color, index) => (
-          <IconButton
-            key={index}
-            icon="circle"
-            iconColor={color}
-            size={25}
-            onPress={() => setSelectedColor(color)}
-            style={
-              selectedColor === color
-                ? {
-                    backgroundColor: color + "55",
-                    marginBottom: 0,
-                    marginTop: 0,
-                  }
-                : { marginBottom: 0, marginTop: 0 }
-            }
-          />
-        ))}
-      </View>
-    </>
-  );
-
-  const IconeForm = () => (
-    <>
-      <Text>Ícone</Text>
-      <View style={styles.iconContainer}>
-        {icons.map((icon, index) => (
-          <IconButton
-            key={index}
-            icon={icon}
-            iconColor={selectedIcon === icon ? "#fff" : "#888"}
-            size={22}
-            onPress={() => setSelectedIcon(icon)}
-            style={
-              selectedIcon === icon ? { backgroundColor: selectedColor } : {}
-            }
-          />
-        ))}
-      </View>
-    </>
-  );
-
   return (
     <ScrollView>
       <View style={styles.container}>
-        <View>
-          <NomeForm />
-        </View>
-        <View>
-          <DescricaoForm />
-        </View>
-        <View>
-          <CorForm />
-        </View>
-        <View>
-          <IconeForm />
-        </View>
-        <View>
-          <Button
-            mode="contained"
-            onPress={handleSubmit(onSubmit)}
-            style={{ marginTop: 20 }}
-          >
-            Cadastrar
-          </Button>
-        </View>
+        <NomeForm control={control} errors={errors} />
+        <DescricaoForm control={control} errors={errors} />
+        <CorForm
+          selectedColor={selectedColor}
+          setSelectedColor={setSelectedColor}
+        />
+        <IconeForm
+          selectedIcon={selectedIcon}
+          setSelectedIcon={setSelectedIcon}
+          selectedColor={selectedColor}
+        />
+        <Button
+          mode="contained"
+          onPress={handleSubmit(onSubmit)}
+          style={{ marginTop: 20 }}
+        >
+          Cadastrar
+        </Button>
       </View>
     </ScrollView>
   );

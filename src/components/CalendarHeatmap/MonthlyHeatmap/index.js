@@ -42,13 +42,16 @@ const MonthlyHeatMap = ({ habit: { completedDates, id }, color }) => {
         const isCompleted = completedDays.includes(date);
 
         return (
-          <TouchableOpacity onPress={() => handleToggleDate(date)}>
-            <Svg key={dayIndex} width="25" height="25" style={{ margin: 2 }}>
+          <TouchableOpacity
+            key={dayIndex}
+            onPress={() => handleToggleDate(date)}
+          >
+            <Svg width="23" height="23" style={{ margin: 2 }}>
               <Rect
-                width="25"
-                height="25"
-                rx="5"
-                ry="5"
+                width="23"
+                height="23"
+                rx="23"
+                ry="23"
                 fill={isCompleted ? color : "lightgrey"}
               />
             </Svg>
