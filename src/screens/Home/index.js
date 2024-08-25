@@ -32,13 +32,18 @@ export function Home() {
       }}
     >
       <SegmentedButtons
+        density="small"
         value={selectedView}
         onValueChange={setSelectedView}
         buttons={[
-          { label: "Diário", value: "Diário" },
-          { label: "Semanal", value: "Semanal" },
-          { label: "Mensal", value: "Mensal" },
-          { label: "Anual", value: "Anual" },
+          { label: "Diário", value: "Diário", accessibilityLabel: "Diário" },
+          {
+            label: "Semanal",
+            value: "Semanal",
+            accessibilityLabel: "Semanal",
+          },
+          { label: "Mensal", value: "Mensal", accessibilityLabel: "Mensal" },
+          { label: "Anual", value: "Anual", accessibilityLabel: "Anual" },
         ]}
       />
       <ScrollView>
