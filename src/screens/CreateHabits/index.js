@@ -7,7 +7,7 @@ import {
   IconButton,
 } from "react-native-paper";
 import uuid from "react-native-uuid";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch } from "react-redux";
 
@@ -19,8 +19,70 @@ export function CreateHabits({ navigation }) {
   } = useForm();
   const dispatch = useDispatch();
 
-  const colors = ["#4682B4", "#FF6347", "#32CD32", "#FFD700", "#8A2BE2"]; // Cores predefinidas
-  const icons = ["camera", "calendar", "briefcase", "book", "beer"];
+  const colors = [
+    "#4682B4",
+    "#FF6347",
+    "#32CD32",
+    "#FFD700",
+    "#8A2BE2",
+    "#C84281",
+    "#9E005D",
+    "#00A99D",
+    "#F15A24",
+    "#8CC63F",
+    "#25C6D4",
+    "#004A98",
+  ]; // Cores predefinidas
+  const icons = [
+    "newspaper-variant-outline",
+    "book-open-blank-variant",
+    "notebook-outline",
+    "baby-face-outline",
+    "briefcase-outline",
+    "soccer",
+    "bag-suitcase-outline",
+    "cellphone",
+    "camera-outline",
+    "cart-outline",
+    "candy-outline",
+    "coffee-outline",
+    "tea-outline",
+    "beer-outline",
+    "tooth-outline",
+    "shopping-outline",
+    "paw-outline",
+    "piggy-bank-outline",
+    "cigar",
+    "credit-card-outline",
+    "food-apple-outline",
+    "vacuum-outline",
+    "wallet-outline",
+    "glass-cocktail",
+    "alarm-check",
+    "arm-flex-outline",
+    "bag-personal-outline",
+    "car-outline",
+    "truck-outline",
+    "moped-outline",
+    "bed-outline",
+    "bowl-mix-outline",
+    "candelabra-fire",
+    "cards-heart-outline",
+    "cross-outline",
+    "gamepad-variant-outline",
+    "forum-outline",
+    "key-outline",
+    "monitor",
+    "music-note-outline",
+    "bacteria-outline",
+    "needle",
+    "office-building-outline",
+    "palette-outline",
+    "pencil-outline",
+    "sleep",
+    "sprout-outline",
+    "television-classic",
+  ];
 
   const [selectedColor, setSelectedColor] = useState(colors[0]); // Cor padrão
   const [selectedIcon, setSelectedIcon] = useState(icons[0]); // Ícone padrão
@@ -99,10 +161,16 @@ export function CreateHabits({ navigation }) {
             key={index}
             icon="circle"
             iconColor={color}
-            size={30}
+            size={25}
             onPress={() => setSelectedColor(color)}
             style={
-              selectedColor === color ? { backgroundColor: color + "55" } : {}
+              selectedColor === color
+                ? {
+                    backgroundColor: color + "55",
+                    marginBottom: 0,
+                    marginTop: 0,
+                  }
+                : { marginBottom: 0, marginTop: 0 }
             }
           />
         ))}
@@ -119,7 +187,7 @@ export function CreateHabits({ navigation }) {
             key={index}
             icon={icon}
             iconColor={selectedIcon === icon ? "#fff" : "#888"}
-            size={30}
+            size={22}
             onPress={() => setSelectedIcon(icon)}
             style={
               selectedIcon === icon ? { backgroundColor: selectedColor } : {}
@@ -131,29 +199,31 @@ export function CreateHabits({ navigation }) {
   );
 
   return (
-    <View style={styles.container}>
-      <View>
-        <NomeForm />
+    <ScrollView>
+      <View style={styles.container}>
+        <View>
+          <NomeForm />
+        </View>
+        <View>
+          <DescricaoForm />
+        </View>
+        <View>
+          <CorForm />
+        </View>
+        <View>
+          <IconeForm />
+        </View>
+        <View>
+          <Button
+            mode="contained"
+            onPress={handleSubmit(onSubmit)}
+            style={{ marginTop: 20 }}
+          >
+            Cadastrar
+          </Button>
+        </View>
       </View>
-      <View>
-        <DescricaoForm />
-      </View>
-      <View>
-        <CorForm />
-      </View>
-      <View>
-        <IconeForm />
-      </View>
-      <View>
-        <Button
-          mode="contained"
-          onPress={handleSubmit(onSubmit)}
-          style={{ marginTop: 20 }}
-        >
-          Submit
-        </Button>
-      </View>
-    </View>
+    </ScrollView>
   );
 }
 

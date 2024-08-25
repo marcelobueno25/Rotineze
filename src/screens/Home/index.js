@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { SegmentedButtons, Card, IconButton } from "react-native-paper";
 import { View, ScrollView } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
@@ -8,7 +8,8 @@ import MonthlyHeatmap from "../../components/CalendarHeatmap/MonthlyHeatmap";
 
 export function Home() {
   const habits = useSelector((state) => state.habits.habits);
-  const [selectedView, setSelectedView] = React.useState("Diário");
+  const [selectedView, setSelectedView] = useState("Diário");
+
   const dispatch = useDispatch();
 
   const handleRemoveHabit = (id) => {
@@ -74,41 +75,45 @@ export function Home() {
                     icon="check-circle-outline"
                     size={24}
                     onPress={() => handleCompletedDates(habit.id)}
+                    style={{ marginRight: 0 }}
                   />
                   <IconButton
                     {...props}
                     icon="delete"
                     size={24}
                     onPress={() => handleRemoveHabit(habit.id)}
+                    style={{ marginLeft: 0 }}
                   />
                 </View>
               )}
             />
-            <View
-              style={{
-                flex: 1,
-                alignItem: "center",
-                paddingLeft: 10,
-                paddingRight: 10,
-                paddingBottom: 10,
-              }}
-            >
-              {selectedView === "Anual" && (
-                <AnnualHeatmap
-                  completedDates={habit.completedDates}
-                  color={habit.color}
-                />
-              )}
-              {selectedView === "Mensal" && (
-                <MonthlyHeatmap
-                  completedDates={habit.completedDates}
-                  color={habit.color}
-                />
-              )}
-              {selectedView === "Semanal" && (
-                <WeeklyHeatmap habit={habit} color={habit.color} />
-              )}
-            </View>
+            {selectedView !== "Diário" && (
+              <View
+                style={{
+                  flex: 1,
+                  alignItem: "center",
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  paddingBottom: 10,
+                }}
+              >
+                {selectedView === "Anual" && (
+                  <AnnualHeatmap
+                    completedDates={habit.completedDates}
+                    color={habit.color}
+                  />
+                )}
+                {selectedView === "Mensal" && (
+                  <MonthlyHeatmap
+                    completedDates={habit.completedDates}
+                    color={habit.color}
+                  />
+                )}
+                {selectedView === "Semanal" && (
+                  <WeeklyHeatmap habit={habit} color={habit.color} />
+                )}
+              </View>
+            )}
           </Card>
         ))}
       </ScrollView>

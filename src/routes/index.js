@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { IconButton } from "react-native-paper";
 import { Details } from "../screens/Details";
 import { CreateHabits } from "../screens/CreateHabits";
 import { Home } from "../screens/Home";
@@ -35,7 +35,7 @@ function HomeTab({ navigation }) {
     right: 16,
     height: 60,
     //elevation: 0,
-    borderRadius: 30,
+    borderRadius: 10,
     border: "none",
   };
 
@@ -43,13 +43,20 @@ function HomeTab({ navigation }) {
     headerShown: true,
     tabBarStyle: customTabStyle,
     tabBarShowLabel: false,
-    headerRight: ({ color, size }) => (
-      <Ionicons
-        name="add-circle-outline"
-        size={30}
-        color={color}
-        style={{ padding: 10 }}
+    headerRight: ({ color }) => (
+      <IconButton
+        icon="plus-circle-outline"
+        size={27}
+        iconColor={color}
         onPress={() => navigation.navigate("CreateHabits")}
+      />
+    ),
+    headerLeft: ({ color }) => (
+      <IconButton
+        icon="format-list-bulleted"
+        mode="outline"
+        size={27}
+        iconColor={color}
       />
     ),
   };
@@ -66,7 +73,7 @@ function HomeTab({ navigation }) {
         options={{
           title: "Hábitos",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
+            <IconButton icon="home" size={30} iconColor={color} />
           ),
         }}
       />
@@ -76,7 +83,7 @@ function HomeTab({ navigation }) {
         options={{
           title: "Detalhes",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="bar-chart-outline" size={size} color={color} />
+            <IconButton icon="chart-line" size={25} iconColor={color} />
           ),
         }}
       />
