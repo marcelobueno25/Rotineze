@@ -1,8 +1,18 @@
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import Svg, { Rect, Text as SvgText, Circle } from "react-native-svg";
 import moment from "moment";
 import { useDispatch } from "react-redux";
+
+const daysOfWeek = [
+  { label: "D", value: 0 }, // Domingo
+  { label: "S", value: 1 }, // Segunda-feira
+  { label: "T", value: 2 }, // Terça-feira
+  { label: "Q", value: 3 }, // Quarta-feira
+  { label: "Q", value: 4 }, // Quinta-feira
+  { label: "S", value: 5 }, // Sexta-feira
+  { label: "S", value: 6 }, // Sábado
+];
 
 const MonthlyHeatMap = ({ habit: { completedDates, id }, color }) => {
   const dispatch = useDispatch();
@@ -25,78 +35,149 @@ const MonthlyHeatMap = ({ habit: { completedDates, id }, color }) => {
     });
   };
 
+  // Determinar o dia da semana em que o mês começa
+  const firstDayOfMonth = moment(
+    `${monthIndex + 1}/01/${currentYear}`,
+    "MM/DD/YYYY"
+  ).day();
+
+  // Criar uma matriz de dias do mês, preenchida para começar no dia correto da semana
+  const calendarDays = Array.from({ length: 42 }, (_, index) => {
+    const dayOfMonth = index - firstDayOfMonth + 1;
+    if (dayOfMonth > 0 && dayOfMonth <= daysInMonth) {
+      return moment(
+        `${dayOfMonth}/${monthIndex + 1}/${currentYear}`,
+        "DD/MM/YYYY"
+      );
+    }
+    return null; // Dias fora do mês
+  });
+
+  // Remover a última linha de dias se todos forem nulos
+  while (calendarDays.slice(-7).every((day) => day === null)) {
+    calendarDays.splice(-7);
+  }
+
   return (
-    <View
-      style={{
-        flexWrap: "wrap",
-        flexDirection: "row",
-        justifyContent: "center",
-      }}
-    >
-      {Array.from({ length: daysInMonth }, (_, dayIndex) => {
-        const date = moment(
-          `${dayIndex + 1}/${monthIndex + 1}/${currentYear}`,
-          "DD/MM/YYYY"
-        ).format("DD/MM/YYYY");
+    <View style={{ alignItems: "center" }}>
+      {/* Cabeçalho com os dias da semana */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          marginBottom: 5,
+        }}
+      >
+        {daysOfWeek.map((day, index) => (
+          <View key={index} style={{ width: 40, alignItems: "center" }}>
+            <Text style={{ fontWeight: "bold" }}>{day.label}</Text>
+          </View>
+        ))}
+      </View>
 
-        const isCompleted = completedDays.includes(date);
-        const isFutureDate = moment(date, "DD/MM/YYYY").isAfter(
-          moment(),
-          "day"
-        );
-        const isToday = moment(date, "DD/MM/YYYY").isSame(moment(), "day");
-        const isPastDate = moment(date, "DD/MM/YYYY").isBefore(moment(), "day");
+      {/* Renderização dos dias do calendário */}
+      <View
+        style={{
+          flexDirection: "row",
+          flexWrap: "wrap",
+          width: 280,
+          justifyContent: "center",
+        }}
+      >
+        {calendarDays.map((date, index) => {
+          if (date) {
+            const formattedDate = date.format("DD/MM/YYYY");
+            const dayNumber = date.date();
 
-        return (
-          <TouchableOpacity
-            key={dayIndex}
-            onPress={() => handleToggleDate(date)}
-            disabled={isFutureDate}
-          >
-            <Svg width="30" height="30" style={{ margin: 2 }}>
-              <Rect
-                width="30"
-                height="30"
-                rx="23"
-                ry="23"
-                fill={isCompleted ? color : "lightgrey"}
-              />
-              {isFutureDate && (
-                <SvgText
-                  x="50%"
-                  y="50%"
-                  textAnchor="middle"
-                  dy=".3em"
-                  fontSize="18"
-                  fill="#999" // Cor do texto "desabilitado"
+            const isCompleted = completedDays.includes(formattedDate);
+            const isFutureDate = date.isAfter(moment(), "day");
+            const isToday = date.isSame(moment(), "day");
+            const isPastDate = date.isBefore(moment(), "day");
+
+            return (
+              <View
+                key={index}
+                style={{ width: 40, alignItems: "center", marginVertical: 2 }}
+              >
+                <TouchableOpacity
+                  onPress={() => handleToggleDate(formattedDate)}
+                  disabled={isFutureDate}
                 >
-                  -
-                </SvgText>
-              )}
-              {isToday && (
-                <Circle
-                  cx="15"
-                  cy="15"
-                  r="4"
-                  fill="#fff" // Cor do círculo interno para o dia de hoje
-                />
-              )}
-              {isPastDate && (
-                <SvgText
-                  x="50%"
-                  y="50%"
-                  textAnchor="middle"
-                  dy=".3em"
-                  fontSize="10"
-                  fill="black" // Cor do texto para os dias passados
-                >
-                  {dayIndex + 1}
-                </SvgText>
-              )}
-            </Svg>
-          </TouchableOpacity>
-        );
-      })}
+                  <Svg width="30" height="30">
+                    <Rect
+                      width="30"
+                      height="30"
+                      rx="23"
+                      ry="23"
+                      fill={isCompleted ? color : "lightgrey"}
+                    />
+                    {isFutureDate && (
+                      <SvgText
+                        x="50%"
+                        y="50%"
+                        textAnchor="middle"
+                        dy=".3em"
+                        fontSize="18"
+                        fill="#999" // Cor do texto "desabilitado"
+                      >
+                        -
+                      </SvgText>
+                    )}
+                    {isToday && (
+                      <Circle
+                        cx="15"
+                        cy="15"
+                        r="4"
+                        fill="#fff" // Cor do círculo interno para o dia de hoje
+                      />
+                    )}
+                    {isPastDate && (
+                      <SvgText
+                        x="50%"
+                        y="50%"
+                        textAnchor="middle"
+                        dy=".3em"
+                        fontSize="10"
+                        fill="black" // Cor do texto para os dias passados
+                      >
+                        {dayNumber}
+                      </SvgText>
+                    )}
+                  </Svg>
+                </TouchableOpacity>
+              </View>
+            );
+          } else {
+            // Espaço vazio para os dias fora do mês com círculo "-"
+            return (
+              <View
+                key={index}
+                style={{ width: 40, alignItems: "center", marginVertical: 2 }}
+              >
+                <Svg width="30" height="30">
+                  <Rect
+                    width="30"
+                    height="30"
+                    rx="23"
+                    ry="23"
+                    fill="lightgrey"
+                  />
+                  <SvgText
+                    x="50%"
+                    y="50%"
+                    textAnchor="middle"
+                    dy=".3em"
+                    fontSize="18"
+                    fill="#999" // Cor do texto "-"
+                  >
+                    -
+                  </SvgText>
+                </Svg>
+              </View>
+            );
+          }
+        })}
+      </View>
     </View>
   );
 };
