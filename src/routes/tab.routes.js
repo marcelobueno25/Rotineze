@@ -1,3 +1,4 @@
+import { Vibration } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { IconButton } from "react-native-paper";
 import { Details } from "../screens/Details";
@@ -24,7 +25,10 @@ const tabScreenOptions = ({ navigation }) => ({
       icon="plus-circle-outline"
       size={27}
       iconColor={color}
-      onPress={() => navigation.navigate("CreateHabits")}
+      onPress={() => {
+        Vibration.vibrate(50);
+        navigation.navigate("CreateHabits");
+      }}
     />
   ),
   headerLeft: ({ color }) => (
@@ -33,6 +37,9 @@ const tabScreenOptions = ({ navigation }) => ({
       mode="outline"
       size={27}
       iconColor={color}
+      onPress={() => {
+        Vibration.vibrate(50);
+      }}
     />
   ),
 });

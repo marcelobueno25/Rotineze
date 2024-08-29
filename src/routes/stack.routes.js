@@ -1,3 +1,4 @@
+import { Vibration } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { CreateHabits } from "../screens/CreateHabits";
@@ -14,7 +15,10 @@ const stackScreenOptions = ({ navigation }) => ({
       name="plus-circle-outline"
       color={color}
       size={26}
-      onPress={() => navigation.navigate("CreateHabits")}
+      onPress={() => {
+        Vibration.vibrate(50);
+        navigation.navigate("CreateHabits");
+      }}
     />
   ),
   headerLeft: ({ color }) => (
@@ -23,7 +27,10 @@ const stackScreenOptions = ({ navigation }) => ({
       color={color}
       size={24}
       style={{ marginRight: 10 }}
-      onPress={() => navigation.navigate("Settings")}
+      onPress={() => {
+        Vibration.vibrate(50);
+        navigation.navigate("Settings");
+      }}
     />
   ),
 });

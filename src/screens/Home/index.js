@@ -1,27 +1,19 @@
 import React, { useState } from "react";
-import { SegmentedButtons, Card, IconButton } from "react-native-paper";
-import { View, ScrollView } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
-import WeeklyHeatmap from "../../components/CalendarHeatmap/WeeklyHeatmap";
-import AnnualHeatmap from "../../components/CalendarHeatmap/AnnualHeatmap";
-import MonthlyHeatmap from "../../components/CalendarHeatmap/MonthlyHeatmap";
-import HabitCard from "../../components/CardHabit";
+import { SegmentedButtons } from "react-native-paper";
+import { View, ScrollView, Vibration } from "react-native";
+import { useSelector } from "react-redux";
+import CardDiario from "./components/CardDiario";
+import CardSemanal from "./components/CardSemanal";
+import CardMensal from "./components/CardMensal";
+import CardAnual from "./components/CardAnual";
 
 export function Home() {
   const habits = useSelector((state) => state.habits.habits);
   const [selectedView, setSelectedView] = useState("Diário");
 
-  const dispatch = useDispatch();
-
-  const handleRemoveHabit = (id) => {
-    dispatch({ type: "REMOVE_HABIT", payload: id });
-  };
-
-  const handleCompletedDates = (id) => {
-    dispatch({
-      type: "TOGGLE_COMPLETE_HABIT",
-      payload: { id },
-    });
+  const handleValueChange = (value) => {
+    Vibration.vibrate(50); // Vibra por 50ms
+    setSelectedView(value);
   };
 
   return (
@@ -36,48 +28,25 @@ export function Home() {
       <SegmentedButtons
         density="small"
         value={selectedView}
-        onValueChange={setSelectedView}
+        onValueChange={handleValueChange}
         buttons={[
-          { label: "Diário", value: "Diário", accessibilityLabel: "Diário" },
+          { label: "Diário", value: "Diário" },
           {
             label: "Semanal",
             value: "Semanal",
-            accessibilityLabel: "Semanal",
           },
-          { label: "Mensal", value: "Mensal", accessibilityLabel: "Mensal" },
-          { label: "Anual", value: "Anual", accessibilityLabel: "Anual" },
+          { label: "Mensal", value: "Mensal" },
+          { label: "Anual", value: "Anual" },
         ]}
       />
       <ScrollView>
         {habits.map((habit, index) => (
-          <HabitCard
-            key={index}
-            habit={habit}
-            onRemoveHabit={handleRemoveHabit}
-            onToggleComplete={handleCompletedDates}
-          >
-            {selectedView !== "Diário" && (
-              <View
-                style={{
-                  flex: 1,
-                  alignItem: "center",
-                  paddingLeft: 10,
-                  paddingRight: 10,
-                  paddingBottom: 10,
-                }}
-              >
-                {selectedView === "Anual" && (
-                  <AnnualHeatmap habit={habit} color={habit.color} />
-                )}
-                {selectedView === "Mensal" && (
-                  <MonthlyHeatmap habit={habit} color={habit.color} />
-                )}
-                {selectedView === "Semanal" && (
-                  <WeeklyHeatmap habit={habit} color={habit.color} />
-                )}
-              </View>
-            )}
-          </HabitCard>
+          <View key={index}>
+            {selectedView === "Diário" && <CardDiario habit={habit} />}
+            {selectedView === "Semanal" && <CardSemanal habit={habit} />}
+            {selectedView === "Mensal" && <CardMensal habit={habit} />}
+            {selectedView === "Anual" && <CardAnual habit={habit} />}
+          </View>
         ))}
       </ScrollView>
     </View>
