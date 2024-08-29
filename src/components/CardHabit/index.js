@@ -24,6 +24,7 @@ const HabitCard = ({ habit, children }) => {
   };
 
   const toggleExpanded = () => {
+    Vibration.vibrate(50);
     setExpanded(!expanded);
   };
 
@@ -83,8 +84,13 @@ const HabitCard = ({ habit, children }) => {
             alignItems: "center",
           }}
         >
-          <Text>Concluídos: {habit.completedDates.length}</Text>
-          <Text>Criado: {habit.criado}</Text>
+          <Text>
+            <Text style={{ fontWeight: "bold" }}>Concluídos:</Text>
+            {habit.completedDates.length}
+          </Text>
+          <Text>
+            <Text style={{ fontWeight: "bold" }}>Criado:</Text> {habit.criado}
+          </Text>
         </View>
       )}
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Vibration } from "react-native";
 import { Text } from "react-native-paper";
 import Svg, { Rect, Text as SvgText, Circle } from "react-native-svg";
 import moment from "moment";
@@ -27,6 +27,7 @@ const MonthlyHeatMap = ({ habit: { completedDates, id }, color }) => {
   );
 
   const handleToggleDate = (date) => {
+    Vibration.vibrate(100);
     dispatch({
       type: "TOGGLE_COMPLETE_HABIT",
       payload: {

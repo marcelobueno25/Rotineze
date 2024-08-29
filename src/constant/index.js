@@ -1,17 +1,18 @@
 export const COLORS_NEW_HABIT = [
-  "#4682B4",
-  "#FF6347",
-  "#32CD32",
-  "#FFD700",
-  "#8A2BE2",
-  "#C84281",
-  "#9E005D",
-  "#00A99D",
-  "#F15A24",
-  "#8CC63F",
-  "#25C6D4",
-  "#004A98",
-]; // Cores predefinidas
+  "#1E90FF", // Dodger Blue
+  "#FF4500", // Orange Red
+  "#006400", // Dark Green
+  "#DAA520", // Goldenrod
+  "#8B008B", // Dark Magenta
+  "#FF1493", // Deep Pink
+  "#A52A2A", // Brown
+  "#008B8B", // Dark Cyan
+  "#FF6347", // Tomato
+  "#556B2F", // Dark Olive Green
+  "#4682B4", // Steel Blue
+  "#8B4513", // Saddle Brown
+];
+
 export const ICONS_NEW_HABIT = [
   "newspaper-variant-outline",
   "book-open-blank-variant",
