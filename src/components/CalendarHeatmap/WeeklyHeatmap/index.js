@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import Svg, { Rect } from "react-native-svg";
+import Svg, { Rect, Text as SvgText, Circle } from "react-native-svg";
 import moment from "moment";
 import { useDispatch } from "react-redux";
 
@@ -46,6 +46,16 @@ const WeeklyHeatmap = ({ habit: { completedDates, id }, color }) => {
           .startOf("week")
           .add(index, "days")
           .format("DD/MM/YYYY");
+
+        const isFutureDate = moment(currentDate, "DD/MM/YYYY").isAfter(
+          moment(),
+          "day"
+        );
+        const isToday = moment(currentDate, "DD/MM/YYYY").isSame(
+          moment(),
+          "day"
+        );
+
         return (
           <View key={index} style={{ alignItems: "center", margin: 3 }}>
             <Text style={{ textAlign: "center", marginBottom: 3 }}>
@@ -54,6 +64,7 @@ const WeeklyHeatmap = ({ habit: { completedDates, id }, color }) => {
             <TouchableOpacity
               key={index}
               onPress={() => handleToggleDate(currentDate)}
+              disabled={isFutureDate}
             >
               <Svg width="35" height="35">
                 <Rect
@@ -63,6 +74,26 @@ const WeeklyHeatmap = ({ habit: { completedDates, id }, color }) => {
                   ry="35"
                   fill={isCheckedOut(currentDate) ? color : "lightgray"}
                 />
+                {isToday && (
+                  <Circle
+                    cx="17.5"
+                    cy="17.5"
+                    r="5"
+                    fill="#fff" // Cor do círculo interno para o dia de hoje
+                  />
+                )}
+                {isFutureDate && (
+                  <SvgText
+                    x="50%"
+                    y="50%"
+                    textAnchor="middle"
+                    dy=".3em"
+                    fontSize="18"
+                    fill="#999" // Cor do texto "desabilitado"
+                  >
+                    -
+                  </SvgText>
+                )}
               </Svg>
             </TouchableOpacity>
           </View>

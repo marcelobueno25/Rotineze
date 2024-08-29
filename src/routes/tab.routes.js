@@ -16,6 +16,11 @@ const customTabStyle = {
   elevation: 0, // Melhor que border: "none" para evitar warnings no React Native
 };
 
+const handleTabPress = (navigation, routeName) => {
+  Vibration.vibrate(50);
+  navigation.navigate(routeName);
+};
+
 const tabScreenOptions = ({ navigation }) => ({
   headerShown: false,
   tabBarStyle: customTabStyle,
@@ -44,7 +49,7 @@ const tabScreenOptions = ({ navigation }) => ({
   ),
 });
 
-export function TabRoutes() {
+export function TabRoutes({ navigation }) {
   return (
     <Tab.Navigator initialRouteName="Habitos" screenOptions={tabScreenOptions}>
       <Tab.Screen
@@ -53,7 +58,12 @@ export function TabRoutes() {
         options={{
           title: "Hábitos",
           tabBarIcon: ({ color }) => (
-            <IconButton icon="home" size={30} iconColor={color} />
+            <IconButton
+              icon="home"
+              size={30}
+              iconColor={color}
+              onPress={() => handleTabPress(navigation, "Habitos")}
+            />
           ),
         }}
       />
@@ -63,7 +73,12 @@ export function TabRoutes() {
         options={{
           title: "Detalhes",
           tabBarIcon: ({ color }) => (
-            <IconButton icon="chart-line" size={25} iconColor={color} />
+            <IconButton
+              icon="chart-line"
+              size={25}
+              iconColor={color}
+              onPress={() => handleTabPress(navigation, "Details")}
+            />
           ),
         }}
       />

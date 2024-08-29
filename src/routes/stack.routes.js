@@ -8,6 +8,7 @@ import { TabRoutes } from "./tab.routes";
 const Stack = createNativeStackNavigator();
 
 const stackScreenOptions = ({ navigation }) => ({
+  title: "Rotinize",
   headerShown: true,
   animation: "fade_from_bottom",
   headerRight: ({ color }) => (

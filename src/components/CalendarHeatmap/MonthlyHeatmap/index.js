@@ -1,6 +1,6 @@
 import React from "react";
 import { View, TouchableOpacity } from "react-native";
-import Svg, { Rect } from "react-native-svg";
+import Svg, { Rect, Text as SvgText, Circle } from "react-native-svg";
 import moment from "moment";
 import { useDispatch } from "react-redux";
 
@@ -40,20 +40,59 @@ const MonthlyHeatMap = ({ habit: { completedDates, id }, color }) => {
         ).format("DD/MM/YYYY");
 
         const isCompleted = completedDays.includes(date);
+        const isFutureDate = moment(date, "DD/MM/YYYY").isAfter(
+          moment(),
+          "day"
+        );
+        const isToday = moment(date, "DD/MM/YYYY").isSame(moment(), "day");
+        const isPastDate = moment(date, "DD/MM/YYYY").isBefore(moment(), "day");
 
         return (
           <TouchableOpacity
             key={dayIndex}
             onPress={() => handleToggleDate(date)}
+            disabled={isFutureDate}
           >
-            <Svg width="23" height="23" style={{ margin: 2 }}>
+            <Svg width="30" height="30" style={{ margin: 2 }}>
               <Rect
-                width="23"
-                height="23"
+                width="30"
+                height="30"
                 rx="23"
                 ry="23"
                 fill={isCompleted ? color : "lightgrey"}
               />
+              {isFutureDate && (
+                <SvgText
+                  x="50%"
+                  y="50%"
+                  textAnchor="middle"
+                  dy=".3em"
+                  fontSize="18"
+                  fill="#999" // Cor do texto "desabilitado"
+                >
+                  -
+                </SvgText>
+              )}
+              {isToday && (
+                <Circle
+                  cx="15"
+                  cy="15"
+                  r="4"
+                  fill="#fff" // Cor do círculo interno para o dia de hoje
+                />
+              )}
+              {isPastDate && (
+                <SvgText
+                  x="50%"
+                  y="50%"
+                  textAnchor="middle"
+                  dy=".3em"
+                  fontSize="10"
+                  fill="black" // Cor do texto para os dias passados
+                >
+                  {dayIndex + 1}
+                </SvgText>
+              )}
             </Svg>
           </TouchableOpacity>
         );
