@@ -57,7 +57,7 @@ const AnnualHeatMap = ({ habit: { completedDates, id }, color }) => {
   };
 
   return (
-    <View style={{ alignItems: "center" }}>
+    <View style={{ alignItems: "center", marginBottom: 20 }}>
       {loading ? (
         <ActivityIndicator size="large" color={color} />
       ) : (

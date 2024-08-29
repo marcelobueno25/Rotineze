@@ -48,7 +48,9 @@ const HabitCard = ({ habit, children }) => {
           <View style={{ flexDirection: "row", alignItems: "center", gap: 0 }}>
             <IconButton
               {...props}
-              icon={`${isToday ? "check-circle" : "circle"}`}
+              icon={`${
+                isToday ? "check-circle" : "checkbox-blank-circle-outline"
+              }`}
               iconColor={`${isToday ? habit.color : "lightgrey"}`}
               size={24}
               onPress={() => handleCompletedDates(habit.id)}
@@ -85,7 +87,17 @@ const HabitCard = ({ habit, children }) => {
           <Text>Criado: {habit.criado}</Text>
         </View>
       )}
-      {children}
+
+      {!!children && (
+        <View
+          style={{
+            paddingVertical: 10,
+            paddingHorizontal: 0,
+          }}
+        >
+          {children}
+        </View>
+      )}
     </Card>
   );
 };

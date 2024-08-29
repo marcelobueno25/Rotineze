@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
+import { Text } from "react-native-paper";
 import Svg, { Rect, Text as SvgText, Circle } from "react-native-svg";
 import moment from "moment";
 import { useDispatch } from "react-redux";
