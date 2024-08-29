@@ -11,6 +11,7 @@ import { View, StyleSheet, ScrollView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
+import moment from "moment";
 
 const NomeForm = memo(({ control, errors }) => (
   <>
@@ -113,6 +114,7 @@ export function CreateHabits({ navigation }) {
 
   const [selectedColor, setSelectedColor] = useState(COLORS_NEW_HABIT[0]); // Cor padrão
   const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]); // Ícone padrão
+  const today = moment().format("DD/MM/YYYY");
 
   const onSubmit = (data) => {
     if (!selectedColor || !selectedIcon) {
@@ -127,6 +129,7 @@ export function CreateHabits({ navigation }) {
       color: selectedColor,
       icon: selectedIcon,
       completedDates: [],
+      criado: today,
     };
     dispatch({
       type: "ADD_HABIT",

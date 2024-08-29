@@ -1,12 +1,12 @@
-// HabitCard.js
-import React from "react";
-import { Card, IconButton } from "react-native-paper";
+import React, { useState } from "react";
+import { Card, IconButton, Text } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { View, Vibration } from "react-native";
 import moment from "moment";
 
 const HabitCard = ({ habit, children }) => {
   const dispatch = useDispatch();
+  const [expanded, setExpanded] = useState(false);
   const today = moment().format("DD/MM/YYYY");
   const isToday = habit.completedDates.some((date) => date === today);
 
@@ -23,6 +23,10 @@ const HabitCard = ({ habit, children }) => {
     });
   };
 
+  const toggleExpanded = () => {
+    setExpanded(!expanded);
+  };
+
   return (
     <Card style={{ margin: 8 }}>
       <Card.Title
@@ -36,29 +40,51 @@ const HabitCard = ({ habit, children }) => {
             style={{
               backgroundColor: habit.color,
               borderRadius: 10,
+              margin: 0,
             }}
           />
         )}
         right={(props) => (
-          <View style={{ flexDirection: "row" }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 0 }}>
             <IconButton
               {...props}
               icon={`${isToday ? "check-circle" : "circle"}`}
               iconColor={`${isToday ? habit.color : "lightgrey"}`}
               size={24}
               onPress={() => handleCompletedDates(habit.id)}
-              style={{ marginRight: 0 }}
+              style={{ margin: 0 }}
             />
             <IconButton
-              {...props}
               icon="delete"
               size={24}
               onPress={() => handleRemoveHabit(habit.id)}
+              style={{ margin: 0 }}
+            />
+            <IconButton
+              {...props}
+              icon={expanded ? "chevron-up" : "chevron-down"}
+              size={24}
+              onPress={toggleExpanded}
               style={{ marginLeft: 0 }}
             />
           </View>
         )}
       />
+      {expanded && (
+        <View
+          style={{
+            paddingHorizontal: 20,
+            paddingVertical: 0,
+            paddingBottom: 15,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Text>Concluídos: {habit.completedDates.length}</Text>
+          <Text>Criado: {habit.criado}</Text>
+        </View>
+      )}
       {children}
     </Card>
   );
