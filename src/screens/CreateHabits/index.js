@@ -190,44 +190,48 @@ const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
   );
 });
 
-const DiasDaSemanaForm = memo(({ selectedDays, setSelectedDays }) => {
-  const daysOfWeek = [
-    { label: "Seg", value: 1 },
-    { label: "Ter", value: 2 },
-    { label: "Qua", value: 3 },
-    { label: "Qui", value: 4 },
-    { label: "Sex", value: 5 },
-    { label: "Sáb", value: 6 },
-    { label: "Dom", value: 0 },
-  ];
+const DiasDaSemanaForm = memo(
+  ({ selectedDays, setSelectedDays, selectedColor }) => {
+    const daysOfWeek = [
+      { label: "Seg", value: 1 },
+      { label: "Ter", value: 2 },
+      { label: "Qua", value: 3 },
+      { label: "Qui", value: 4 },
+      { label: "Sex", value: 5 },
+      { label: "Sáb", value: 6 },
+      { label: "Dom", value: 0 },
+    ];
 
-  const toggleDay = (day) => {
-    setSelectedDays((prevDays) => {
-      if (prevDays.includes(day)) {
-        return prevDays.filter((d) => d !== day);
-      } else {
-        return [...prevDays, day];
-      }
-    });
-  };
+    const toggleDay = (day) => {
+      setSelectedDays((prevDays) => {
+        if (prevDays.includes(day)) {
+          return prevDays.filter((d) => d !== day);
+        } else {
+          return [...prevDays, day];
+        }
+      });
+    };
 
-  return (
-    <View style={styles.daysContainer}>
-      {daysOfWeek.map((day, index) => (
-        <TouchableOpacity
-          key={index}
-          style={[
-            styles.dayCircle,
-            selectedDays.includes(day.value) ? styles.selectedDay : {},
-          ]}
-          onPress={() => toggleDay(day.value)}
-        >
-          <Text style={styles.dayLabel}>{day.label}</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-});
+    return (
+      <View style={styles.daysContainer}>
+        {daysOfWeek.map((day, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.dayCircle,
+              selectedDays.includes(day.value)
+                ? [styles.selectedDay, { backgroundColor: selectedColor }]
+                : { backgroundColor: "#e0e0e0" },
+            ]}
+            onPress={() => toggleDay(day.value)}
+          >
+            <Text style={styles.dayLabel}>{day.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  }
+);
 
 export function CreateHabits({ navigation }) {
   const {
@@ -329,8 +333,9 @@ export function CreateHabits({ navigation }) {
               <DiasDaSemanaForm
                 selectedDays={selectedDays}
                 setSelectedDays={setSelectedDays}
+                selectedColor={selectedColor} // Passando a cor selecionada
               />
-              {selectedDays.length > 0 && ( // Condição para exibir TimePickerForm
+              {selectedDays.length > 0 && (
                 <TimePickerForm
                   selectedDate={selectedDate}
                   setSelectedDate={setSelectedDate}
@@ -383,12 +388,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#e0e0e0",
     justifyContent: "center",
     alignItems: "center",
   },
   selectedDay: {
-    backgroundColor: "#4a90e2",
+    backgroundColor: "#4a90e2", // Cor padrão antes de aplicar o selectedColor
   },
   dayLabel: {
     color: "#fff",
