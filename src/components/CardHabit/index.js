@@ -85,7 +85,7 @@ const HabitCard = ({ habit, children }) => {
           }}
         >
           <Text>
-            <Text style={{ fontWeight: "bold" }}>Concluídos:</Text>
+            <Text style={{ fontWeight: "bold" }}>Concluídos:</Text>{" "}
             {habit.completedDates.length}
           </Text>
           <Text>

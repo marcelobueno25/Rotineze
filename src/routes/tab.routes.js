@@ -1,7 +1,7 @@
 import { Vibration } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { IconButton } from "react-native-paper";
-import { Details } from "../screens/Details";
+import { Grafico } from "../screens/Grafico";
 import { Home } from "../screens/Home";
 
 const Tab = createBottomTabNavigator();
@@ -13,7 +13,11 @@ const customTabStyle = {
   right: 16,
   height: 60,
   borderRadius: 10,
-  elevation: 0, // Melhor que border: "none" para evitar warnings no React Native
+  elevation: 5,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
 };
 
 const handleTabPress = (navigation, routeName) => {
@@ -68,16 +72,16 @@ export function TabRoutes({ navigation }) {
         }}
       />
       <Tab.Screen
-        name="Details"
-        component={Details}
+        name="Grafico"
+        component={Grafico}
         options={{
-          title: "Detalhes",
+          title: "Grafico",
           tabBarIcon: ({ color }) => (
             <IconButton
               icon="chart-line"
               size={25}
               iconColor={color}
-              onPress={() => handleTabPress(navigation, "Details")}
+              onPress={() => handleTabPress(navigation, "Grafico")}
             />
           ),
         }}

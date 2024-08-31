@@ -1,5 +1,5 @@
 const initialConfigState = {
-  theme: true,
+  theme: false,
   notificationsEnabled: true,
   language: "pt-br",
 };

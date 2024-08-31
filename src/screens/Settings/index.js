@@ -18,30 +18,32 @@ export function Settings() {
   };
 
   return (
-    <View rowGap={15} style={{ padding: 20 }}>
-      <Text style={{ fontSize: 18, marginBottom: 20 }}>Selecionar o Tema:</Text>
-      <RadioButton.Group onValueChange={handleThemeChange} value={checked}>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 10,
-          }}
-        >
-          <RadioButton value="dark" />
-          <Text>Escuro</Text>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 10,
-          }}
-        >
-          <RadioButton value="light" />
-          <Text>Claro</Text>
-        </View>
-      </RadioButton.Group>
+    <View style={{ flex: 1, flexDirection: "column", padding: 20 }}>
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}
+      >
+        <Text style={{ fontSize: 18, marginRight: 10, fontWeight: "bold" }}>
+          Tema:
+        </Text>
+        <RadioButton.Group onValueChange={handleThemeChange} value={checked}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginRight: 20,
+              }}
+            >
+              <RadioButton value="dark" />
+              <Text>Escuro</Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <RadioButton value="light" />
+              <Text>Claro</Text>
+            </View>
+          </View>
+        </RadioButton.Group>
+      </View>
     </View>
   );
 }
