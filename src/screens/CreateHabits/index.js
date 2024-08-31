@@ -7,6 +7,7 @@ import {
   Modal,
   Portal,
   Button,
+  Switch,
 } from "react-native-paper";
 import uuid from "react-native-uuid";
 import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
@@ -92,7 +93,6 @@ const IconeForm = memo(({ selectedIcon, setSelectedIcon, selectedColor }) => {
   const [visible, setVisible] = useState(false);
   const [icons, setIcons] = useState(ICONS_NEW_HABIT);
 
-  // Mostrar apenas as primeiras duas linhas (10 ícones)
   const iconsToShow = icons.slice(0, 10);
 
   const openModal = () => setVisible(true);
@@ -100,7 +100,6 @@ const IconeForm = memo(({ selectedIcon, setSelectedIcon, selectedColor }) => {
 
   const handleIconSelect = (icon) => {
     setSelectedIcon(icon);
-    // Move o ícone selecionado para o início do array
     setIcons((prevIcons) => {
       const newIcons = prevIcons.filter((i) => i !== icon);
       return [icon, ...newIcons];
@@ -141,7 +140,7 @@ const IconeForm = memo(({ selectedIcon, setSelectedIcon, selectedColor }) => {
                 icon={icon}
                 iconColor={selectedIcon === icon ? "#fff" : "#888"}
                 size={22}
-                onPress={() => handleIconSelect(icon)} // Atualiza o ícone selecionado e fecha o modal
+                onPress={() => handleIconSelect(icon)}
                 style={
                   selectedIcon === icon
                     ? { backgroundColor: selectedColor }
@@ -170,20 +169,20 @@ const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
           label="Hora Selecionada"
           value={moment(selectedDate).format("HH:mm")}
           mode="outlined"
-          editable={false} // Impede a edição direta, só permite abrir o modal
-          pointerEvents="none" // Garante que o toque não seja capturado pelo TextInput
+          editable={false}
+          pointerEvents="none"
         />
       </TouchableOpacity>
 
       <DatePicker
         date={selectedDate}
-        onDateChange={setSelectedDate} // Atualiza a data no estado
+        onDateChange={setSelectedDate}
         mode="time"
         modal={true}
         open={visible}
         onConfirm={(date) => {
-          setSelectedDate(date); // Atualiza a data selecionada
-          hideDatePicker(); // Fecha o modal
+          setSelectedDate(date);
+          hideDatePicker();
         }}
         onCancel={hideDatePicker}
       />
@@ -242,6 +241,7 @@ export function CreateHabits({ navigation }) {
   const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDays, setSelectedDays] = useState([]);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false); // Estado para o switch
 
   const today = moment().format("DD/MM/YYYY");
 
@@ -253,13 +253,22 @@ export function CreateHabits({ navigation }) {
           body: "Está na hora de completar seu hábito!",
         },
         trigger: {
-          weekday: day + 1, // Configura o dia da semana (1 = Domingo)
+          weekday: day + 1,
           hour: date.getHours(),
           minute: date.getMinutes(),
           repeats: true,
         },
       });
     });
+  };
+
+  const handleNotificationToggle = (value) => {
+    setNotificationsEnabled(value);
+    if (!value) {
+      // Resetar opções quando notificações são desativadas
+      setSelectedDays([]);
+      setSelectedDate(new Date());
+    }
   };
 
   const onSubmit = (data) => {
@@ -278,10 +287,13 @@ export function CreateHabits({ navigation }) {
       criado: today,
       date: selectedDate,
       days: selectedDays,
+      notificationsEnabled: notificationsEnabled,
     };
 
-    // Agendar notificação
-    scheduleNotification(selectedDate, selectedDays);
+    // Agendar notificação somente se o switch estiver ativado
+    if (notificationsEnabled) {
+      scheduleNotification(selectedDate, selectedDays);
+    }
 
     dispatch({
       type: "ADD_HABIT",
@@ -292,7 +304,7 @@ export function CreateHabits({ navigation }) {
 
   return (
     <>
-      <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View style={styles.container}>
           <NomeForm control={control} errors={errors} />
           <DescricaoForm control={control} errors={errors} />
@@ -305,23 +317,38 @@ export function CreateHabits({ navigation }) {
             setSelectedIcon={setSelectedIcon}
             selectedColor={selectedColor}
           />
-          <DiasDaSemanaForm
-            selectedDays={selectedDays}
-            setSelectedDays={setSelectedDays}
-          />
-          <TimePickerForm
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-          />
+          <View style={styles.switchContainer}>
+            <Text>Notificações</Text>
+            <Switch
+              value={notificationsEnabled}
+              onValueChange={handleNotificationToggle} // Função modificada para redefinir ao desativar
+            />
+          </View>
+          {notificationsEnabled && (
+            <>
+              <DiasDaSemanaForm
+                selectedDays={selectedDays}
+                setSelectedDays={setSelectedDays}
+              />
+              {selectedDays.length > 0 && ( // Condição para exibir TimePickerForm
+                <TimePickerForm
+                  selectedDate={selectedDate}
+                  setSelectedDate={setSelectedDate}
+                />
+              )}
+            </>
+          )}
         </View>
       </ScrollView>
-      <Button
-        mode="contained"
-        onPress={handleSubmit(onSubmit)}
-        style={styles.floatingButton}
-      >
-        Salvar
-      </Button>
+      <View style={styles.floatingButtonContainer}>
+        <Button
+          mode="contained"
+          onPress={handleSubmit(onSubmit)}
+          style={styles.floatingButton}
+        >
+          Salvar
+        </Button>
+      </View>
     </>
   );
 }
@@ -341,11 +368,11 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "flex-start", // Alinha os ícones à esquerda
+    justifyContent: "flex-start",
   },
   iconWrapper: {
-    width: "20%", // 5 ícones por linha
-    alignItems: "center", // Centraliza os ícones horizontalmente
+    width: "20%",
+    alignItems: "center",
   },
   daysContainer: {
     flexDirection: "row",
@@ -372,12 +399,23 @@ const styles = StyleSheet.create({
     margin: 20,
     borderRadius: 10,
   },
-  floatingButton: {
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginVertical: 10,
+  },
+  floatingButtonContainer: {
     position: "absolute",
     bottom: 20,
     left: 0,
     right: 0,
-    marginHorizontal: 16,
+    paddingHorizontal: 16,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  floatingButton: {
+    width: "100%",
     borderRadius: 10,
   },
 });
