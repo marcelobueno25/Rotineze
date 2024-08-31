@@ -1,17 +1,21 @@
 import React, { useState, memo } from "react";
 import {
   Text,
-  Button,
   TextInput,
   MD3Colors,
   IconButton,
+  Modal,
+  Portal,
+  Button,
 } from "react-native-paper";
 import uuid from "react-native-uuid";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { useForm, Controller } from "react-hook-form";
+import DatePicker from "react-native-date-picker";
 import { useDispatch } from "react-redux";
 import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
 import moment from "moment";
+import * as Notifications from "expo-notifications"; // Para notificações
 
 const NomeForm = memo(({ control, errors }) => (
   <>
@@ -84,25 +88,147 @@ const CorForm = memo(({ selectedColor, setSelectedColor }) => (
   </>
 ));
 
-const IconeForm = memo(({ selectedIcon, setSelectedIcon, selectedColor }) => (
-  <>
-    <Text>Ícone</Text>
-    <View style={styles.iconContainer}>
-      {ICONS_NEW_HABIT.map((icon, index) => (
-        <IconButton
-          key={index}
-          icon={icon}
-          iconColor={selectedIcon === icon ? "#fff" : "#888"}
-          size={22}
-          onPress={() => setSelectedIcon(icon)}
-          style={
-            selectedIcon === icon ? { backgroundColor: selectedColor } : {}
-          }
+const IconeForm = memo(({ selectedIcon, setSelectedIcon, selectedColor }) => {
+  const [visible, setVisible] = useState(false);
+  const [icons, setIcons] = useState(ICONS_NEW_HABIT);
+
+  // Mostrar apenas as primeiras duas linhas (10 ícones)
+  const iconsToShow = icons.slice(0, 10);
+
+  const openModal = () => setVisible(true);
+  const closeModal = () => setVisible(false);
+
+  const handleIconSelect = (icon) => {
+    setSelectedIcon(icon);
+    // Move o ícone selecionado para o início do array
+    setIcons((prevIcons) => {
+      const newIcons = prevIcons.filter((i) => i !== icon);
+      return [icon, ...newIcons];
+    });
+    closeModal();
+  };
+
+  return (
+    <>
+      <Text>Ícone</Text>
+      <View style={styles.iconContainer}>
+        {iconsToShow.map((icon, index) => (
+          <View key={index} style={styles.iconWrapper}>
+            <IconButton
+              icon={icon}
+              iconColor={selectedIcon === icon ? "#fff" : "#888"}
+              size={22}
+              onPress={() => setSelectedIcon(icon)}
+              style={
+                selectedIcon === icon ? { backgroundColor: selectedColor } : {}
+              }
+            />
+          </View>
+        ))}
+      </View>
+      <Button onPress={openModal}>Ver mais</Button>
+      <Portal>
+        <Modal
+          visible={visible}
+          onDismiss={closeModal}
+          contentContainerStyle={styles.modalContainer}
+        >
+          <Text>Escolha um Ícone</Text>
+          <View style={styles.iconContainer}>
+            {ICONS_NEW_HABIT.map((icon, index) => (
+              <IconButton
+                key={index}
+                icon={icon}
+                iconColor={selectedIcon === icon ? "#fff" : "#888"}
+                size={22}
+                onPress={() => handleIconSelect(icon)} // Atualiza o ícone selecionado e fecha o modal
+                style={
+                  selectedIcon === icon
+                    ? { backgroundColor: selectedColor }
+                    : {}
+                }
+              />
+            ))}
+          </View>
+          <Button onPress={closeModal}>Fechar</Button>
+        </Modal>
+      </Portal>
+    </>
+  );
+});
+
+const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
+  const [visible, setVisible] = useState(false);
+
+  const showDatePicker = () => setVisible(true);
+  const hideDatePicker = () => setVisible(false);
+
+  return (
+    <>
+      <TouchableOpacity onPress={showDatePicker}>
+        <TextInput
+          label="Hora Selecionada"
+          value={moment(selectedDate).format("HH:mm")}
+          mode="outlined"
+          editable={false} // Impede a edição direta, só permite abrir o modal
+          pointerEvents="none" // Garante que o toque não seja capturado pelo TextInput
         />
+      </TouchableOpacity>
+
+      <DatePicker
+        date={selectedDate}
+        onDateChange={setSelectedDate} // Atualiza a data no estado
+        mode="time"
+        modal={true}
+        open={visible}
+        onConfirm={(date) => {
+          setSelectedDate(date); // Atualiza a data selecionada
+          hideDatePicker(); // Fecha o modal
+        }}
+        onCancel={hideDatePicker}
+      />
+    </>
+  );
+});
+
+const DiasDaSemanaForm = memo(({ selectedDays, setSelectedDays }) => {
+  const daysOfWeek = [
+    { label: "Seg", value: 1 },
+    { label: "Ter", value: 2 },
+    { label: "Qua", value: 3 },
+    { label: "Qui", value: 4 },
+    { label: "Sex", value: 5 },
+    { label: "Sáb", value: 6 },
+    { label: "Dom", value: 0 },
+  ];
+
+  const toggleDay = (day) => {
+    setSelectedDays((prevDays) => {
+      if (prevDays.includes(day)) {
+        return prevDays.filter((d) => d !== day);
+      } else {
+        return [...prevDays, day];
+      }
+    });
+  };
+
+  return (
+    <View style={styles.daysContainer}>
+      {daysOfWeek.map((day, index) => (
+        <TouchableOpacity
+          key={index}
+          style={[
+            styles.dayCircle,
+            selectedDays.includes(day.value) ? styles.selectedDay : {},
+          ]}
+          onPress={() => toggleDay(day.value)}
+        >
+          <Text style={styles.dayLabel}>{day.label}</Text>
+        </TouchableOpacity>
       ))}
     </View>
-  </>
-));
+  );
+});
 
 export function CreateHabits({ navigation }) {
   const {
@@ -112,9 +238,29 @@ export function CreateHabits({ navigation }) {
   } = useForm();
   const dispatch = useDispatch();
 
-  const [selectedColor, setSelectedColor] = useState(COLORS_NEW_HABIT[0]); // Cor padrão
-  const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]); // Ícone padrão
+  const [selectedColor, setSelectedColor] = useState(COLORS_NEW_HABIT[0]);
+  const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDays, setSelectedDays] = useState([]);
+
   const today = moment().format("DD/MM/YYYY");
+
+  const scheduleNotification = (date, selectedDays) => {
+    selectedDays.forEach((day) => {
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Lembrete de Hábito",
+          body: "Está na hora de completar seu hábito!",
+        },
+        trigger: {
+          weekday: day + 1, // Configura o dia da semana (1 = Domingo)
+          hour: date.getHours(),
+          minute: date.getMinutes(),
+          repeats: true,
+        },
+      });
+    });
+  };
 
   const onSubmit = (data) => {
     if (!selectedColor || !selectedIcon) {
@@ -130,37 +276,53 @@ export function CreateHabits({ navigation }) {
       icon: selectedIcon,
       completedDates: [],
       criado: today,
+      date: selectedDate,
+      days: selectedDays,
     };
+
+    // Agendar notificação
+    scheduleNotification(selectedDate, selectedDays);
+
     dispatch({
       type: "ADD_HABIT",
       payload: newHabit,
     });
-    navigation.goBack(); // Retorna à tela anterior (lista de hábitos)
+    navigation.goBack();
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <NomeForm control={control} errors={errors} />
-        <DescricaoForm control={control} errors={errors} />
-        <CorForm
-          selectedColor={selectedColor}
-          setSelectedColor={setSelectedColor}
-        />
-        <IconeForm
-          selectedIcon={selectedIcon}
-          setSelectedIcon={setSelectedIcon}
-          selectedColor={selectedColor}
-        />
-        <Button
-          mode="contained"
-          onPress={handleSubmit(onSubmit)}
-          style={{ marginTop: 20 }}
-        >
-          Cadastrar
-        </Button>
-      </View>
-    </ScrollView>
+    <>
+      <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
+        <View style={styles.container}>
+          <NomeForm control={control} errors={errors} />
+          <DescricaoForm control={control} errors={errors} />
+          <CorForm
+            selectedColor={selectedColor}
+            setSelectedColor={setSelectedColor}
+          />
+          <IconeForm
+            selectedIcon={selectedIcon}
+            setSelectedIcon={setSelectedIcon}
+            selectedColor={selectedColor}
+          />
+          <DiasDaSemanaForm
+            selectedDays={selectedDays}
+            setSelectedDays={setSelectedDays}
+          />
+          <TimePickerForm
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
+        </View>
+      </ScrollView>
+      <Button
+        mode="contained"
+        onPress={handleSubmit(onSubmit)}
+        style={styles.floatingButton}
+      >
+        Salvar
+      </Button>
+    </>
   );
 }
 
@@ -177,9 +339,45 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   iconContainer: {
-    display: "flex",
-    justifyContent: "center",
     flexDirection: "row",
     flexWrap: "wrap",
+    justifyContent: "flex-start", // Alinha os ícones à esquerda
+  },
+  iconWrapper: {
+    width: "20%", // 5 ícones por linha
+    alignItems: "center", // Centraliza os ícones horizontalmente
+  },
+  daysContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginVertical: 10,
+  },
+  dayCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#e0e0e0",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  selectedDay: {
+    backgroundColor: "#4a90e2",
+  },
+  dayLabel: {
+    color: "#fff",
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    margin: 20,
+    borderRadius: 10,
+  },
+  floatingButton: {
+    position: "absolute",
+    bottom: 20,
+    left: 0,
+    right: 0,
+    marginHorizontal: 16,
+    borderRadius: 10,
   },
 });
