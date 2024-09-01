@@ -3,9 +3,11 @@ import { Card, IconButton, Text } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { View, Vibration } from "react-native";
 import moment from "moment";
+import { useNavigation } from "@react-navigation/native"; // Importa o hook
 
 const HabitCard = ({ habit, children }) => {
   const dispatch = useDispatch();
+  const navigation = useNavigation(); // Usa o hook para obter o objeto de navegação
   const [expanded, setExpanded] = useState(false);
   const today = moment().format("DD/MM/YYYY");
   const isToday = habit.completedDates.some((date) => date === today);
@@ -13,6 +15,11 @@ const HabitCard = ({ habit, children }) => {
   const handleRemoveHabit = (id) => {
     Vibration.vibrate(400);
     dispatch({ type: "REMOVE_HABIT", payload: id });
+  };
+
+  const handleEditHabit = (id) => {
+    Vibration.vibrate(400);
+    navigation.navigate("EditHabit", { habitId: id });
   };
 
   const handleCompletedDates = (id) => {
@@ -55,6 +62,12 @@ const HabitCard = ({ habit, children }) => {
               iconColor={`${isToday ? habit.color : "lightgrey"}`}
               size={24}
               onPress={() => handleCompletedDates(habit.id)}
+              style={{ margin: 0 }}
+            />
+            <IconButton
+              icon="square-edit-outline"
+              size={24}
+              onPress={() => handleEditHabit(habit.id)}
               style={{ margin: 0 }}
             />
             <IconButton

@@ -1,13 +1,11 @@
-import React, { useState } from "react";
-import { Text, Button, Switch } from "react-native-paper";
-import uuid from "react-native-uuid";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
+import { Button } from "react-native-paper";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
-import moment from "moment";
-import * as Notifications from "expo-notifications"; // Para notificações
+import { useDispatch, useSelector } from "react-redux";
+import * as Notifications from "expo-notifications";
 
+// Importando componentes
 import { NomeForm } from "../../components/Forms/NomeForm";
 import { DescricaoForm } from "../../components/Forms/DescricaoForm";
 import { CorForm } from "../../components/Forms/CorForm";
@@ -16,19 +14,36 @@ import { TimePickerForm } from "../../components/Forms/TimePickerForm";
 import { DiasDaSemanaForm } from "../../components/Forms/DiasDaSemanaForm";
 import { NotificationsToggle } from "../../components/Forms/NotificationsToggle";
 
-export function CreateHabits({ navigation }) {
+import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
+
+export function EditHabit({ route, navigation }) {
+  const { habitId } = route.params; // Recebendo o ID do hábito a ser editado
+  const dispatch = useDispatch();
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm();
-  const dispatch = useDispatch();
 
-  const [selectedColor, setSelectedColor] = useState(COLORS_NEW_HABIT[0]);
-  const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedDays, setSelectedDays] = useState([]);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  // Buscar hábito existente a partir do Redux Store
+  const habit = useSelector((state) =>
+    state.habits.habits.find((h) => h.id === habitId)
+  );
+
+  const [selectedColor, setSelectedColor] = useState(habit.color);
+  const [selectedIcon, setSelectedIcon] = useState(habit.icon);
+  const [selectedDate, setSelectedDate] = useState(new Date(habit.date));
+  const [selectedDays, setSelectedDays] = useState(habit.days);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(
+    habit.notificationsEnabled
+  );
+
+  useEffect(() => {
+    // Carregar valores do hábito para o formulário
+    setValue("name", habit.name);
+    setValue("description", habit.description);
+  }, [habit, setValue]);
 
   const handleNotificationToggle = (value) => {
     setNotificationsEnabled(value);
@@ -61,14 +76,12 @@ export function CreateHabits({ navigation }) {
       return;
     }
 
-    const newHabit = {
-      id: uuid.v4(),
+    const updatedHabit = {
+      ...habit,
       name: data.name,
       description: data.description,
       color: selectedColor,
       icon: selectedIcon,
-      completedDates: [],
-      criado: moment().format("DD/MM/YYYY"),
       date: selectedDate,
       days: selectedDays,
       notificationsEnabled,
@@ -78,7 +91,7 @@ export function CreateHabits({ navigation }) {
       scheduleNotification(selectedDate, selectedDays);
     }
 
-    dispatch({ type: "ADD_HABIT", payload: newHabit });
+    dispatch({ type: "UPDATE_HABIT", payload: updatedHabit });
     navigation.goBack();
   };
 
@@ -126,14 +139,13 @@ export function CreateHabits({ navigation }) {
           onPress={handleSubmit(onSubmit)}
           style={styles.floatingButton}
         >
-          Salvar
+          Salvar Alterações
         </Button>
       </View>
     </>
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,

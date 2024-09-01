@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { CreateHabits } from "../screens/CreateHabits";
 import { Settings } from "../screens/Settings";
+import { EditHabit } from "../screens/EditHabit";
 import { TabRoutes } from "./tab.routes";
 
 const Stack = createNativeStackNavigator();
@@ -60,6 +61,11 @@ export function StackRoutes() {
         name="Settings"
         component={Settings}
         options={{ title: "Configuração" }}
+      />
+      <Stack.Screen
+        name="EditHabit"
+        component={EditHabit}
+        options={{ title: "Editar" }}
       />
     </Stack.Navigator>
   );

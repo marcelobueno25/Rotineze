@@ -1,16 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  View,
-  TouchableOpacity,
-  ActivityIndicator,
-  Vibration,
-} from "react-native";
+import { View, ActivityIndicator } from "react-native";
 import Svg, { Rect } from "react-native-svg";
 import moment from "moment";
-import { useDispatch } from "react-redux";
 
-const AnnualHeatMap = ({ habit: { completedDates, id }, color }) => {
-  const dispatch = useDispatch();
+const AnnualHeatMap = ({ habit: { completedDates }, color }) => {
   const currentYear = moment().year(); // Ano atual
 
   // Converter datas concluídas para o formato 'YYYY-MM-DD'
@@ -51,17 +44,6 @@ const AnnualHeatMap = ({ habit: { completedDates, id }, color }) => {
     }
   }, [renderedDays, daysInYear.length]);
 
-  const handleToggleDate = (date) => {
-    Vibration.vibrate(100);
-    dispatch({
-      type: "TOGGLE_COMPLETE_HABIT",
-      payload: {
-        id: id,
-        date: date,
-      },
-    });
-  };
-
   return (
     <View style={{ alignItems: "center", marginBottom: 20 }}>
       {loading ? (
@@ -79,20 +61,15 @@ const AnnualHeatMap = ({ habit: { completedDates, id }, color }) => {
             const isCompleted = completedDaysSet.has(date);
 
             return (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleToggleDate(date)}
-              >
-                <Svg width="13" height="13" style={{ margin: 1 }}>
-                  <Rect
-                    width="13"
-                    height="13"
-                    rx="13"
-                    ry="13"
-                    fill={isCompleted ? color : "lightgrey"}
-                  />
-                </Svg>
-              </TouchableOpacity>
+              <Svg width="13" height="13" style={{ margin: 1 }}>
+                <Rect
+                  width="13"
+                  height="13"
+                  rx="13"
+                  ry="13"
+                  fill={isCompleted ? color : "lightgrey"}
+                />
+              </Svg>
             );
           })}
         </View>
