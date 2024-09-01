@@ -18,6 +18,7 @@ import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
 import moment from "moment";
 import * as Notifications from "expo-notifications"; // Para notificações
 
+// Componentes de Formulário
 const NomeForm = memo(({ control, errors }) => (
   <>
     <Controller
@@ -93,25 +94,17 @@ const IconeForm = memo(({ selectedIcon, setSelectedIcon, selectedColor }) => {
   const [visible, setVisible] = useState(false);
   const [icons, setIcons] = useState(ICONS_NEW_HABIT);
 
-  const iconsToShow = icons.slice(0, 10);
-
-  const openModal = () => setVisible(true);
-  const closeModal = () => setVisible(false);
-
   const handleIconSelect = (icon) => {
     setSelectedIcon(icon);
-    setIcons((prevIcons) => {
-      const newIcons = prevIcons.filter((i) => i !== icon);
-      return [icon, ...newIcons];
-    });
-    closeModal();
+    setIcons((prevIcons) => [icon, ...prevIcons.filter((i) => i !== icon)]);
+    setVisible(false);
   };
 
   return (
     <>
       <Text>Ícone</Text>
       <View style={styles.iconContainer}>
-        {iconsToShow.map((icon, index) => (
+        {icons.slice(0, 10).map((icon, index) => (
           <View key={index} style={styles.iconWrapper}>
             <IconButton
               icon={icon}
@@ -125,11 +118,11 @@ const IconeForm = memo(({ selectedIcon, setSelectedIcon, selectedColor }) => {
           </View>
         ))}
       </View>
-      <Button onPress={openModal}>Ver mais</Button>
+      <Button onPress={() => setVisible(true)}>Ver mais</Button>
       <Portal>
         <Modal
           visible={visible}
-          onDismiss={closeModal}
+          onDismiss={() => setVisible(false)}
           contentContainerStyle={styles.modalContainer}
         >
           <Text>Escolha um Ícone</Text>
@@ -149,7 +142,7 @@ const IconeForm = memo(({ selectedIcon, setSelectedIcon, selectedColor }) => {
               />
             ))}
           </View>
-          <Button onPress={closeModal}>Fechar</Button>
+          <Button onPress={() => setVisible(false)}>Fechar</Button>
         </Modal>
       </Portal>
     </>
@@ -159,12 +152,9 @@ const IconeForm = memo(({ selectedIcon, setSelectedIcon, selectedColor }) => {
 const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
   const [visible, setVisible] = useState(false);
 
-  const showDatePicker = () => setVisible(true);
-  const hideDatePicker = () => setVisible(false);
-
   return (
     <>
-      <TouchableOpacity onPress={showDatePicker}>
+      <TouchableOpacity onPress={() => setVisible(true)}>
         <TextInput
           label="Hora Selecionada"
           value={moment(selectedDate).format("HH:mm")}
@@ -182,9 +172,9 @@ const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
         open={visible}
         onConfirm={(date) => {
           setSelectedDate(date);
-          hideDatePicker();
+          setVisible(false);
         }}
-        onCancel={hideDatePicker}
+        onCancel={() => setVisible(false)}
       />
     </>
   );
@@ -203,13 +193,11 @@ const DiasDaSemanaForm = memo(
     ];
 
     const toggleDay = (day) => {
-      setSelectedDays((prevDays) => {
-        if (prevDays.includes(day)) {
-          return prevDays.filter((d) => d !== day);
-        } else {
-          return [...prevDays, day];
-        }
-      });
+      setSelectedDays((prevDays) =>
+        prevDays.includes(day)
+          ? prevDays.filter((d) => d !== day)
+          : [...prevDays, day]
+      );
     };
 
     return (
@@ -233,6 +221,7 @@ const DiasDaSemanaForm = memo(
   }
 );
 
+// Função principal do componente
 export function CreateHabits({ navigation }) {
   const {
     control,
@@ -245,9 +234,15 @@ export function CreateHabits({ navigation }) {
   const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDays, setSelectedDays] = useState([]);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false); // Estado para o switch
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
-  const today = moment().format("DD/MM/YYYY");
+  const handleNotificationToggle = (value) => {
+    setNotificationsEnabled(value);
+    if (!value) {
+      setSelectedDays([]);
+      setSelectedDate(new Date());
+    }
+  };
 
   const scheduleNotification = (date, selectedDays) => {
     selectedDays.forEach((day) => {
@@ -266,15 +261,6 @@ export function CreateHabits({ navigation }) {
     });
   };
 
-  const handleNotificationToggle = (value) => {
-    setNotificationsEnabled(value);
-    if (!value) {
-      // Resetar opções quando notificações são desativadas
-      setSelectedDays([]);
-      setSelectedDate(new Date());
-    }
-  };
-
   const onSubmit = (data) => {
     if (!selectedColor || !selectedIcon) {
       alert("Por favor, selecione uma cor e um ícone.");
@@ -288,21 +274,17 @@ export function CreateHabits({ navigation }) {
       color: selectedColor,
       icon: selectedIcon,
       completedDates: [],
-      criado: today,
+      criado: moment().format("DD/MM/YYYY"),
       date: selectedDate,
       days: selectedDays,
-      notificationsEnabled: notificationsEnabled,
+      notificationsEnabled,
     };
 
-    // Agendar notificação somente se o switch estiver ativado
     if (notificationsEnabled) {
       scheduleNotification(selectedDate, selectedDays);
     }
 
-    dispatch({
-      type: "ADD_HABIT",
-      payload: newHabit,
-    });
+    dispatch({ type: "ADD_HABIT", payload: newHabit });
     navigation.goBack();
   };
 
@@ -325,7 +307,7 @@ export function CreateHabits({ navigation }) {
             <Text>Notificações</Text>
             <Switch
               value={notificationsEnabled}
-              onValueChange={handleNotificationToggle} // Função modificada para redefinir ao desativar
+              onValueChange={handleNotificationToggle}
             />
           </View>
           {notificationsEnabled && (
@@ -333,7 +315,7 @@ export function CreateHabits({ navigation }) {
               <DiasDaSemanaForm
                 selectedDays={selectedDays}
                 setSelectedDays={setSelectedDays}
-                selectedColor={selectedColor} // Passando a cor selecionada
+                selectedColor={selectedColor}
               />
               {selectedDays.length > 0 && (
                 <TimePickerForm
@@ -358,6 +340,7 @@ export function CreateHabits({ navigation }) {
   );
 }
 
+// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -392,7 +375,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedDay: {
-    backgroundColor: "#4a90e2", // Cor padrão antes de aplicar o selectedColor
+    backgroundColor: "#4a90e2",
   },
   dayLabel: {
     color: "#fff",
