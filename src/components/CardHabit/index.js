@@ -18,7 +18,7 @@ const HabitCard = ({ habit, children }) => {
   };
 
   const handleEditHabit = (id) => {
-    Vibration.vibrate(400);
+    Vibration.vibrate(100);
     navigation.navigate("EditHabit", { habitId: id });
   };
 

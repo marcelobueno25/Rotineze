@@ -11,7 +11,7 @@ export const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
     <>
       <TouchableOpacity onPress={() => setVisible(true)}>
         <TextInput
-          label="Hora Selecionada"
+          label="Selecione a Hora"
           value={moment(selectedDate).format("HH:mm")}
           mode="outlined"
           editable={false}
@@ -23,6 +23,9 @@ export const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
         date={selectedDate}
         onDateChange={setSelectedDate}
         mode="time"
+        title=" "
+        confirmText="Confirmar"
+        cancelText="Cancelar"
         modal={true}
         open={visible}
         onConfirm={(date) => {

@@ -1,9 +1,18 @@
 import React, { useState, useEffect, memo } from "react";
-import { Text, IconButton, Modal, Portal, Button } from "react-native-paper";
+import {
+  Text,
+  IconButton,
+  Modal,
+  Portal,
+  Button,
+  useTheme,
+} from "react-native-paper";
 import { View, StyleSheet } from "react-native";
 
 export const IconeForm = memo(
   ({ selectedIcon, setSelectedIcon, selectedColor, listIcons }) => {
+    const theme = useTheme();
+
     const [visible, setVisible] = useState(false);
     const [icons, setIcons] = useState(listIcons);
 
@@ -46,9 +55,11 @@ export const IconeForm = memo(
           <Modal
             visible={visible}
             onDismiss={() => setVisible(false)}
-            contentContainerStyle={styles.modalContainer}
+            contentContainerStyle={{
+              backgroundColor: theme.colors.surfaceVariant,
+              ...styles.modalContainer,
+            }}
           >
-            <Text>Escolha um Ícone</Text>
             <View style={styles.iconContainer}>
               {listIcons.map((icon, index) => (
                 <IconButton
@@ -65,7 +76,13 @@ export const IconeForm = memo(
                 />
               ))}
             </View>
-            <Button onPress={() => setVisible(false)}>Fechar</Button>
+            <Button
+              mode="outlined"
+              onPress={() => setVisible(false)}
+              style={{ marginTop: 10 }}
+            >
+              Fechar
+            </Button>
           </Modal>
         </Portal>
       </>
@@ -84,7 +101,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContainer: {
-    backgroundColor: "white",
     padding: 20,
     margin: 20,
     borderRadius: 10,
