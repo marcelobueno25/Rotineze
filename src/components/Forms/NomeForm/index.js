@@ -15,6 +15,7 @@ export const NomeForm = memo(({ control, errors }) => (
           onChangeText={onChange}
           value={value}
           error={!!errors.name}
+          maxLength={20}
         />
       )}
       name="name"

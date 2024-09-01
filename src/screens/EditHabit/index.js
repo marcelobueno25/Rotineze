@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
-import { Button } from "react-native-paper";
+import { View, StyleSheet, ScrollView, Alert } from "react-native";
+import { Button, MD3Colors } from "react-native-paper";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import * as Notifications from "expo-notifications";
@@ -27,16 +27,16 @@ export function EditHabit({ route, navigation }) {
   } = useForm();
 
   // Buscar hábito existente a partir do Redux Store
-  const habit = useSelector((state) =>
-    state.habits.habits.find((h) => h.id === habitId)
-  );
+  const habit =
+    useSelector((state) => state.habits.habits.find((h) => h.id === habitId)) ||
+    {};
 
-  const [selectedColor, setSelectedColor] = useState(habit.color);
-  const [selectedIcon, setSelectedIcon] = useState(habit.icon);
+  const [selectedColor, setSelectedColor] = useState(habit.color || "");
+  const [selectedIcon, setSelectedIcon] = useState(habit.icon || "");
   const [selectedDate, setSelectedDate] = useState(new Date(habit.date));
-  const [selectedDays, setSelectedDays] = useState(habit.days);
+  const [selectedDays, setSelectedDays] = useState(habit.days || []);
   const [notificationsEnabled, setNotificationsEnabled] = useState(
-    habit.notificationsEnabled
+    habit.notificationsEnabled || false
   );
 
   useEffect(() => {
@@ -53,13 +53,15 @@ export function EditHabit({ route, navigation }) {
     }
   };
 
-  const scheduleNotification = (date, selectedDays) => {
-    selectedDays.forEach((day) => {
-      Notifications.scheduleNotificationAsync({
+  const scheduleNotifications = async (habitId, date, selectedDays) => {
+    await cancelNotifications(habitId); // Cancelar quaisquer notificações existentes antes de agendar novas
+    for (let day of selectedDays) {
+      await Notifications.scheduleNotificationAsync({
         content: {
           title: "Lembrete de Hábito",
           body: "Está na hora de completar seu hábito!",
         },
+        identifier: `${habitId}-${day}`, // Usando o ID do hábito e o dia como identificador de notificação
         trigger: {
           weekday: day + 1,
           hour: date.getHours(),
@@ -67,13 +69,31 @@ export function EditHabit({ route, navigation }) {
           repeats: true,
         },
       });
-    });
+    }
   };
 
-  const onSubmit = (data) => {
+  const cancelNotifications = async (habitId) => {
+    const allScheduledNotifications =
+      await Notifications.getAllScheduledNotificationsAsync();
+    const habitNotifications = allScheduledNotifications.filter(
+      (notification) => notification.identifier.startsWith(`${habitId}-`)
+    );
+
+    for (let notification of habitNotifications) {
+      await Notifications.cancelScheduledNotificationAsync(
+        notification.identifier
+      );
+    }
+  };
+
+  const onSubmit = async (data) => {
     if (!selectedColor || !selectedIcon) {
       alert("Por favor, selecione uma cor e um ícone.");
       return;
+    }
+
+    if (notificationsEnabled) {
+      await scheduleNotifications(habitId, selectedDate, selectedDays);
     }
 
     const updatedHabit = {
@@ -87,12 +107,30 @@ export function EditHabit({ route, navigation }) {
       notificationsEnabled,
     };
 
-    if (notificationsEnabled) {
-      scheduleNotification(selectedDate, selectedDays);
-    }
-
     dispatch({ type: "UPDATE_HABIT", payload: updatedHabit });
     navigation.goBack();
+  };
+
+  const handleRemoveHabit = () => {
+    Alert.alert(
+      "Deseja Excluir o Hábito",
+      "Tem certeza de que deseja excluir este hábito?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Excluir",
+          onPress: async () => {
+            await cancelNotifications(habitId); // Cancelar todas as notificações associadas ao hábito
+            dispatch({ type: "REMOVE_HABIT", payload: habitId });
+            navigation.goBack();
+          },
+          style: "destructive",
+        },
+      ]
+    );
   };
 
   return (
@@ -131,6 +169,14 @@ export function EditHabit({ route, navigation }) {
               )}
             </>
           )}
+          <Button
+            onPress={handleRemoveHabit}
+            mode="text"
+            textColor={MD3Colors.error50}
+            style={styles.deleteButton}
+          >
+            Excluir Hábito
+          </Button>
         </View>
       </ScrollView>
       <View style={styles.floatingButtonContainer}>
@@ -164,5 +210,9 @@ const styles = StyleSheet.create({
   floatingButton: {
     width: "100%",
     borderRadius: 10,
+  },
+  deleteButton: {
+    marginTop: 20,
+    alignSelf: "center",
   },
 });

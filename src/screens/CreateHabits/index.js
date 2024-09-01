@@ -38,13 +38,15 @@ export function CreateHabits({ navigation }) {
     }
   };
 
-  const scheduleNotification = (date, selectedDays) => {
-    selectedDays.forEach((day) => {
-      Notifications.scheduleNotificationAsync({
+  const scheduleNotifications = async (habitId, date, selectedDays) => {
+    await cancelNotifications(habitId); // Cancelar quaisquer notificações existentes antes de agendar novas
+    for (let day of selectedDays) {
+      await Notifications.scheduleNotificationAsync({
         content: {
           title: "Lembrete de Hábito",
           body: "Está na hora de completar seu hábito!",
         },
+        identifier: `${habitId}-${day}`, // Usando o ID do hábito e o dia como identificador de notificação
         trigger: {
           weekday: day + 1,
           hour: date.getHours(),
@@ -52,17 +54,36 @@ export function CreateHabits({ navigation }) {
           repeats: true,
         },
       });
-    });
+    }
   };
 
-  const onSubmit = (data) => {
+  const cancelNotifications = async (habitId) => {
+    const allScheduledNotifications =
+      await Notifications.getAllScheduledNotificationsAsync();
+    const habitNotifications = allScheduledNotifications.filter(
+      (notification) => notification.identifier.startsWith(`${habitId}-`)
+    );
+
+    for (let notification of habitNotifications) {
+      await Notifications.cancelScheduledNotificationAsync(
+        notification.identifier
+      );
+    }
+  };
+
+  const onSubmit = async (data) => {
     if (!selectedColor || !selectedIcon) {
       alert("Por favor, selecione uma cor e um ícone.");
       return;
     }
+    const newHabitId = uuid.v4();
+
+    if (notificationsEnabled) {
+      await scheduleNotifications(newHabitId, selectedDate, selectedDays);
+    }
 
     const newHabit = {
-      id: uuid.v4(),
+      id: newHabitId,
       name: data.name,
       description: data.description,
       color: selectedColor,
@@ -73,10 +94,6 @@ export function CreateHabits({ navigation }) {
       days: selectedDays,
       notificationsEnabled,
     };
-
-    if (notificationsEnabled) {
-      scheduleNotification(selectedDate, selectedDays);
-    }
 
     dispatch({ type: "ADD_HABIT", payload: newHabit });
     navigation.goBack();

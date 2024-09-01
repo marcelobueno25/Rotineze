@@ -12,11 +12,6 @@ const HabitCard = ({ habit, children }) => {
   const today = moment().format("DD/MM/YYYY");
   const isToday = habit.completedDates.some((date) => date === today);
 
-  const handleRemoveHabit = (id) => {
-    Vibration.vibrate(400);
-    dispatch({ type: "REMOVE_HABIT", payload: id });
-  };
-
   const handleEditHabit = (id) => {
     Vibration.vibrate(100);
     navigation.navigate("EditHabit", { habitId: id });
@@ -68,12 +63,6 @@ const HabitCard = ({ habit, children }) => {
               icon="square-edit-outline"
               size={24}
               onPress={() => handleEditHabit(habit.id)}
-              style={{ margin: 0 }}
-            />
-            <IconButton
-              icon="delete"
-              size={24}
-              onPress={() => handleRemoveHabit(habit.id)}
               style={{ margin: 0 }}
             />
             <IconButton

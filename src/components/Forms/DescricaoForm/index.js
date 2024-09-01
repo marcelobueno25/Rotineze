@@ -14,6 +14,7 @@ export const DescricaoForm = memo(({ control, errors }) => (
           onChangeText={onChange}
           value={value}
           error={!!errors.description}
+          maxLength={50}
         />
       )}
       name="description"
