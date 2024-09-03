@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, Button, Switch } from "react-native-paper";
+import { Button } from "react-native-paper";
 import uuid from "react-native-uuid";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { useForm } from "react-hook-form";
