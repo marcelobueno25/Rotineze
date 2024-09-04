@@ -5,7 +5,9 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { CreateHabits } from "../screens/CreateHabits";
 import { Settings } from "../screens/Settings";
 import { EditHabit } from "../screens/EditHabit";
+import { Onboarding } from "../screens/Onboarding";
 import { TabRoutes } from "./tab.routes";
+import { useSelector } from "react-redux";
 
 const Stack = createNativeStackNavigator();
 
@@ -45,8 +47,15 @@ const stackScreenOptions = ({ navigation }) => ({
 });
 
 export function StackRoutes() {
+  const onboarding = useSelector((state) => state.configuration.onboarding);
+  const isOnboarding = onboarding ? "Onboarding" : "Home";
   return (
-    <Stack.Navigator initialRouteName="Home">
+    <Stack.Navigator initialRouteName={isOnboarding}>
+      <Stack.Screen
+        name="Onboarding"
+        component={Onboarding}
+        options={{ title: "Novo Hábito", headerShown: false }}
+      />
       <Stack.Screen
         name="Home"
         component={TabRoutes}

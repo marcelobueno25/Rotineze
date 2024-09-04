@@ -13,7 +13,7 @@ const persistConfig = {
 const configPersistConfig = {
   key: "configuration",
   storage: AsyncStorage,
-  whitelist: ["theme", "notificationsEnabled", "language"], // Defina quais partes do estado deseja persistir
+  whitelist: ["theme", "notificationsEnabled", "language", "onboarding"], // Defina quais partes do estado deseja persistir
 };
 
 const rootReducer = combineReducers({

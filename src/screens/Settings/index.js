@@ -5,15 +5,14 @@ import { useDispatch, useSelector } from "react-redux";
 
 export function Settings() {
   const dispatch = useDispatch();
-  const currentTheme = useSelector((state) => state.configuration.theme); // true para Dark, false para Light
-
-  const [checked, setChecked] = useState(currentTheme ? "dark" : "light");
+  const currentTheme = useSelector((state) => state.configuration);
+  const [checked, setChecked] = useState(currentTheme.theme ? "dark" : "light");
 
   const handleThemeChange = (value) => {
     setChecked(value);
     dispatch({
       type: "UPDATE_CONFIG",
-      payload: { theme: value === "dark" ? true : false },
+      payload: { ...currentTheme, theme: value === "dark" ? true : false },
     });
   };
 

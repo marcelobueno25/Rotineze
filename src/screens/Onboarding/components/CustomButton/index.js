@@ -10,9 +10,15 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { useNavigation } from "@react-navigation/native"; // Importa o hook
+import { useDispatch, useSelector } from "react-redux";
 
 export const CustomButton = ({ flatlistRef, flatlistIndex, dataLength, x }) => {
   const { width: SCREEN_WIDTH } = useWindowDimensions();
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const currentTheme = useSelector((state) => state.configuration);
+
   const buttonAnimationStyle = useAnimatedStyle(() => {
     return {
       width:
@@ -70,7 +76,11 @@ export const CustomButton = ({ flatlistRef, flatlistIndex, dataLength, x }) => {
             index: flatlistIndex.value + 1,
           });
         } else {
-          console.log("navigate to nest screen");
+          navigation.navigate("Home");
+          dispatch({
+            type: "UPDATE_CONFIG",
+            payload: { ...currentTheme, onboarding: false },
+          });
         }
       }}
     >

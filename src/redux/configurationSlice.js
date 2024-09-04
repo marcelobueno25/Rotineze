@@ -2,6 +2,7 @@ const initialConfigState = {
   theme: false,
   notificationsEnabled: true,
   language: "pt-br",
+  onboarding: true,
 };
 
 const configurationReducer = (state = initialConfigState, action) => {
