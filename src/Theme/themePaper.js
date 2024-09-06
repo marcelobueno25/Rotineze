@@ -8,7 +8,7 @@ export const lightTheme = {
     ...MD3LightTheme.colors,
     primary: "#6200ee",
     accent: "#03dac4",
-    // Outras personalizações de cor para o tema claro
+    success: "#A8D5BA",
   },
 };
 
@@ -18,6 +18,6 @@ export const darkTheme = {
     ...MD3DarkTheme.colors,
     primary: "#bb86fc",
     accent: "#03dac4",
-    // Outras personalizações de cor para o tema escuro
+    success: "#A8D5BA",
   },
 };

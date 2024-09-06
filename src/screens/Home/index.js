@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SegmentedButtons } from "react-native-paper";
-import { View, Vibration } from "react-native";
+import { View, Vibration, ScrollView } from "react-native";
 import { useSelector } from "react-redux";
 import CardDiario from "./components/CardDiario";
 import CardSemanal from "./components/CardSemanal";
@@ -39,10 +39,12 @@ export function Home() {
           { label: "Anual", value: "Anual" },
         ]}
       />
-      {selectedView === "Hoje" && <CardDiario habits={habits} />}
-      {selectedView === "Semanal" && <CardSemanal habits={habits} />}
-      {selectedView === "Mensal" && <CardMensal habits={habits} />}
-      {selectedView === "Anual" && <CardAnual habits={habits} />}
+      <ScrollView>
+        {selectedView === "Hoje" && <CardDiario habits={habits} />}
+        {/* {selectedView === "Semanal" && <CardSemanal habits={habits} />}
+        {selectedView === "Mensal" && <CardMensal habits={habits} />}
+        {selectedView === "Anual" && <CardAnual habits={habits} />} */}
+      </ScrollView>
     </View>
   );
 }

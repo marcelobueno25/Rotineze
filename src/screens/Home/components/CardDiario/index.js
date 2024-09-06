@@ -3,25 +3,34 @@ import { Swipeable } from "react-native-gesture-handler";
 import { StyleSheet, Vibration, View, TouchableOpacity } from "react-native";
 import { Text, IconButton, useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
-import { ScrollView } from "react-native";
 import moment from "moment";
 import { useNavigation } from "@react-navigation/native"; // Importa o hook
 
 const LIST_ITEM_HEIGHT = 70;
 
 export default memo(function CardDiario({ habits }) {
+  const sortedHabits = [...habits].sort((a, b) => {
+    const today = moment().format("DD/MM/YYYY");
+    const aCompleted = a.completedDates.some((date) => date === today);
+    const bCompleted = b.completedDates.some((date) => date === today);
+
+    // Move hábitos completados para o final
+    if (aCompleted && !bCompleted) return 1;
+    if (!aCompleted && bCompleted) return -1;
+    return 0;
+  });
+
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        {habits.map((habit, index) => (
-          <Item item={habit} index={index} />
-        ))}
-      </View>
-    </ScrollView>
+    <View style={styles.container}>
+      {sortedHabits.map((habit, index) => (
+        <Item item={habit} index={index} key={habit.id} />
+      ))}
+    </View>
   );
 });
 
 const Item = ({ item, index }) => {
+  console.log(item);
   const dispatch = useDispatch();
   const { colors } = useTheme();
   const navigation = useNavigation();
@@ -172,8 +181,8 @@ const Item = ({ item, index }) => {
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
           <IconButton
             icon={item.icon}
-            iconColor={item.color}
-            size={40}
+            iconColor={`${isToday ? "lightgrey" : item.color}`}
+            size={25}
             style={{
               borderRadius: 10,
               margin: 0,
@@ -205,7 +214,7 @@ const Item = ({ item, index }) => {
               icon={`${
                 isToday ? "check-circle" : "checkbox-blank-circle-outline"
               }`}
-              iconColor={`${isToday ? item.color : "lightgrey"}`}
+              iconColor={`${isToday ? colors.success : "lightgrey"}`}
               size={24}
               onPress={() => handleCheckHabit(item)}
               style={{ margin: 0, padding: 0 }}
