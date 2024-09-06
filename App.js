@@ -3,6 +3,7 @@ import { PaperProvider } from "react-native-paper";
 import { Provider, useSelector } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
 import { PersistGate } from "redux-persist/integration/react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { LocaleConfig } from "react-native-calendars";
 import moment from "moment";
 import { lightTheme, darkTheme } from "./src/Theme/themePaper";
@@ -38,7 +39,9 @@ function MainApp() {
       <NavigationContainer
         theme={isDarkTheme ? darkNavigationTheme : lightNavigationTheme}
       >
-        <Routes />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Routes />
+        </GestureHandlerRootView>
       </NavigationContainer>
     </PaperProvider>
   );
