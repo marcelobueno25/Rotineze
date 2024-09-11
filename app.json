@@ -19,7 +19,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#333333"
       },
-      "package": "com.marcelobueno25.rotinize"
+      "package": "com.marcelobueno25.rotinize",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.ico"
@@ -28,6 +29,18 @@
       "eas": {
         "projectId": "732f6e3c-27fb-43fe-9b6c-29c9d367e2ad"
       }
-    }
+    },
+    "plugins": [
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ]
   }
 }

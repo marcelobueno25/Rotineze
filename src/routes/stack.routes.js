@@ -8,6 +8,9 @@ import { EditHabit } from "../screens/EditHabit";
 import { Onboarding } from "../screens/Onboarding";
 import { TabRoutes } from "./tab.routes";
 import { useSelector } from "react-redux";
+import Login from "../screens/Login";
+import Register from "../screens/Register";
+import { signOut } from "@services/auth";
 
 const Stack = createNativeStackNavigator();
 
@@ -17,16 +20,29 @@ const stackScreenOptions = ({ navigation }) => ({
   animation: "fade_from_bottom",
   headerRight: () => {
     const { colors } = useTheme();
+    const handleLogout = () => {
+      signOut();
+    };
+
     return (
-      <MaterialCommunityIcons
-        name="plus-circle-outline"
-        color={colors.text}
-        size={26}
-        onPress={() => {
-          Vibration.vibrate(50);
-          navigation.navigate("CreateHabits");
-        }}
-      />
+      <>
+        <MaterialCommunityIcons
+          name="account-arrow-left-outline"
+          color={colors.text}
+          size={26}
+          onPress={() => handleLogout()}
+          marginRight={10}
+        />
+        <MaterialCommunityIcons
+          name="plus-circle-outline"
+          color={colors.text}
+          size={26}
+          onPress={() => {
+            Vibration.vibrate(50);
+            navigation.navigate("CreateHabits");
+          }}
+        />
+      </>
     );
   },
   headerLeft: () => {
@@ -46,36 +62,58 @@ const stackScreenOptions = ({ navigation }) => ({
   },
 });
 
+const HomeStack = () => {
+  <Stack.Navigator initialRouteName={"Home"}></Stack.Navigator>;
+};
+
 export function StackRoutes() {
   const onboarding = useSelector((state) => state.configuration.onboarding);
-  const isOnboarding = onboarding ? "Onboarding" : "Home";
+  const user = useSelector((state) => state.auth.user);
+
   return (
-    <Stack.Navigator initialRouteName={isOnboarding}>
-      <Stack.Screen
-        name="Onboarding"
-        component={Onboarding}
-        options={{ title: "Novo Hábito", headerShown: false }}
-      />
-      <Stack.Screen
-        name="Home"
-        component={TabRoutes}
-        options={stackScreenOptions}
-      />
-      <Stack.Screen
-        name="CreateHabits"
-        component={CreateHabits}
-        options={{ title: "Novo Hábito" }}
-      />
-      <Stack.Screen
-        name="Settings"
-        component={Settings}
-        options={{ title: "Configuração" }}
-      />
-      <Stack.Screen
-        name="EditHabit"
-        component={EditHabit}
-        options={{ title: "Editar" }}
-      />
+    <Stack.Navigator initialRouteName={user ? "Home" : "Login"}>
+      {!user ? (
+        <>
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={Register}
+            options={{ headerShown: false }}
+          />
+        </>
+      ) : (
+        <>
+          <Stack.Screen
+            name="Onboarding"
+            component={Onboarding}
+            options={{ title: "Novo Hábito", headerShown: false }}
+          />
+          <Stack.Screen
+            name="Home"
+            component={TabRoutes}
+            options={stackScreenOptions}
+          />
+          <Stack.Screen
+            name="CreateHabits"
+            component={CreateHabits}
+            options={{ title: "Novo Hábito" }}
+          />
+          <Stack.Screen
+            name="Settings"
+            component={Settings}
+            options={{ title: "Configuração" }}
+          />
+          <Stack.Screen
+            name="EditHabit"
+            component={EditHabit}
+            options={{ title: "Editar" }}
+          />
+        </>
+      )}
     </Stack.Navigator>
   );
 }

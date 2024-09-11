@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "405843797385",
+    "project_id": "rotinize",
+    "storage_bucket": "rotinize.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405843797385:android:7a1f9488afa0eb3b57ed58",
+        "android_client_info": {
+          "package_name": "com.marcelobueno25.rotinize"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBcCSt2kAL-MissexI3oOfMVC8kO4ZGEfE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
