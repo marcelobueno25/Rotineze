@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { setUser } from "@redux/authSlice";
-import { signIn } from "@services/auth";
+import { signIn } from "@services/authService";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);

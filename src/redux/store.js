@@ -2,7 +2,7 @@ import { combineReducers } from "redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import habitReducer from "./habitSlice";
+import habitSlice from "./habitSlice";
 import configurationReducer from "./configurationSlice";
 import authSlice from "./authSlice";
 
@@ -14,7 +14,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   configuration: configurationReducer,
-  habits: habitReducer,
+  habits: habitSlice,
   auth: authSlice,
 });
 
@@ -29,3 +29,4 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+export const getStore = () => store;

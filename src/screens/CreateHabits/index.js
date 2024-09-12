@@ -3,18 +3,19 @@ import { Button } from "react-native-paper";
 import uuid from "react-native-uuid";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
-import moment from "moment";
 import * as Notifications from "expo-notifications"; // Para notificações
 
-import { NomeForm } from "../../components/Forms/NomeForm";
-import { DescricaoForm } from "../../components/Forms/DescricaoForm";
-import { CorForm } from "../../components/Forms/CorForm";
-import { IconeForm } from "../../components/Forms/IconeForm";
-import { TimePickerForm } from "../../components/Forms/TimePickerForm";
-import { DiasDaSemanaForm } from "../../components/Forms/DiasDaSemanaForm";
-import { NotificationsToggle } from "../../components/Forms/NotificationsToggle";
+import { NomeForm } from "@components/Forms/NomeForm";
+import { DescricaoForm } from "@components/Forms/DescricaoForm";
+import { CorForm } from "@components/Forms/CorForm";
+import { IconeForm } from "@components/Forms/IconeForm";
+import { TimePickerForm } from "@components/Forms/TimePickerForm";
+import { DiasDaSemanaForm } from "@components/Forms/DiasDaSemanaForm";
+import { NotificationsToggle } from "@components/Forms/NotificationsToggle";
+import { createHabit } from "@services/habitService";
+import moment from "moment";
 
 export function CreateHabits({ navigation }) {
   const {
@@ -23,6 +24,7 @@ export function CreateHabits({ navigation }) {
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
+  const userId = useSelector((state) => state.auth.user.uid);
 
   const [selectedColor, setSelectedColor] = useState(COLORS_NEW_HABIT[0]);
   const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]);
@@ -82,21 +84,22 @@ export function CreateHabits({ navigation }) {
       await scheduleNotifications(newHabitId, selectedDate, selectedDays);
     }
 
-    const newHabit = {
-      id: newHabitId,
+    const habitData = {
       name: data.name,
       description: data.description,
       color: selectedColor,
       icon: selectedIcon,
       completedDates: [],
-      criado: moment().format("DD/MM/YYYY"),
-      date: selectedDate,
+      date: selectedDays.length ? moment(selectedDate).format("HH:mm") : "",
       days: selectedDays,
       notificationsEnabled,
     };
-
-    dispatch({ type: "ADD_HABIT", payload: newHabit });
-    navigation.goBack();
+    try {
+      await dispatch(createHabit(habitData, userId));
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error creating habit:", error);
+    }
   };
 
   return (

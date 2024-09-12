@@ -1,20 +1,39 @@
-import React, { useState } from "react";
-import { SegmentedButtons } from "react-native-paper";
-import { View, Vibration, ScrollView } from "react-native";
-import { useSelector } from "react-redux";
+import React, { useEffect, useCallback, useState } from "react";
+import { View, Vibration, ScrollView, RefreshControl } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import CardDiario from "./components/CardDiario";
-import CardSemanal from "./components/CardSemanal";
-import CardMensal from "./components/CardMensal";
-import CardAnual from "./components/CardAnual";
+import { useFocusEffect } from "@react-navigation/native";
+import { fetchHabits } from "@services/habitService";
 
 export function Home() {
+  const [refreshing, setRefreshing] = useState(false);
+  const dispatch = useDispatch();
   const habits = useSelector((state) => state.habits.habits);
-  const [selectedView, setSelectedView] = useState("Hoje");
+  const userId = useSelector((state) => state.auth.user.uid);
 
-  const handleValueChange = (value) => {
-    Vibration.vibrate(50); // Vibra por 50ms
-    setSelectedView(value);
-  };
+  const loadHabits = useCallback(() => {
+    if (userId) {
+      dispatch(fetchHabits(userId));
+    }
+  }, [dispatch, userId]);
+
+  useEffect(() => {
+    loadHabits();
+  }, [loadHabits]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadHabits();
+    }, [loadHabits])
+  );
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+      loadHabits();
+    }, 2000);
+  }, []);
 
   return (
     <View
@@ -25,25 +44,12 @@ export function Home() {
         padding: 10,
       }}
     >
-      <SegmentedButtons
-        density="small"
-        value={selectedView}
-        onValueChange={handleValueChange}
-        buttons={[
-          { label: "Hoje", value: "Hoje" },
-          {
-            label: "Semanal",
-            value: "Semanal",
-          },
-          { label: "Mensal", value: "Mensal" },
-          { label: "Anual", value: "Anual" },
-        ]}
-      />
-      <ScrollView>
-        {selectedView === "Hoje" && <CardDiario habits={habits} />}
-        {/* {selectedView === "Semanal" && <CardSemanal habits={habits} />}
-        {selectedView === "Mensal" && <CardMensal habits={habits} />}
-        {selectedView === "Anual" && <CardAnual habits={habits} />} */}
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <CardDiario habits={habits} />
       </ScrollView>
     </View>
   );

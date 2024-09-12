@@ -10,7 +10,7 @@ import { TabRoutes } from "./tab.routes";
 import { useSelector } from "react-redux";
 import Login from "../screens/Login";
 import Register from "../screens/Register";
-import { signOut } from "@services/auth";
+import { signOut } from "@services/authService";
 
 const Stack = createNativeStackNavigator();
 

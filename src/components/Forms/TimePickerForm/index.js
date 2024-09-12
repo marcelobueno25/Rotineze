@@ -20,7 +20,7 @@ export const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
       </TouchableOpacity>
 
       <DatePicker
-        date={selectedDate}
+        date={new Date(selectedDate)}
         onDateChange={setSelectedDate}
         mode="time"
         title=" "

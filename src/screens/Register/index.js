@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { setUser } from "@redux/authSlice";
-import { signUp } from "@services/auth";
+import { signUp } from "@services/authService";
 
 export default function Register() {
   const [loading, setLoading] = useState(false);

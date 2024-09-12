@@ -5,6 +5,7 @@ import { Text, IconButton, useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import moment from "moment";
 import { useNavigation } from "@react-navigation/native"; // Importa o hook
+import { deleteHabit } from "@services/habitService";
 
 const LIST_ITEM_HEIGHT = 70;
 
@@ -30,7 +31,6 @@ export default memo(function CardDiario({ habits }) {
 });
 
 const Item = ({ item, index }) => {
-  console.log(item);
   const dispatch = useDispatch();
   const { colors } = useTheme();
   const navigation = useNavigation();
@@ -39,6 +39,7 @@ const Item = ({ item, index }) => {
   const swipeableRef = useRef(null);
 
   const handleEditHabit = ({ id }) => {
+    console.log("ID EDITAR: ", id);
     Vibration.vibrate(100);
     navigation.navigate("EditHabit", { habitId: id });
   };
@@ -51,9 +52,17 @@ const Item = ({ item, index }) => {
     });
   };
 
-  const handleDeleteHabit = ({ id }) => {
-    Vibration.vibrate(100);
-    dispatch({ type: "REMOVE_HABIT", payload: id });
+  const handleDeleteHabit = async ({ id }) => {
+    try {
+      Vibration.vibrate(100);
+      await dispatch(deleteHabit(id));
+      Alert.alert("Sucesso", "Hábito excluído com sucesso!");
+    } catch (error) {
+      Alert.alert(
+        "Erro",
+        "Não foi possível excluir o hábito. Tente novamente."
+      );
+    }
   };
 
   const leftSwipe = () => {

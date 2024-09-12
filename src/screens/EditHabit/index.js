@@ -15,6 +15,7 @@ import { DiasDaSemanaForm } from "../../components/Forms/DiasDaSemanaForm";
 import { NotificationsToggle } from "../../components/Forms/NotificationsToggle";
 
 import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
+import moment from "moment";
 
 export function EditHabit({ route, navigation }) {
   const { habitId } = route.params; // Recebendo o ID do hábito a ser editado
@@ -27,13 +28,13 @@ export function EditHabit({ route, navigation }) {
   } = useForm();
 
   // Buscar hábito existente a partir do Redux Store
-  const habit =
-    useSelector((state) => state.habits.habits.find((h) => h.id === habitId)) ||
-    {};
+  const habit = useSelector((state) =>
+    state.habits.habits.find((h) => h.id === habitId)
+  );
 
   const [selectedColor, setSelectedColor] = useState(habit.color || "");
   const [selectedIcon, setSelectedIcon] = useState(habit.icon || "");
-  const [selectedDate, setSelectedDate] = useState(new Date(habit.date));
+  const [selectedDate, setSelectedDate] = useState(moment(habit.date, "HH:mm"));
   const [selectedDays, setSelectedDays] = useState(habit.days || []);
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     habit.notificationsEnabled || false
