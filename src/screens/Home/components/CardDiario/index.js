@@ -5,7 +5,7 @@ import { Text, IconButton, useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import moment from "moment";
 import { useNavigation } from "@react-navigation/native"; // Importa o hook
-import { deleteHabit } from "@services/habitService";
+import { deleteHabit, toggleHabitCheck } from "@services/habitService";
 
 const LIST_ITEM_HEIGHT = 70;
 
@@ -35,21 +35,24 @@ const Item = ({ item, index }) => {
   const { colors } = useTheme();
   const navigation = useNavigation();
   const today = moment().format("DD/MM/YYYY");
-  const isToday = item.completedDates.some((date) => date === today);
+  const isToday = item.checkDates && item.checkDates.includes(today);
   const swipeableRef = useRef(null);
 
   const handleEditHabit = ({ id }) => {
-    console.log("ID EDITAR: ", id);
     Vibration.vibrate(100);
     navigation.navigate("EditHabit", { habitId: id });
   };
 
-  const handleCheckHabit = ({ id }) => {
+  const handleCheckHabit = async ({ id }) => {
     Vibration.vibrate(100);
-    dispatch({
-      type: "TOGGLE_COMPLETE_HABIT",
-      payload: { id },
-    });
+    try {
+      await dispatch(toggleHabitCheck(id, today));
+    } catch (error) {
+      Alert.alert(
+        "Erro",
+        "Não foi possível atualizar o hábito. Tente novamente."
+      );
+    }
   };
 
   const handleDeleteHabit = async ({ id }) => {

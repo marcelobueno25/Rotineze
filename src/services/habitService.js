@@ -17,7 +17,6 @@ export const fetchHabits = (userId) => async (dispatch) => {
       id: doc.id,
       ...doc.data(),
     }));
-    console.log("atualizado: ", habits);
     dispatch(setHabits(habits));
   } catch (error) {
     console.error(error);
@@ -61,6 +60,27 @@ export const deleteHabit = (habitId) => async (dispatch) => {
     throw error;
   }
 };
+
+export const toggleHabitCheck =
+  (habitId, date) => async (dispatch, getState) => {
+    try {
+      const { habits } = getState().habits;
+      const habit = habits.find((h) => h.id === habitId);
+      const checkDates = habit.checkDates || [];
+      const updatedCheckDates = checkDates.includes(date)
+        ? checkDates.filter((d) => d !== date)
+        : [...checkDates, date];
+
+      await firestore()
+        .collection("habits")
+        .doc(habitId)
+        .update({ checkDates: updatedCheckDates });
+      dispatch(updateHabit({ ...habit, checkDates: updatedCheckDates }));
+    } catch (error) {
+      console.error("Error toggling habit check:", error);
+      throw error;
+    }
+  };
 
 // export const getUserData = async (userId) => {
 //   try {
