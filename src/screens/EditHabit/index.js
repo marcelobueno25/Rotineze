@@ -16,6 +16,8 @@ import { NotificationsToggle } from "../../components/Forms/NotificationsToggle"
 
 import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
 import moment from "moment";
+import { editHabit } from "@services/habitService";
+import { converterParaHora } from "@utils/date";
 
 export function EditHabit({ route, navigation }) {
   const { habitId } = route.params; // Recebendo o ID do hábito a ser editado
@@ -31,17 +33,17 @@ export function EditHabit({ route, navigation }) {
   const habit = useSelector((state) =>
     state.habits.habits.find((h) => h.id === habitId)
   );
-
   const [selectedColor, setSelectedColor] = useState(habit.color || "");
   const [selectedIcon, setSelectedIcon] = useState(habit.icon || "");
-  const [selectedDate, setSelectedDate] = useState(moment(habit.date, "HH:mm"));
+  const [selectedDate, setSelectedDate] = useState(
+    converterParaHora(habit.date)
+  );
   const [selectedDays, setSelectedDays] = useState(habit.days || []);
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     habit.notificationsEnabled || false
   );
 
   useEffect(() => {
-    // Carregar valores do hábito para o formulário
     setValue("name", habit.name);
     setValue("description", habit.description);
   }, [habit, setValue]);
@@ -50,7 +52,7 @@ export function EditHabit({ route, navigation }) {
     setNotificationsEnabled(value);
     if (!value) {
       setSelectedDays([]);
-      setSelectedDate(new Date());
+      setSelectedDate(converterParaHora());
     }
   };
 
@@ -65,8 +67,8 @@ export function EditHabit({ route, navigation }) {
         identifier: `${habitId}-${day}`, // Usando o ID do hábito e o dia como identificador de notificação
         trigger: {
           weekday: day + 1,
-          hour: date.getHours(),
-          minute: date.getMinutes(),
+          hour: moment(date, "HH:mm").hour(),
+          minute: moment(date, "HH:mm").minute(),
           repeats: true,
         },
       });
@@ -98,18 +100,20 @@ export function EditHabit({ route, navigation }) {
     }
 
     const updatedHabit = {
-      ...habit,
       name: data.name,
       description: data.description,
       color: selectedColor,
       icon: selectedIcon,
-      date: selectedDate,
+      date: selectedDays.length ? selectedDate : "",
       days: selectedDays,
       notificationsEnabled,
     };
-
-    dispatch({ type: "UPDATE_HABIT", payload: updatedHabit });
-    navigation.goBack();
+    try {
+      await dispatch(editHabit(habitId, updatedHabit));
+      navigation.navigate("Home");
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível editar o hábito. Tente novamente.");
+    }
   };
 
   const handleRemoveHabit = () => {

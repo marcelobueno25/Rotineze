@@ -62,10 +62,6 @@ const stackScreenOptions = ({ navigation }) => ({
   },
 });
 
-const HomeStack = () => {
-  <Stack.Navigator initialRouteName={"Home"}></Stack.Navigator>;
-};
-
 export function StackRoutes() {
   const onboarding = useSelector((state) => state.configuration.onboarding);
   const user = useSelector((state) => state.auth.user);

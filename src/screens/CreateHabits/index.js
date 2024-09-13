@@ -16,6 +16,7 @@ import { DiasDaSemanaForm } from "@components/Forms/DiasDaSemanaForm";
 import { NotificationsToggle } from "@components/Forms/NotificationsToggle";
 import { createHabit } from "@services/habitService";
 import moment from "moment";
+import { converterParaHora } from "@utils/date";
 
 export function CreateHabits({ navigation }) {
   const {
@@ -28,7 +29,7 @@ export function CreateHabits({ navigation }) {
 
   const [selectedColor, setSelectedColor] = useState(COLORS_NEW_HABIT[0]);
   const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(converterParaHora());
   const [selectedDays, setSelectedDays] = useState([]);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
@@ -36,7 +37,7 @@ export function CreateHabits({ navigation }) {
     setNotificationsEnabled(value);
     if (!value) {
       setSelectedDays([]);
-      setSelectedDate(new Date());
+      setSelectedDate(converterParaHora());
     }
   };
 
@@ -51,8 +52,8 @@ export function CreateHabits({ navigation }) {
         identifier: `${habitId}-${day}`, // Usando o ID do hábito e o dia como identificador de notificação
         trigger: {
           weekday: day + 1,
-          hour: date.getHours(),
-          minute: date.getMinutes(),
+          hour: moment(date, "HH:mm").hour(),
+          minute: moment(date, "HH:mm").minute(),
           repeats: true,
         },
       });
@@ -90,7 +91,7 @@ export function CreateHabits({ navigation }) {
       color: selectedColor,
       icon: selectedIcon,
       completedDates: [],
-      date: selectedDays.length ? moment(selectedDate).format("HH:mm") : "",
+      date: selectedDays.length ? selectedDate : "",
       days: selectedDays,
       notificationsEnabled,
     };

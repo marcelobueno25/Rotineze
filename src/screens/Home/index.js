@@ -8,14 +8,14 @@ import { fetchHabits } from "@services/habitService";
 export function Home() {
   const [refreshing, setRefreshing] = useState(false);
   const dispatch = useDispatch();
-  const habits = useSelector((state) => state.habits.habits);
-  const userId = useSelector((state) => state.auth.user.uid);
+  const habits = useSelector((state) => state.habits.habits) || [];
+  const user = useSelector((state) => state.auth.user);
 
   const loadHabits = useCallback(() => {
-    if (userId) {
-      dispatch(fetchHabits(userId));
+    if (user) {
+      dispatch(fetchHabits(user.uid));
     }
-  }, [dispatch, userId]);
+  }, [dispatch, user]);
 
   useEffect(() => {
     loadHabits();

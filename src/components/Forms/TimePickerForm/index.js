@@ -2,7 +2,7 @@ import React, { memo, useState } from "react";
 import { TouchableOpacity } from "react-native";
 import { TextInput } from "react-native-paper";
 import DatePicker from "react-native-date-picker";
-import moment from "moment";
+import { converterParaData, converterParaHora } from "@utils/date";
 
 export const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
   const [visible, setVisible] = useState(false);
@@ -12,7 +12,7 @@ export const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
       <TouchableOpacity onPress={() => setVisible(true)}>
         <TextInput
           label="Selecione a Hora"
-          value={moment(selectedDate).format("HH:mm")}
+          value={selectedDate}
           mode="outlined"
           editable={false}
           pointerEvents="none"
@@ -20,7 +20,7 @@ export const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
       </TouchableOpacity>
 
       <DatePicker
-        date={new Date(selectedDate)}
+        date={converterParaData(selectedDate)}
         onDateChange={setSelectedDate}
         mode="time"
         title=" "
@@ -29,7 +29,7 @@ export const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
         modal={true}
         open={visible}
         onConfirm={(date) => {
-          setSelectedDate(date);
+          setSelectedDate(converterParaHora(date));
           setVisible(false);
         }}
         onCancel={() => setVisible(false)}

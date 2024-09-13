@@ -1,6 +1,12 @@
 import React, { memo, useRef } from "react";
 import { Swipeable } from "react-native-gesture-handler";
-import { StyleSheet, Vibration, View, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Vibration,
+  View,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { Text, IconButton, useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import moment from "moment";
@@ -10,20 +16,9 @@ import { deleteHabit, toggleHabitCheck } from "@services/habitService";
 const LIST_ITEM_HEIGHT = 70;
 
 export default memo(function CardDiario({ habits }) {
-  const sortedHabits = [...habits].sort((a, b) => {
-    const today = moment().format("DD/MM/YYYY");
-    const aCompleted = a.completedDates.some((date) => date === today);
-    const bCompleted = b.completedDates.some((date) => date === today);
-
-    // Move hábitos completados para o final
-    if (aCompleted && !bCompleted) return 1;
-    if (!aCompleted && bCompleted) return -1;
-    return 0;
-  });
-
   return (
     <View style={styles.container}>
-      {sortedHabits.map((habit, index) => (
+      {habits.map((habit, index) => (
         <Item item={habit} index={index} key={habit.id} />
       ))}
     </View>
@@ -208,7 +203,7 @@ const Item = ({ item, index }) => {
                 color: `${isToday ? "#999" : colors.onSurface}`,
               }}
             >
-              {item.name}
+              {item?.name}
             </Text>
             <Text
               style={{
@@ -216,7 +211,7 @@ const Item = ({ item, index }) => {
                 color: `${isToday ? "#999" : colors.onSurface}`,
               }}
             >
-              {item.name}
+              {"subtitle"}
             </Text>
           </View>
         </View>

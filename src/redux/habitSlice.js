@@ -10,7 +10,7 @@ const habitSlice = createSlice({
       state.habits = action.payload;
     },
     addHabit: (state, action) => {
-      state.habits.push(action.payload);
+      state.habits = [...state.habits, action.payload];
     },
     updateHabit: (state, action) => {
       const index = state.habits.findIndex(

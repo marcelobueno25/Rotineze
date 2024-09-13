@@ -1,10 +1,11 @@
 import React from "react";
 import { View } from "react-native";
 import { Card, Text, Divider } from "react-native-paper";
-import { useSelector } from "react-redux";
+//import { useSelector } from "react-redux";
 
 export const Grafico = () => {
-  const habits = useSelector((state) => state.habits.habits);
+  //const habits = useSelector((state) => state.habits.habits) || [];
+  //const habit = {};
 
   return (
     <View
@@ -24,7 +25,7 @@ export const Grafico = () => {
         <Card>
           <Card.Content>
             <Text variant="titleLarge">Nome Habito</Text>
-            <Text variant="bodyMedium">{habits[0].name}</Text>
+            <Text variant="bodyMedium">teste</Text>
           </Card.Content>
         </Card>
       </View>
@@ -32,7 +33,7 @@ export const Grafico = () => {
         <Card>
           <Card.Content>
             <Text variant="titleLarge">Criado</Text>
-            <Text variant="bodyMedium">{habits[0].criado}</Text>
+            <Text variant="bodyMedium">teste</Text>
           </Card.Content>
         </Card>
       </View>
@@ -40,7 +41,7 @@ export const Grafico = () => {
         <Card>
           <Card.Content>
             <Text variant="titleLarge">Concluídos</Text>
-            <Text variant="bodyMedium">{habits[0].completedDates.length}</Text>
+            <Text variant="bodyMedium">teste</Text>
           </Card.Content>
         </Card>
       </View>
@@ -51,7 +52,7 @@ export const Grafico = () => {
         <Card>
           <Card.Content>
             <Text variant="titleLarge">Descrição</Text>
-            <Text variant="bodyMedium">{habits[0].description}</Text>
+            <Text variant="bodyMedium">teste</Text>
           </Card.Content>
         </Card>
       </View>

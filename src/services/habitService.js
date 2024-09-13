@@ -52,8 +52,6 @@ export const editHabit = (habitId, updatedHabit) => async (dispatch) => {
 export const deleteHabit = (habitId) => async (dispatch) => {
   try {
     await firestore().collection("habits").doc(habitId).delete();
-    const teste = await firestore().collection("habits").doc(habitId);
-    console.log("delete: ", teste);
     dispatch(removeHabit(habitId));
   } catch (error) {
     console.error("Error deleting habit:", error);
