@@ -1,115 +1,125 @@
+import React, { useCallback } from "react";
 import { Vibration } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { useSelector } from "react-redux";
 import { CreateHabits } from "../screens/CreateHabits";
 import { Settings } from "../screens/Settings";
 import { EditHabit } from "../screens/EditHabit";
 import { Onboarding } from "../screens/Onboarding";
 import { TabRoutes } from "./tab.routes";
-import { useSelector } from "react-redux";
 import Login from "../screens/Login";
 import Register from "../screens/Register";
-import { signOut } from "@services/authService";
+import { signOut } from "../services/authService";
 
 const Stack = createNativeStackNavigator();
+
+const HeaderIcon = ({ name, onPress, size = 26, style }) => {
+  const { colors } = useTheme();
+  return (
+    <MaterialCommunityIcons
+      name={name}
+      color={colors.text}
+      size={size}
+      onPress={() => {
+        Vibration.vibrate(50);
+        onPress();
+      }}
+      style={style}
+    />
+  );
+};
 
 const stackScreenOptions = ({ navigation }) => ({
   title: "Rotinize",
   headerShown: true,
   animation: "fade_from_bottom",
-  headerRight: () => {
-    const { colors } = useTheme();
-    const handleLogout = () => {
-      signOut();
-    };
-
-    return (
-      <>
-        <MaterialCommunityIcons
-          name="account-arrow-left-outline"
-          color={colors.text}
-          size={26}
-          onPress={() => handleLogout()}
-          marginRight={10}
-        />
-        <MaterialCommunityIcons
-          name="plus-circle-outline"
-          color={colors.text}
-          size={26}
-          onPress={() => {
-            Vibration.vibrate(50);
-            navigation.navigate("CreateHabits");
-          }}
-        />
-      </>
-    );
-  },
-  headerLeft: () => {
-    const { colors } = useTheme();
-    return (
-      <MaterialCommunityIcons
-        name="format-list-bulleted"
-        color={colors.text}
-        size={24}
+  headerRight: () => (
+    <>
+      <HeaderIcon
+        name="account-arrow-left-outline"
+        onPress={signOut}
         style={{ marginRight: 10 }}
-        onPress={() => {
-          Vibration.vibrate(50);
-          navigation.navigate("Settings");
-        }}
       />
-    );
-  },
+      <HeaderIcon
+        name="plus-circle-outline"
+        onPress={() => navigation.navigate("CreateHabits")}
+      />
+    </>
+  ),
+  headerLeft: () => (
+    <HeaderIcon
+      name="format-list-bulleted"
+      onPress={() => navigation.navigate("Settings")}
+      size={24}
+      style={{ marginRight: 10 }}
+    />
+  ),
 });
 
 export function StackRoutes() {
-  const onboarding = useSelector((state) => state.configuration.onboarding);
   const user = useSelector((state) => state.auth.user);
+  const hasSeenOnboarding = useSelector(
+    (state) => state.auth.hasSeenOnboarding
+  );
 
-  return (
-    <Stack.Navigator initialRouteName={user ? "Home" : "Login"}>
-      {!user ? (
-        <>
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={Register}
-            options={{ headerShown: false }}
-          />
-        </>
-      ) : (
-        <>
+  const AuthenticatedStack = useCallback(
+    () => (
+      <>
+        {!hasSeenOnboarding && (
           <Stack.Screen
             name="Onboarding"
             component={Onboarding}
-            options={{ title: "Novo Hábito", headerShown: false }}
+            options={{ headerShown: false }}
           />
-          <Stack.Screen
-            name="Home"
-            component={TabRoutes}
-            options={stackScreenOptions}
-          />
-          <Stack.Screen
-            name="CreateHabits"
-            component={CreateHabits}
-            options={{ title: "Novo Hábito" }}
-          />
-          <Stack.Screen
-            name="Settings"
-            component={Settings}
-            options={{ title: "Configuração" }}
-          />
-          <Stack.Screen
-            name="EditHabit"
-            component={EditHabit}
-            options={{ title: "Editar" }}
-          />
-        </>
-      )}
+        )}
+        <Stack.Screen
+          name="Home"
+          component={TabRoutes}
+          options={stackScreenOptions}
+        />
+        <Stack.Screen
+          name="CreateHabits"
+          component={CreateHabits}
+          options={{ title: "Novo Hábito" }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={Settings}
+          options={{ title: "Configuração" }}
+        />
+        <Stack.Screen
+          name="EditHabit"
+          component={EditHabit}
+          options={{ title: "Editar" }}
+        />
+      </>
+    ),
+    [hasSeenOnboarding]
+  );
+
+  const UnauthenticatedStack = useCallback(
+    () => (
+      <>
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={Register}
+          options={{ headerShown: false }}
+        />
+      </>
+    ),
+    []
+  );
+
+  return (
+    <Stack.Navigator>
+      {user ? AuthenticatedStack() : UnauthenticatedStack()}
     </Stack.Navigator>
   );
 }
