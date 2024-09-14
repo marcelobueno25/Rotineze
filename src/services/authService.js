@@ -1,16 +1,22 @@
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 
-export const signUp = async (email, password, name) => {
+export const signUp = async (email, password, name, birthDate, gender) => {
   try {
     const userCredential = await auth().createUserWithEmailAndPassword(
       email,
-      password
+      password,
+      name,
+      birthDate,
+      gender
     );
     await userCredential.user.updateProfile({ displayName: name });
     await firestore().collection("users").doc(userCredential.user.uid).set({
       name,
       email,
+      name,
+      birthDate,
+      gender,
     });
     return userCredential.user;
   } catch (error) {

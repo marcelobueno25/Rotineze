@@ -1,6 +1,18 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { TextInput, Button, Text, Checkbox } from "react-native-paper";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  SafeAreaView,
+} from "react-native";
+import {
+  TextInput,
+  Button,
+  Text,
+  Checkbox,
+  useTheme,
+} from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -10,8 +22,8 @@ import { signIn } from "@services/authService";
 export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // Estado para controlar a visibilidade da senha
-  const [rememberPassword, setRememberPassword] = useState(false); // Estado para o checkbox "Lembrar senha"
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberPassword, setRememberPassword] = useState(false);
   const {
     control,
     handleSubmit,
@@ -19,6 +31,7 @@ export default function Login() {
   } = useForm();
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const theme = useTheme();
 
   const onLogin = async (data) => {
     try {
@@ -26,123 +39,154 @@ export default function Login() {
       dispatch(setUser(user));
     } catch (error) {
       console.error(error);
+      setErrorMessage("Falha no login. Verifique suas credenciais.");
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <View style={styles.container}>
+          <Text style={styles.title}>Entrar</Text>
 
-      <Controller
-        control={control}
-        rules={{
-          required: "Email é obrigatório",
-          pattern: {
-            value: /^\S+@\S+$/i,
-            message: "Formato de email inválido",
-          },
-        }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            label="Email"
-            mode="outlined"
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            error={!!errors.email}
-          />
-        )}
-        name="email"
-        defaultValue=""
-      />
-      {errors.email && (
-        <Text style={styles.errorText}>{errors.email.message}</Text>
-      )}
-
-      <Controller
-        control={control}
-        rules={{
-          required: "Senha é obrigatória",
-          minLength: {
-            value: 6,
-            message: "A senha deve ter pelo menos 6 caracteres",
-          },
-        }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            label="Senha"
-            mode="outlined"
-            secureTextEntry={!showPassword} // Controla a visibilidade da senha
-            right={
-              <TextInput.Icon
-                icon={showPassword ? "eye-off" : "eye"}
-                onPress={() => setShowPassword(!showPassword)} // Alterna a visibilidade da senha
+          <Controller
+            control={control}
+            rules={{
+              required: "Email é obrigatório",
+              pattern: {
+                value: /^\S+@\S+$/i,
+                message: "Formato de email inválido",
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Email"
+                mode="outlined"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                error={!!errors.email}
+                style={styles.input}
+                left={<TextInput.Icon icon="email" />}
               />
-            }
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-            error={!!errors.password}
+            )}
+            name="email"
+            defaultValue=""
           />
-        )}
-        name="password"
-        defaultValue=""
-      />
-      {errors.password && (
-        <Text style={styles.errorText}>{errors.password.message}</Text>
-      )}
+          {errors.email && (
+            <Text style={styles.errorText}>{errors.email.message}</Text>
+          )}
 
-      <View style={styles.rememberContainer}>
-        <Checkbox
-          status={rememberPassword ? "checked" : "unchecked"}
-          onPress={() => setRememberPassword(!rememberPassword)}
-        />
-        <Text>Lembrar senha</Text>
-      </View>
+          <Controller
+            control={control}
+            rules={{
+              required: "Senha é obrigatória",
+              minLength: {
+                value: 6,
+                message: "A senha deve ter pelo menos 6 caracteres",
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Senha"
+                mode="outlined"
+                secureTextEntry={!showPassword}
+                right={
+                  <TextInput.Icon
+                    icon={showPassword ? "eye-off" : "eye"}
+                    onPress={() => setShowPassword(!showPassword)}
+                  />
+                }
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                error={!!errors.password}
+                style={styles.input}
+                left={<TextInput.Icon icon="lock" />}
+              />
+            )}
+            name="password"
+            defaultValue=""
+          />
+          {errors.password && (
+            <Text style={styles.errorText}>{errors.password.message}</Text>
+          )}
 
-      {errorMessage ? (
-        <Text style={styles.errorText}>{errorMessage}</Text>
-      ) : null}
+          <View style={styles.rememberContainer}>
+            <Checkbox
+              status={rememberPassword ? "checked" : "unchecked"}
+              onPress={() => setRememberPassword(!rememberPassword)}
+              color={theme.colors.primary}
+            />
+            <Text style={styles.rememberText}>Lembrar senha</Text>
+          </View>
 
-      <Button
-        mode="contained"
-        onPress={handleSubmit(onLogin)}
-        loading={loading}
-        disabled={loading}
-        style={styles.button}
-      >
-        Entrar
-      </Button>
+          {errorMessage ? (
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          ) : null}
 
-      <View style={styles.registerContainer}>
-        <Text>Ainda não tem uma conta?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-          <Text style={styles.registerLink}>Cadastre-se</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <Button
+            mode="contained"
+            onPress={handleSubmit(onLogin)}
+            loading={loading}
+            disabled={loading}
+            style={styles.button}
+            contentStyle={styles.buttonContent}
+          >
+            Entrar
+          </Button>
+
+          <View style={styles.registerContainer}>
+            <Text style={styles.registerText}>Ainda não tem uma conta?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+              <Text style={styles.registerLink}>Cadastre-se</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f0f2f5",
+  },
+  scrollView: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     padding: 20,
+    backgroundColor: "#f0f2f5",
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
+    fontWeight: "bold",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 30,
+    color: "#333",
+  },
+  input: {
+    marginBottom: 15,
+    backgroundColor: "white",
   },
   errorText: {
-    color: "red",
+    color: "#ff3333",
     marginBottom: 10,
+    fontSize: 12,
+    marginLeft: 5,
   },
   button: {
     marginTop: 20,
+    borderRadius: 5,
+  },
+  buttonContent: {
+    paddingVertical: 10,
   },
   rememberContainer: {
     flexDirection: "row",
@@ -150,13 +194,21 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
   },
+  rememberText: {
+    marginLeft: 8,
+    color: "#666",
+  },
   registerContainer: {
     flexDirection: "row",
     justifyContent: "center",
     marginTop: 20,
   },
+  registerText: {
+    color: "#666",
+  },
   registerLink: {
     color: "#6200ee",
     marginLeft: 5,
+    fontWeight: "bold",
   },
 });
