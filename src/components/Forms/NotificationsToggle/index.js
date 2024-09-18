@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text } from "react-native";
-import { Switch } from "react-native-paper";
+import { View } from "react-native";
+import { Switch, Text } from "react-native-paper";
 import { StyleSheet } from "react-native";
 
 export const NotificationsToggle = ({ notificationsEnabled, onToggle }) => (

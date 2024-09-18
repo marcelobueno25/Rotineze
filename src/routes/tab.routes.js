@@ -1,8 +1,9 @@
 import { Vibration } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { IconButton } from "react-native-paper";
-import { Grafico } from "../screens/Grafico";
-import { Home } from "../screens/Home";
+import { Grafico } from "@screens/Grafico";
+import { Home } from "@screens/Home";
+import { Explorar } from "@screens/Explorar";
 
 const Tab = createBottomTabNavigator();
 
@@ -63,10 +64,25 @@ export function TabRoutes({ navigation }) {
           title: "Hábitos",
           tabBarIcon: ({ color }) => (
             <IconButton
-              icon="home"
+              icon="home-outline"
               size={30}
               iconColor={color}
               onPress={() => handleTabPress(navigation, "Habitos")}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Explorar"
+        component={Explorar}
+        options={{
+          title: "Explorar",
+          tabBarIcon: ({ color }) => (
+            <IconButton
+              icon="compass-outline"
+              size={25}
+              iconColor={color}
+              onPress={() => handleTabPress(navigation, "Explorar")}
             />
           ),
         }}
@@ -78,7 +94,7 @@ export function TabRoutes({ navigation }) {
           title: "Grafico",
           tabBarIcon: ({ color }) => (
             <IconButton
-              icon="chart-line"
+              icon="chart-timeline-variant"
               size={25}
               iconColor={color}
               onPress={() => handleTabPress(navigation, "Grafico")}

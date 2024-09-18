@@ -44,8 +44,8 @@ export default function Login() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
           <Text style={styles.title}>Entrar</Text>
 
@@ -151,29 +151,19 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#f0f2f5",
-  },
-  scrollView: {
-    flexGrow: 1,
-  },
   container: {
     flex: 1,
     justifyContent: "center",
     padding: 20,
-    backgroundColor: "#f0f2f5",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 30,
-    color: "#333",
   },
   input: {
     marginBottom: 15,
-    backgroundColor: "white",
   },
   errorText: {
     color: "#ff3333",
@@ -183,7 +173,6 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
-    borderRadius: 5,
   },
   buttonContent: {
     paddingVertical: 10,

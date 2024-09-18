@@ -4,14 +4,15 @@ import { useTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useSelector } from "react-redux";
-import { CreateHabits } from "../screens/CreateHabits";
-import { Settings } from "../screens/Settings";
-import { EditHabit } from "../screens/EditHabit";
-import { Onboarding } from "../screens/Onboarding";
 import { TabRoutes } from "./tab.routes";
-import Login from "../screens/Login";
-import Register from "../screens/Register";
-import { signOut } from "../services/authService";
+import { signOut } from "@services/authService";
+import Login from "@screens/Login";
+import Register from "@screens/Register";
+import { EditHabit } from "@screens/EditHabit";
+import { Onboarding } from "@screens/Onboarding";
+import { CreateHabits } from "@screens/CreateHabits";
+import { Settings } from "@screens/Settings";
+import { Aparencia } from "@screens/Settings/components/Aparencia";
 
 const Stack = createNativeStackNavigator();
 
@@ -88,6 +89,11 @@ export function StackRoutes() {
           name="Settings"
           component={Settings}
           options={{ title: "Configuração" }}
+        />
+        <Stack.Screen
+          name="Aparencia"
+          component={Aparencia}
+          options={{ title: "Aparência" }}
         />
         <Stack.Screen
           name="EditHabit"

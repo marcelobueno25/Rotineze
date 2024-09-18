@@ -19,7 +19,7 @@ export const darkNavigationTheme = {
   ...NavigationDarkTheme,
   colors: {
     ...NavigationDarkTheme.colors,
-    background: "#000000",
+    background: "#111111",
     text: "#ffffff",
     // Outras personalizações de cor para o tema escuro de navegação
   },
