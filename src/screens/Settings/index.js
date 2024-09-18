@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   ScrollView,
-  StyleSheet,
   TouchableWithoutFeedback,
   Linking,
 } from "react-native";
@@ -22,6 +21,7 @@ import {
 export function Settings({ navigation }) {
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [lastBackup, setLastBackup] = useState(new Date()); // Armazena a data do último backup
   const theme = useTheme();
 
   const toggleNotifications = () =>
@@ -31,22 +31,55 @@ export function Settings({ navigation }) {
 
   const userName = "Marcelo Bueno";
   const userEmail = "marcelo.bueno@email.com"; // Email do usuário
-  const userAvatar =
-    "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"; // Coloque a URL do avatar
+  const userAvatar = "https://avatars.githubusercontent.com/u/32822094?v=4"; // Coloque a URL do avatar
+
+  // Função para formatar a data e hora sem exibir os segundos
+  const formatDateTime = (date) => {
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}`;
+  };
 
   return (
-    <ScrollView style={[styles.container]}>
+    <ScrollView style={{ flex: 1, paddingHorizontal: 25 }}>
       {/* Header com Avatar e Nome do Usuário */}
-      <Text style={[styles.categoryTitle, { color: theme.colors.outline }]}>
+      <Text
+        style={{
+          fontSize: 14,
+          marginTop: 20,
+          marginBottom: 10,
+          fontWeight: "600",
+          color: theme.colors.outline,
+        }}
+      >
         Usuário
       </Text>
-      <View style={styles.header}>
-        <Avatar.Image size={80} source={{ uri: userAvatar }} />
-        <View style={styles.userInfo}>
-          <Text style={[styles.userName, { color: theme.colors.onBackground }]}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginVertical: 20,
+        }}
+      >
+        <Avatar.Image size={75} source={{ uri: userAvatar }} />
+        <View style={{ marginLeft: 16 }}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              color: theme.colors.onBackground,
+            }}
+          >
             {userName}
           </Text>
-          <Text style={[styles.userEmail, { color: theme.colors.outline }]}>
+          <Text
+            style={{
+              color: theme.colors.outline,
+              fontSize: 16,
+              marginTop: 4,
+            }}
+          >
             {userEmail}
           </Text>
         </View>
@@ -54,13 +87,21 @@ export function Settings({ navigation }) {
       <Divider />
 
       {/* Categoria: Geral */}
-      <Text style={[styles.categoryTitle, { color: theme.colors.outline }]}>
+      <Text
+        style={{
+          fontSize: 14,
+          marginTop: 20,
+          marginBottom: 10,
+          fontWeight: "600",
+          color: theme.colors.outline,
+        }}
+      >
         Geral
       </Text>
       <List.Item
         title="Notificações"
         right={() => (
-          <Text style={styles.disabledText}>
+          <Text style={{ color: "#A1A1A1", marginRight: 10, fontSize: 16 }}>
             {notificationsEnabled ? "Ativado" : "Desativado"}
           </Text>
         )}
@@ -84,14 +125,26 @@ export function Settings({ navigation }) {
       <Divider />
       <List.Item
         title="Backup"
+        description={`Último Backup: ${formatDateTime(lastBackup)}`}
+        descriptionStyle={{ color: "#A1A1A1", fontSize: 16 }} // Cor igual ao "Desativado"
         left={() => (
           <List.Icon icon="cloud-refresh" color={theme.colors.primary} />
         )}
-        onPress={() => {}}
+        onPress={() => {
+          setLastBackup(new Date()); // Atualiza a data do último backup
+        }}
       />
 
       {/* Categoria: Suporte */}
-      <Text style={[styles.categoryTitle, { color: theme.colors.outline }]}>
+      <Text
+        style={{
+          fontSize: 14,
+          marginTop: 20,
+          marginBottom: 10,
+          fontWeight: "600",
+          color: theme.colors.outline,
+        }}
+      >
         Suporte
       </Text>
       <List.Item
@@ -116,7 +169,15 @@ export function Settings({ navigation }) {
       />
 
       {/* Categoria: Siga-nos */}
-      <Text style={[styles.categoryTitle, { color: theme.colors.outline }]}>
+      <Text
+        style={{
+          fontSize: 14,
+          marginTop: 20,
+          marginBottom: 10,
+          fontWeight: "600",
+          color: theme.colors.outline,
+        }}
+      >
         Siga-nos
       </Text>
       <List.Item
@@ -129,15 +190,48 @@ export function Settings({ navigation }) {
         onPress={() => Linking.openURL("https://instagram.com")}
       />
 
-      <View style={styles.logoutContainer}>
+      <View style={{ marginVertical: 30, alignItems: "center" }}>
+        {/* Botão Logar */}
+        <Button
+          mode="outlined"
+          icon="login"
+          style={{
+            borderColor: theme.colors.primary,
+            width: "100%", // Largura total
+            paddingVertical: 10, // Mais altura para o botão
+            borderRadius: 10, // Arredondamento suave
+            elevation: 2, // Leve sombra
+          }}
+          labelStyle={{
+            color: theme.colors.primary,
+            fontSize: 16,
+            fontWeight: "bold",
+          }}
+          onPress={() => {
+            // testes
+          }}
+        >
+          Logar
+        </Button>
+        {/* Botão Sair */}
         <Button
           mode="contained"
           icon="logout"
-          //onPress={handleLogout}
-          style={styles.logoutButton}
-          labelStyle={styles.logoutButtonText}
+          style={{
+            backgroundColor: "#FF6B6B",
+            marginTop: 15,
+            width: "100%", // Largura total
+            paddingVertical: 10, // Mais altura para o botão
+            borderRadius: 10, // Arredondamento suave
+            elevation: 2, // Leve sombra
+          }}
+          labelStyle={{
+            color: "#FFF",
+            fontSize: 16,
+            fontWeight: "bold",
+          }}
         >
-          Deslogar
+          Sair
         </Button>
       </View>
 
@@ -146,33 +240,40 @@ export function Settings({ navigation }) {
         <Modal
           visible={isModalVisible}
           onDismiss={hideModal}
-          contentContainerStyle={styles.modalWrapper}
+          contentContainerStyle={{ justifyContent: "flex-end", flex: 1 }}
         >
           <TouchableWithoutFeedback onPress={hideModal}>
-            <View style={styles.modalBackdrop} />
+            <View
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+              }}
+            />
           </TouchableWithoutFeedback>
           <View
-            style={[
-              styles.bottomSheet,
-              { backgroundColor: theme.colors.onBackground },
-            ]}
+            style={{
+              backgroundColor: theme.colors.onBackground,
+              padding: 20,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+            }}
           >
             <View
-              style={[
-                {
-                  flexDirection: "row",
-                  alignItems: "center",
-                  alignContent: "center",
-                  marginBottom: 20,
-                },
-              ]}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 20,
+              }}
             >
               <IconButton
                 icon="close"
                 color={theme.colors.primary}
                 iconColor={theme.colors.background}
                 size={24}
-                style={styles.closeButtonTopLeft}
                 onPress={hideModal}
               />
               <Text
@@ -182,7 +283,14 @@ export function Settings({ navigation }) {
                 Notificações e Alertas
               </Text>
             </View>
-            <View style={styles.switchRow}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 20,
+              }}
+            >
               <Text
                 variant="bodyMedium"
                 style={{ color: theme.colors.surface }}
@@ -200,83 +308,3 @@ export function Settings({ navigation }) {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 25,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 20,
-  },
-  userInfo: {
-    marginLeft: 16, // Espaço entre o avatar e o texto
-  },
-  userName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  userEmail: {
-    color: "#A1A1A1",
-    fontSize: 16,
-    marginTop: 4, // Pequeno espaçamento entre o nome e o e-mail
-  },
-  categoryTitle: {
-    fontSize: 14,
-    marginTop: 20,
-    marginBottom: 10,
-    fontWeight: "600",
-  },
-  disabledText: {
-    color: "#A1A1A1",
-    marginRight: 10,
-    fontSize: 16,
-  },
-  modalWrapper: {
-    justifyContent: "flex-end",
-    flex: 1,
-  },
-  modalBackdrop: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  bottomSheet: {
-    backgroundColor: "#2c2c2e",
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  bottomSheetTitle: {
-    fontSize: 18,
-    marginBottom: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  switchRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  switchLabel: {
-    fontSize: 16,
-  },
-  logoutContainer: {
-    marginTop: 30,
-    alignItems: "center",
-  },
-  logoutButton: {
-    backgroundColor: "#FF6B6B",
-    marginBottom: 30,
-  },
-  logoutButtonText: {
-    color: "#FFF",
-    fontSize: 16,
-  },
-});

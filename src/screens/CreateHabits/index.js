@@ -14,9 +14,9 @@ import { IconeForm } from "@components/Forms/IconeForm";
 import { TimePickerForm } from "@components/Forms/TimePickerForm";
 import { DiasDaSemanaForm } from "@components/Forms/DiasDaSemanaForm";
 import { NotificationsToggle } from "@components/Forms/NotificationsToggle";
-import { createHabit } from "@services/habitService";
 import moment from "moment";
 import { converterParaHora } from "@utils/date";
+import { addHabit } from "@redux/habitSlice";
 
 export function CreateHabits({ navigation }) {
   const {
@@ -25,8 +25,6 @@ export function CreateHabits({ navigation }) {
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
-  const userId = useSelector((state) => state.auth.user.uid);
-
   const [selectedColor, setSelectedColor] = useState(COLORS_NEW_HABIT[0]);
   const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]);
   const [selectedDate, setSelectedDate] = useState(converterParaHora());
@@ -86,21 +84,19 @@ export function CreateHabits({ navigation }) {
     }
 
     const habitData = {
+      id: newHabitId,
       name: data.name,
       description: data.description,
       color: selectedColor,
       icon: selectedIcon,
       completedDates: [],
+      criado: moment().format("DD/MM/YYYY"),
       date: selectedDays.length ? selectedDate : "",
       days: selectedDays,
       notificationsEnabled,
     };
-    try {
-      await dispatch(createHabit(habitData, userId));
-      navigation.goBack();
-    } catch (error) {
-      console.error("Error creating habit:", error);
-    }
+    dispatch(addHabit(habitData));
+    navigation.goBack();
   };
 
   return (

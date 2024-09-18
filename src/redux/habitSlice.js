@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import moment from "moment";
 
 const habitSlice = createSlice({
   name: "habits",
@@ -20,6 +21,26 @@ const habitSlice = createSlice({
         state.habits[index] = action.payload;
       }
     },
+    checkHabit: (state, action) => {
+      const today = moment().format("DD/MM/YYYY");
+
+      state.habits = state.habits.map((habit) => {
+        if (habit.id === action.payload.id) {
+          const dateIndex = habit.completedDates.indexOf(today);
+
+          if (dateIndex > -1) {
+            // Se a data já estiver marcada, removê-la da lista
+            habit.completedDates = habit.completedDates.filter(
+              (date) => date !== today
+            );
+          } else {
+            // Se a data não estiver marcada, adicioná-la à lista
+            habit.completedDates = [...habit.completedDates, today];
+          }
+        }
+        return habit;
+      });
+    },
     removeHabit: (state, action) => {
       state.habits = state.habits.filter(
         (habit) => habit.id !== action.payload
@@ -28,7 +49,7 @@ const habitSlice = createSlice({
   },
 });
 
-export const { setHabits, addHabit, updateHabit, removeHabit } =
+export const { setHabits, addHabit, checkHabit, updateHabit, removeHabit } =
   habitSlice.actions;
 export default habitSlice.reducer;
 

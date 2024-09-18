@@ -6,8 +6,6 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { useSelector } from "react-redux";
 import { TabRoutes } from "./tab.routes";
 import { signOut } from "@services/authService";
-import Login from "@screens/Login";
-import Register from "@screens/Register";
 import { EditHabit } from "@screens/EditHabit";
 import { Onboarding } from "@screens/Onboarding";
 import { CreateHabits } from "@screens/CreateHabits";
@@ -60,7 +58,6 @@ const stackScreenOptions = ({ navigation }) => ({
 });
 
 export function StackRoutes() {
-  const user = useSelector((state) => state.auth.user);
   const hasSeenOnboarding = useSelector(
     (state) => state.auth.hasSeenOnboarding
   );
@@ -105,27 +102,5 @@ export function StackRoutes() {
     [hasSeenOnboarding]
   );
 
-  const UnauthenticatedStack = useCallback(
-    () => (
-      <>
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Register"
-          component={Register}
-          options={{ headerShown: false }}
-        />
-      </>
-    ),
-    []
-  );
-
-  return (
-    <Stack.Navigator>
-      {user ? AuthenticatedStack() : UnauthenticatedStack()}
-    </Stack.Navigator>
-  );
+  return <Stack.Navigator>{AuthenticatedStack()}</Stack.Navigator>;
 }

@@ -1,24 +1,29 @@
 import React, { memo, useRef } from "react";
 import { Swipeable } from "react-native-gesture-handler";
-import {
-  StyleSheet,
-  Vibration,
-  View,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { StyleSheet, Vibration, View, TouchableOpacity } from "react-native";
 import { Text, IconButton, useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import moment from "moment";
 import { useNavigation } from "@react-navigation/native"; // Importa o hook
-import { deleteHabit, toggleHabitCheck } from "@services/habitService";
+import { checkHabit, removeHabit } from "@redux/habitSlice";
 
 const LIST_ITEM_HEIGHT = 70;
 
 export default memo(function CardDiario({ habits }) {
+  const sortedHabits = [...habits].sort((a, b) => {
+    const today = moment().format("DD/MM/YYYY");
+    const aCompleted = a.completedDates.some((date) => date === today);
+    const bCompleted = b.completedDates.some((date) => date === today);
+
+    // Move hábitos completados para o final
+    if (aCompleted && !bCompleted) return 1;
+    if (!aCompleted && bCompleted) return -1;
+    return 0;
+  });
+
   return (
     <View style={styles.container}>
-      {habits.map((habit, index) => (
+      {sortedHabits.map((habit, index) => (
         <Item item={habit} index={index} key={habit.id} />
       ))}
     </View>
@@ -30,7 +35,7 @@ const Item = ({ item, index }) => {
   const { colors } = useTheme();
   const navigation = useNavigation();
   const today = moment().format("DD/MM/YYYY");
-  const isToday = item.checkDates && item.checkDates.includes(today);
+  const isToday = item.completedDates.some((date) => date === today);
   const swipeableRef = useRef(null);
 
   const handleEditHabit = ({ id }) => {
@@ -38,29 +43,14 @@ const Item = ({ item, index }) => {
     navigation.navigate("EditHabit", { habitId: id });
   };
 
-  const handleCheckHabit = async ({ id }) => {
+  const handleCheckHabit = (habit) => {
     Vibration.vibrate(100);
-    try {
-      await dispatch(toggleHabitCheck(id, today));
-    } catch (error) {
-      Alert.alert(
-        "Erro",
-        "Não foi possível atualizar o hábito. Tente novamente."
-      );
-    }
+    dispatch(checkHabit(habit));
   };
 
-  const handleDeleteHabit = async ({ id }) => {
-    try {
-      Vibration.vibrate(100);
-      await dispatch(deleteHabit(id));
-      Alert.alert("Sucesso", "Hábito excluído com sucesso!");
-    } catch (error) {
-      Alert.alert(
-        "Erro",
-        "Não foi possível excluir o hábito. Tente novamente."
-      );
-    }
+  const handleDeleteHabit = ({ id }) => {
+    Vibration.vibrate(100);
+    dispatch(removeHabit(id));
   };
 
   const leftSwipe = () => {
@@ -211,7 +201,7 @@ const Item = ({ item, index }) => {
                 color: `${isToday ? "#999" : colors.onSurface}`,
               }}
             >
-              {"subtitle"}
+              {item.name}
             </Text>
           </View>
         </View>
