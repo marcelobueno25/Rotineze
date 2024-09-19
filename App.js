@@ -17,6 +17,7 @@ import { store, persistor } from "@redux/store";
 import { ptBR } from "@utils/localecalendarConfig";
 import "moment/locale/pt-br";
 import auth from "@react-native-firebase/auth";
+import { signOut } from "@services/authService";
 
 moment.locale("pt-br");
 LocaleConfig.locales["pt-br"] = ptBR;
@@ -38,9 +39,8 @@ function MainApp() {
 
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged((user) => {
-      if (user) {
-        store.dispatch({ type: "auth/setUser", payload: user });
-      } else {
+      if (!user) {
+        signOut();
         store.dispatch({ type: "auth/clearUser" });
       }
     });

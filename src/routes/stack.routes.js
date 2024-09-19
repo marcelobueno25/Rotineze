@@ -5,12 +5,13 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useSelector } from "react-redux";
 import { TabRoutes } from "./tab.routes";
-import { signOut } from "@services/authService";
 import { EditHabit } from "@screens/EditHabit";
 import { Onboarding } from "@screens/Onboarding";
 import { CreateHabits } from "@screens/CreateHabits";
 import { Settings } from "@screens/Settings";
 import { Aparencia } from "@screens/Settings/components/Aparencia";
+import LoginModal from "@screens/Login";
+import Register from "@screens/Register";
 
 const Stack = createNativeStackNavigator();
 
@@ -35,17 +36,10 @@ const stackScreenOptions = ({ navigation }) => ({
   headerShown: true,
   animation: "fade_from_bottom",
   headerRight: () => (
-    <>
-      <HeaderIcon
-        name="account-arrow-left-outline"
-        onPress={signOut}
-        style={{ marginRight: 10 }}
-      />
-      <HeaderIcon
-        name="plus-circle-outline"
-        onPress={() => navigation.navigate("CreateHabits")}
-      />
-    </>
+    <HeaderIcon
+      name="plus-circle-outline"
+      onPress={() => navigation.navigate("CreateHabits")}
+    />
   ),
   headerLeft: () => (
     <HeaderIcon
@@ -76,6 +70,22 @@ export function StackRoutes() {
           name="Home"
           component={TabRoutes}
           options={stackScreenOptions}
+        />
+        <Stack.Screen
+          name="Login"
+          component={LoginModal}
+          options={{
+            presentation: "modal",
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={Register}
+          options={{
+            presentation: "modal",
+            headerShown: false,
+          }}
         />
         <Stack.Screen
           name="CreateHabits"

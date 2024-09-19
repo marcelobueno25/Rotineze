@@ -1,39 +1,17 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useState } from "react";
 import { View, ScrollView, RefreshControl } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import CardDiario from "./components/CardDiario";
-import { useFocusEffect } from "@react-navigation/native";
-import { fetchHabits } from "@services/habitService";
+// import { fetchHabits } from "@services/habitService";
 
 export function Home() {
-  const [refreshing, setRefreshing] = useState(false);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const habits = useSelector((state) => state.habits.habits) || [];
-  const user = useSelector((state) => state.auth.user);
+  // const user = useSelector((state) => state.auth.user);
 
-  const loadHabits = useCallback(() => {
-    if (user) {
-      dispatch(fetchHabits(user.uid));
-    }
-  }, [dispatch, user]);
-
-  useEffect(() => {
-    loadHabits();
-  }, [loadHabits]);
-
-  useFocusEffect(
-    useCallback(() => {
-      loadHabits();
-    }, [loadHabits])
-  );
-
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-      loadHabits();
-    }, 2000);
-  }, []);
+  // const onRefresh = () => {
+  //   dispatch(fetchHabits(user, habits));
+  // };
 
   return (
     <View
@@ -44,11 +22,7 @@ export function Home() {
         padding: 10,
       }}
     >
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
+      <ScrollView refreshControl={<RefreshControl refreshing={false} />}>
         <CardDiario habits={habits} />
       </ScrollView>
     </View>

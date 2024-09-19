@@ -1,10 +1,17 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  SafeAreaView,
+} from "react-native";
 import {
   TextInput,
   Button,
   Text,
   RadioButton,
+  IconButton,
   useTheme,
 } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
@@ -14,41 +21,26 @@ import { setUser } from "@redux/authSlice";
 import { signUp } from "@services/authService";
 
 const formatDate = (input) => {
-  // Remove todos os caracteres não numéricos
   const numbers = input.replace(/\D/g, "");
-
-  // Aplica a máscara DD/MM/AAAA
   if (numbers.length <= 2) return numbers;
   if (numbers.length <= 4) return `${numbers.slice(0, 2)}/${numbers.slice(2)}`;
   return `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4, 8)}`;
 };
 
 const validateDate = (date) => {
-  // Verifica se a data está no formato correto
   if (!/^\d{2}\/\d{2}\/\d{4}$/.test(date)) return "Formato de data inválido";
-
   const [day, month, year] = date.split("/").map(Number);
   const currentYear = new Date().getFullYear();
-
-  // Verifica se o ano é válido (entre 1900 e o ano atual)
   if (year < 1900 || year > currentYear) return "Ano inválido";
-
-  // Verifica se o mês é válido
   if (month < 1 || month > 12) return "Mês inválido";
-
-  // Verifica se o dia é válido para o mês
   const daysInMonth = new Date(year, month, 0).getDate();
-  if (day < 1 || day > daysInMonth)
-    return "Dia inválido para o mês selecionado";
-
-  // Verifica se a data não é futura
-  const inputDate = new Date(year, month - 1, day);
-  if (inputDate > new Date()) return "A data não pode ser no futuro";
-
+  if (day < 1 || day > daysInMonth) return "Dia inválido";
+  if (new Date(year, month - 1, day) > new Date())
+    return "A data não pode ser no futuro";
   return true;
 };
 
-export default function Register() {
+export default function RegisterModal() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const {
@@ -70,6 +62,7 @@ export default function Register() {
         data.gender
       );
       dispatch(setUser(user));
+      navigation.goBack(); // Fechar o modal após o cadastro
     } catch (error) {
       console.error(error);
       setErrorMessage("Erro ao cadastrar. Por favor, tente novamente.");
@@ -77,183 +70,201 @@ export default function Register() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Cadastro</Text>
-
-      <Controller
-        control={control}
-        rules={{ required: "Nome é obrigatório" }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            label="Nome"
-            mode="outlined"
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-            autoCapitalize="words"
-            error={!!errors.name}
-            style={styles.input}
-            left={<TextInput.Icon icon="account" />}
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={styles.container}>
+          {/* Botão para fechar o modal */}
+          <IconButton
+            icon="close"
+            size={30}
+            onPress={() => navigation.goBack()}
+            style={styles.closeButton}
           />
-        )}
-        name="name"
-        defaultValue=""
-      />
-      {errors.name && (
-        <Text style={styles.errorText}>{errors.name.message}</Text>
-      )}
 
-      <Controller
-        control={control}
-        rules={{
-          required: "Email é obrigatório",
-          pattern: {
-            value: /^\S+@\S+$/i,
-            message: "Formato de email inválido",
-          },
-        }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            label="Email"
-            mode="outlined"
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            error={!!errors.email}
-            style={styles.input}
-            left={<TextInput.Icon icon="email" />}
+          <Text style={styles.title}>Cadastro</Text>
+
+          <Controller
+            control={control}
+            rules={{ required: "Nome é obrigatório" }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Nome"
+                mode="outlined"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                autoCapitalize="words"
+                error={!!errors.name}
+                style={styles.input}
+                left={<TextInput.Icon icon="account" />}
+              />
+            )}
+            name="name"
+            defaultValue=""
           />
-        )}
-        name="email"
-        defaultValue=""
-      />
-      {errors.email && (
-        <Text style={styles.errorText}>{errors.email.message}</Text>
-      )}
+          {errors.name && (
+            <Text style={styles.errorText}>{errors.name.message}</Text>
+          )}
 
-      <Controller
-        control={control}
-        rules={{
-          required: "Senha é obrigatória",
-          minLength: {
-            value: 6,
-            message: "A senha deve ter pelo menos 6 caracteres",
-          },
-        }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            label="Senha"
-            mode="outlined"
-            secureTextEntry
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-            error={!!errors.password}
-            style={styles.input}
-            left={<TextInput.Icon icon="lock" />}
+          <Controller
+            control={control}
+            rules={{
+              required: "Email é obrigatório",
+              pattern: {
+                value: /^\S+@\S+$/i,
+                message: "Formato de email inválido",
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Email"
+                mode="outlined"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                error={!!errors.email}
+                style={styles.input}
+                left={<TextInput.Icon icon="email" />}
+              />
+            )}
+            name="email"
+            defaultValue=""
           />
-        )}
-        name="password"
-        defaultValue=""
-      />
-      {errors.password && (
-        <Text style={styles.errorText}>{errors.password.message}</Text>
-      )}
+          {errors.email && (
+            <Text style={styles.errorText}>{errors.email.message}</Text>
+          )}
 
-      <Controller
-        control={control}
-        rules={{
-          required: "Data de nascimento é obrigatória",
-          validate: validateDate,
-        }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            label="Data de Nascimento"
-            mode="outlined"
-            onBlur={onBlur}
-            onChangeText={(text) => onChange(formatDate(text))}
-            value={value}
-            placeholder="DD/MM/AAAA"
-            keyboardType="numeric"
-            error={!!errors.birthDate}
-            style={styles.input}
-            maxLength={10}
-            left={<TextInput.Icon icon="calendar" />}
+          <Controller
+            control={control}
+            rules={{
+              required: "Senha é obrigatória",
+              minLength: {
+                value: 6,
+                message: "A senha deve ter pelo menos 6 caracteres",
+              },
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Senha"
+                mode="outlined"
+                secureTextEntry
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                error={!!errors.password}
+                style={styles.input}
+                left={<TextInput.Icon icon="lock" />}
+              />
+            )}
+            name="password"
+            defaultValue=""
           />
-        )}
-        name="birthDate"
-        defaultValue=""
-      />
-      {errors.birthDate && (
-        <Text style={styles.errorText}>{errors.birthDate.message}</Text>
-      )}
+          {errors.password && (
+            <Text style={styles.errorText}>{errors.password.message}</Text>
+          )}
 
-      <Controller
-        control={control}
-        rules={{ required: "Sexo é obrigatório" }}
-        render={({ field: { onChange, value } }) => (
-          <View style={styles.genderContainer}>
-            <Text style={styles.genderLabel}>Sexo:</Text>
-            <View style={styles.radioGroup}>
-              <View style={styles.radioButton}>
-                <RadioButton
-                  value="Masculino"
-                  status={value === "Masculino" ? "checked" : "unchecked"}
-                  onPress={() => onChange("Masculino")}
-                  color={theme.colors.primary}
-                />
-                <Text>Masculino</Text>
+          <Controller
+            control={control}
+            rules={{
+              required: "Data de nascimento é obrigatória",
+              validate: validateDate,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                label="Data de Nascimento"
+                mode="outlined"
+                onBlur={onBlur}
+                onChangeText={(text) => onChange(formatDate(text))}
+                value={value}
+                placeholder="DD/MM/AAAA"
+                keyboardType="numeric"
+                error={!!errors.birthDate}
+                style={styles.input}
+                maxLength={10}
+                left={<TextInput.Icon icon="calendar" />}
+              />
+            )}
+            name="birthDate"
+            defaultValue=""
+          />
+          {errors.birthDate && (
+            <Text style={styles.errorText}>{errors.birthDate.message}</Text>
+          )}
+
+          <Controller
+            control={control}
+            rules={{ required: "Sexo é obrigatório" }}
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.genderContainer}>
+                <Text style={styles.genderLabel}>Sexo:</Text>
+                <View style={styles.radioGroup}>
+                  <View style={styles.radioButton}>
+                    <RadioButton
+                      value="Masculino"
+                      status={value === "Masculino" ? "checked" : "unchecked"}
+                      onPress={() => onChange("Masculino")}
+                      color={theme.colors.primary}
+                    />
+                    <Text>Masculino</Text>
+                  </View>
+                  <View style={styles.radioButton}>
+                    <RadioButton
+                      value="Feminino"
+                      status={value === "Feminino" ? "checked" : "unchecked"}
+                      onPress={() => onChange("Feminino")}
+                      color={theme.colors.primary}
+                    />
+                    <Text>Feminino</Text>
+                  </View>
+                </View>
               </View>
-              <View style={styles.radioButton}>
-                <RadioButton
-                  value="Feminino"
-                  status={value === "Feminino" ? "checked" : "unchecked"}
-                  onPress={() => onChange("Feminino")}
-                  color={theme.colors.primary}
-                />
-                <Text>Feminino</Text>
-              </View>
-            </View>
+            )}
+            name="gender"
+            defaultValue=""
+          />
+          {errors.gender && (
+            <Text style={styles.errorText}>{errors.gender.message}</Text>
+          )}
+
+          {errorMessage ? (
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          ) : null}
+
+          <Button
+            mode="contained"
+            onPress={handleSubmit(onRegister)}
+            loading={loading}
+            disabled={loading}
+            style={styles.button}
+          >
+            Cadastrar
+          </Button>
+
+          <View style={styles.loginContainer}>
+            <Text>Já tem uma conta?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+              <Text style={styles.loginLink}>Entre aqui</Text>
+            </TouchableOpacity>
           </View>
-        )}
-        name="gender"
-        defaultValue=""
-      />
-      {errors.gender && (
-        <Text style={styles.errorText}>{errors.gender.message}</Text>
-      )}
-
-      {errorMessage ? (
-        <Text style={styles.errorText}>{errorMessage}</Text>
-      ) : null}
-
-      <Button
-        mode="contained"
-        onPress={handleSubmit(onRegister)}
-        loading={loading}
-        disabled={loading}
-        style={styles.button}
-      >
-        Cadastrar
-      </Button>
-
-      <View style={styles.loginContainer}>
-        <Text>Já tem uma conta?</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.loginLink}>Entre aqui</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     justifyContent: "center",
     padding: 20,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    zIndex: 1,
   },
   title: {
     fontSize: 28,
@@ -262,15 +273,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   input: {
-    marginBottom: 10,
-  },
-  maskedInput: {
-    height: 56,
-    borderWidth: 1,
-    borderColor: "#999",
-    borderRadius: 4,
-    paddingHorizontal: 10,
-    fontSize: 16,
+    marginBottom: 15,
   },
   errorText: {
     color: "red",
@@ -293,10 +296,6 @@ const styles = StyleSheet.create({
   },
   genderContainer: {
     marginBottom: 10,
-  },
-  genderLabel: {
-    fontSize: 16,
-    marginBottom: 5,
   },
   radioGroup: {
     flexDirection: "row",

@@ -10,6 +10,7 @@ import {
   TextInput,
   Button,
   Text,
+  IconButton,
   Checkbox,
   useTheme,
 } from "react-native-paper";
@@ -18,8 +19,9 @@ import { useDispatch } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { setUser } from "@redux/authSlice";
 import { signIn } from "@services/authService";
+import { fetchAllHabits } from "@services/habitService";
 
-export default function Login() {
+export default function LoginModal() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -37,6 +39,8 @@ export default function Login() {
     try {
       const user = await signIn(data.email, data.password);
       dispatch(setUser(user));
+      dispatch(fetchAllHabits(user));
+      navigation.goBack(); // Fechar o modal após o login
     } catch (error) {
       console.error(error);
       setErrorMessage("Falha no login. Verifique suas credenciais.");
@@ -47,6 +51,14 @@ export default function Login() {
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.container}>
+          {/* Botão para fechar o modal */}
+          <IconButton
+            icon="close"
+            size={30}
+            onPress={() => navigation.goBack()}
+            style={styles.closeButton}
+          />
+
           <Text style={styles.title}>Entrar</Text>
 
           <Controller
@@ -161,6 +173,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 30,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    zIndex: 1,
   },
   input: {
     marginBottom: 15,

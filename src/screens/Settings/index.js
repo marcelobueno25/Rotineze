@@ -17,8 +17,14 @@ import {
   Avatar,
   Button,
 } from "react-native-paper";
+import { useSelector, useDispatch } from "react-redux";
+import { signOut } from "@services/authService";
+import { backupHabits } from "@services/habitService";
 
 export function Settings({ navigation }) {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const habits = useSelector((state) => state.habits.habits) || [];
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [lastBackup, setLastBackup] = useState(new Date()); // Armazena a data do último backup
@@ -29,8 +35,6 @@ export function Settings({ navigation }) {
   const showModal = () => setModalVisible(true);
   const hideModal = () => setModalVisible(false);
 
-  const userName = "Marcelo Bueno";
-  const userEmail = "marcelo.bueno@email.com"; // Email do usuário
   const userAvatar = "https://avatars.githubusercontent.com/u/32822094?v=4"; // Coloque a URL do avatar
 
   // Função para formatar a data e hora sem exibir os segundos
@@ -62,7 +66,7 @@ export function Settings({ navigation }) {
           marginVertical: 20,
         }}
       >
-        <Avatar.Image size={75} source={{ uri: userAvatar }} />
+        <Avatar.Text size={75} label={!!user ? user.name.charAt(0) : "N"} />
         <View style={{ marginLeft: 16 }}>
           <Text
             style={{
@@ -71,7 +75,7 @@ export function Settings({ navigation }) {
               color: theme.colors.onBackground,
             }}
           >
-            {userName}
+            {!!user ? user.name : "Nome"}
           </Text>
           <Text
             style={{
@@ -80,7 +84,7 @@ export function Settings({ navigation }) {
               marginTop: 4,
             }}
           >
-            {userEmail}
+            {!!user ? user.email : "Email"}
           </Text>
         </View>
       </View>
@@ -132,6 +136,7 @@ export function Settings({ navigation }) {
         )}
         onPress={() => {
           setLastBackup(new Date()); // Atualiza a data do último backup
+          dispatch(backupHabits(user, habits));
         }}
       />
 
@@ -191,48 +196,73 @@ export function Settings({ navigation }) {
       />
 
       <View style={{ marginVertical: 30, alignItems: "center" }}>
-        {/* Botão Logar */}
-        <Button
-          mode="outlined"
-          icon="login"
-          style={{
-            borderColor: theme.colors.primary,
-            width: "100%", // Largura total
-            paddingVertical: 10, // Mais altura para o botão
-            borderRadius: 10, // Arredondamento suave
-            elevation: 2, // Leve sombra
-          }}
-          labelStyle={{
-            color: theme.colors.primary,
-            fontSize: 16,
-            fontWeight: "bold",
-          }}
-          onPress={() => {
-            // testes
-          }}
-        >
-          Logar
-        </Button>
-        {/* Botão Sair */}
-        <Button
-          mode="contained"
-          icon="logout"
-          style={{
-            backgroundColor: "#FF6B6B",
-            marginTop: 15,
-            width: "100%", // Largura total
-            paddingVertical: 10, // Mais altura para o botão
-            borderRadius: 10, // Arredondamento suave
-            elevation: 2, // Leve sombra
-          }}
-          labelStyle={{
-            color: "#FFF",
-            fontSize: 16,
-            fontWeight: "bold",
-          }}
-        >
-          Sair
-        </Button>
+        {!user ? (
+          <>
+            <Button
+              mode="contained"
+              icon="login"
+              style={{
+                borderColor: theme.colors.primary,
+                width: "100%", // Largura total
+                paddingVertical: 10, // Mais altura para o botão
+                borderRadius: 10, // Arredondamento suave
+                elevation: 2, // Leve sombra
+              }}
+              labelStyle={{
+                color: theme.colors.background,
+                fontSize: 16,
+                fontWeight: "bold",
+              }}
+              onPress={() => {
+                navigation.navigate("Login");
+              }}
+            >
+              Logar
+            </Button>
+            <Button
+              mode="outlined"
+              style={{
+                borderColor: theme.colors.primary,
+                marginTop: 15,
+                width: "100%", // Largura total
+                paddingVertical: 10, // Mais altura para o botão
+                borderRadius: 10, // Arredondamento suave
+                elevation: 2, // Leve sombra
+              }}
+              labelStyle={{
+                color: theme.colors.primary,
+                fontSize: 16,
+                fontWeight: "bold",
+              }}
+              onPress={() => {
+                navigation.navigate("Register");
+              }}
+            >
+              Cadastrar
+            </Button>
+          </>
+        ) : (
+          <Button
+            mode="contained"
+            icon="logout"
+            style={{
+              backgroundColor: "#FF6B6B",
+              marginTop: 15,
+              width: "100%", // Largura total
+              paddingVertical: 10, // Mais altura para o botão
+              borderRadius: 10, // Arredondamento suave
+              elevation: 2, // Leve sombra
+            }}
+            labelStyle={{
+              color: "#FFF",
+              fontSize: 16,
+              fontWeight: "bold",
+            }}
+            onPress={() => signOut()}
+          >
+            Sair
+          </Button>
+        )}
       </View>
 
       {/* BottomSheet com Backdrop */}
