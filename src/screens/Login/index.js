@@ -39,7 +39,7 @@ export default function LoginModal() {
     try {
       const user = await signIn(data.email, data.password);
       dispatch(setUser(user));
-      dispatch(fetchAllHabits(user));
+      fetchAllHabits();
       navigation.goBack(); // Fechar o modal após o login
     } catch (error) {
       console.error(error);

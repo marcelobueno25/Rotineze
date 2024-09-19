@@ -1,8 +1,10 @@
 import firestore from "@react-native-firebase/firestore";
 import { setHabits } from "@redux/habitSlice";
-//import { getStore } from "@redux/store";
+import { getStore } from "@redux/store";
 
-export const backupHabits = (user, habits) => async (dispatch) => {
+export const backupHabits = async () => {
+  let habits = getStore().getState().habits.habits || [];
+  let user = getStore().getState().auth.user;
   try {
     if (!!user) {
       const habitsRef = firestore().collection("habits");
@@ -17,7 +19,7 @@ export const backupHabits = (user, habits) => async (dispatch) => {
         const habitWithUserId = { ...habit, uid: user.uid };
         await habitsRef.add(habitWithUserId);
       }
-      dispatch(setHabits(habits));
+      getStore().dispatch(setHabits(habits));
     } else {
       console.log("Nenhum usuário logado.");
     }
@@ -27,7 +29,8 @@ export const backupHabits = (user, habits) => async (dispatch) => {
   }
 };
 
-export const fetchAllHabits = (user) => async (dispatch) => {
+export const fetchAllHabits = async () => {
+  let user = getStore().getState().auth.user;
   try {
     if (!!user) {
       const habitsRef = firestore().collection("habits");
@@ -42,7 +45,7 @@ export const fetchAllHabits = (user) => async (dispatch) => {
       }));
 
       // Atualiza o estado no Redux com os hábitos
-      dispatch(setHabits(allHabits));
+      getStore().dispatch(setHabits(allHabits));
 
       console.log("Hábitos atualizados:", allHabits);
     } else {

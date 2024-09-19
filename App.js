@@ -41,7 +41,6 @@ function MainApp() {
     const unsubscribe = auth().onAuthStateChanged((user) => {
       if (!user) {
         signOut();
-        store.dispatch({ type: "auth/clearUser" });
       }
     });
 

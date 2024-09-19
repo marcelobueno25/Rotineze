@@ -17,14 +17,12 @@ import {
   Avatar,
   Button,
 } from "react-native-paper";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { signOut } from "@services/authService";
 import { backupHabits } from "@services/habitService";
 
 export function Settings({ navigation }) {
-  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
-  const habits = useSelector((state) => state.habits.habits) || [];
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [lastBackup, setLastBackup] = useState(new Date()); // Armazena a data do último backup
@@ -35,9 +33,6 @@ export function Settings({ navigation }) {
   const showModal = () => setModalVisible(true);
   const hideModal = () => setModalVisible(false);
 
-  const userAvatar = "https://avatars.githubusercontent.com/u/32822094?v=4"; // Coloque a URL do avatar
-
-  // Função para formatar a data e hora sem exibir os segundos
   const formatDateTime = (date) => {
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {
       hour: "2-digit",
@@ -45,51 +40,57 @@ export function Settings({ navigation }) {
     })}`;
   };
 
+  const AvatarUser = () => {
+    return (
+      <>
+        <Text
+          style={{
+            fontSize: 14,
+            marginTop: 20,
+            marginBottom: 10,
+            fontWeight: "600",
+            color: theme.colors.outline,
+          }}
+        >
+          Usuário
+        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginVertical: 20,
+          }}
+        >
+          <Avatar.Text size={75} label={!!user ? user.name.charAt(0) : "N"} />
+          <View style={{ marginLeft: 16 }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                color: theme.colors.onBackground,
+              }}
+            >
+              {!!user ? user.name : "Nome"}
+            </Text>
+            <Text
+              style={{
+                color: theme.colors.outline,
+                fontSize: 16,
+                marginTop: 4,
+              }}
+            >
+              {!!user ? user.email : "Email"}
+            </Text>
+          </View>
+        </View>
+        <Divider />
+      </>
+    );
+  };
+
   return (
     <ScrollView style={{ flex: 1, paddingHorizontal: 25 }}>
-      {/* Header com Avatar e Nome do Usuário */}
-      <Text
-        style={{
-          fontSize: 14,
-          marginTop: 20,
-          marginBottom: 10,
-          fontWeight: "600",
-          color: theme.colors.outline,
-        }}
-      >
-        Usuário
-      </Text>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginVertical: 20,
-        }}
-      >
-        <Avatar.Text size={75} label={!!user ? user.name.charAt(0) : "N"} />
-        <View style={{ marginLeft: 16 }}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "bold",
-              color: theme.colors.onBackground,
-            }}
-          >
-            {!!user ? user.name : "Nome"}
-          </Text>
-          <Text
-            style={{
-              color: theme.colors.outline,
-              fontSize: 16,
-              marginTop: 4,
-            }}
-          >
-            {!!user ? user.email : "Email"}
-          </Text>
-        </View>
-      </View>
-      <Divider />
-
+      {!!user ? <AvatarUser /> : <></>}
       {/* Categoria: Geral */}
       <Text
         style={{
@@ -130,13 +131,13 @@ export function Settings({ navigation }) {
       <List.Item
         title="Backup"
         description={`Último Backup: ${formatDateTime(lastBackup)}`}
-        descriptionStyle={{ color: "#A1A1A1", fontSize: 16 }} // Cor igual ao "Desativado"
+        descriptionStyle={{ color: "#A1A1A1", fontSize: 13 }} // Cor igual ao "Desativado"
         left={() => (
           <List.Icon icon="cloud-refresh" color={theme.colors.primary} />
         )}
         onPress={() => {
           setLastBackup(new Date()); // Atualiza a data do último backup
-          dispatch(backupHabits(user, habits));
+          backupHabits();
         }}
       />
 

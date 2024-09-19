@@ -46,11 +46,20 @@ const habitSlice = createSlice({
         (habit) => habit.id !== action.payload
       );
     },
+    resetHabit: (state, action) => {
+      state.habits = [];
+    },
   },
 });
 
-export const { setHabits, addHabit, checkHabit, updateHabit, removeHabit } =
-  habitSlice.actions;
+export const {
+  setHabits,
+  addHabit,
+  checkHabit,
+  updateHabit,
+  removeHabit,
+  resetHabit,
+} = habitSlice.actions;
 export default habitSlice.reducer;
 
 // import moment from "moment";

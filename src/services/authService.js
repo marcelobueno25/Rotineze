@@ -1,5 +1,8 @@
 import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
+import { getStore } from "@redux/store";
+import { resetHabit } from "@redux/habitSlice";
+import { clearUser } from "@redux/authSlice";
 
 // Função para criar documento no Firestore
 const createUserInFirestore = async (uid, userData) => {
@@ -80,6 +83,8 @@ export const signIn = async (email, password) => {
 
 export const signOut = async () => {
   try {
+    getStore().dispatch(resetHabit());
+    getStore().dispatch(clearUser());
     await auth().signOut();
   } catch (error) {
     throw error;
