@@ -3,12 +3,16 @@ import { setHabits } from "@redux/habitSlice";
 import { getStore } from "@redux/store";
 
 export const backupHabits = async () => {
-  let habits = getStore().getState().habits.habits || [];
-  let user = getStore().getState().auth.user;
+  const habits = getStore().getState().habits.habits || [];
+  const user = getStore().getState().auth.user;
+
   try {
-    if (!!user) {
-      const habitsRef = firestore().collection("habits");
-      const querySnapshot = await habitsRef.where("uid", "==", user.uid).get();
+    if (user) {
+      const habitsRef = firestore()
+        .collection("users")
+        .doc(user.uid)
+        .collection("habits");
+      const querySnapshot = await habitsRef.get();
       const batch = firestore().batch();
       querySnapshot.forEach((doc) => {
         batch.delete(doc.ref);
@@ -16,7 +20,10 @@ export const backupHabits = async () => {
       await batch.commit();
       console.log("Hábitos antigos excluídos.");
       for (const habit of habits) {
-        const habitWithUserId = { ...habit, uid: user.uid };
+        const habitWithUserId = {
+          ...habit,
+          createdAt: new Date().toISOString(),
+        };
         await habitsRef.add(habitWithUserId);
       }
       getStore().dispatch(setHabits(habits));
@@ -30,23 +37,20 @@ export const backupHabits = async () => {
 };
 
 export const fetchAllHabits = async () => {
-  let user = getStore().getState().auth.user;
+  const user = getStore().getState().auth.user;
+
   try {
-    if (!!user) {
-      const habitsRef = firestore().collection("habits");
-
-      // Consulta todos os hábitos do usuário atual com base no UID
-      const querySnapshot = await habitsRef.where("uid", "==", user.uid).get();
-
-      // Extrai os dados dos hábitos
+    if (user) {
+      const habitsRef = firestore()
+        .collection("users")
+        .doc(user.uid)
+        .collection("habits");
+      const querySnapshot = await habitsRef.get();
       const allHabits = querySnapshot.docs.map((doc) => ({
-        id: doc.id, // Inclui o ID do documento
-        ...doc.data(), // Inclui os dados do documento
+        id: doc.id,
+        ...doc.data(),
       }));
-
-      // Atualiza o estado no Redux com os hábitos
       getStore().dispatch(setHabits(allHabits));
-
       console.log("Hábitos atualizados:", allHabits);
     } else {
       console.log("Nenhum usuário logado.");

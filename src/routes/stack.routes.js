@@ -12,6 +12,7 @@ import { Settings } from "@screens/Settings";
 import { Aparencia } from "@screens/Settings/components/Aparencia";
 import LoginModal from "@screens/Login";
 import Register from "@screens/Register";
+import { Avancado } from "@screens/Settings/components/Avançado/indes";
 
 const Stack = createNativeStackNavigator();
 
@@ -101,6 +102,11 @@ export function StackRoutes() {
           name="Aparencia"
           component={Aparencia}
           options={{ title: "Aparência" }}
+        />
+        <Stack.Screen
+          name="Avançado"
+          component={Avancado}
+          options={{ title: "Avançado" }}
         />
         <Stack.Screen
           name="EditHabit"
