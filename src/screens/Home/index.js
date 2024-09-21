@@ -1,29 +1,54 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, ScrollView, RefreshControl } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { Text, useTheme, IconButton } from "react-native-paper";
 import CardDiario from "./components/CardDiario";
-// import { fetchHabits } from "@services/habitService";
 
 export function Home() {
-  // const dispatch = useDispatch();
   const habits = useSelector((state) => state.habits.habits) || [];
-  // const user = useSelector((state) => state.auth.user);
-
-  // const onRefresh = () => {
-  //   dispatch(fetchHabits(user, habits));
-  // };
+  const theme = useTheme();
 
   return (
     <View
-      rowGap={15}
       style={{
         flex: 1,
-        marginBottom: 80,
         padding: 10,
       }}
     >
-      <ScrollView refreshControl={<RefreshControl refreshing={false} />}>
-        <CardDiario habits={habits} />
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: habits.length === 0 ? "center" : "flex-start",
+        }}
+        refreshControl={<RefreshControl refreshing={false} />}
+      >
+        {habits.length === 0 ? (
+          <View
+            style={{
+              alignItems: "center",
+              flex: 1,
+              opacity: 0.5,
+            }}
+          >
+            <IconButton
+              icon="clipboard-text-off-outline"
+              size={70}
+              iconColor={theme.colors.outline}
+              style={{ marginBottom: 10, marginTop: 60 }}
+            />
+            <Text
+              variant="titleMedium"
+              style={{
+                color: theme.colors.outline,
+                textAlign: "center",
+              }}
+            >
+              Nenhum hábito cadastrado ainda.
+            </Text>
+          </View>
+        ) : (
+          <CardDiario habits={habits} />
+        )}
       </ScrollView>
     </View>
   );

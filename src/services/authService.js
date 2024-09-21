@@ -83,9 +83,17 @@ export const signIn = async (email, password) => {
 
 export const signOut = async () => {
   try {
+    await clearLocalUser();
+    await auth().signOut();
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const clearLocalUser = async () => {
+  try {
     getStore().dispatch(resetHabit());
     getStore().dispatch(clearUser());
-    await auth().signOut();
   } catch (error) {
     throw error;
   }

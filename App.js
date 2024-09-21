@@ -17,7 +17,7 @@ import { store, persistor } from "@redux/store";
 import { ptBR } from "@utils/localecalendarConfig";
 import "moment/locale/pt-br";
 import auth from "@react-native-firebase/auth";
-import { signOut } from "@services/authService";
+import { clearLocalUser } from "@services/authService";
 
 moment.locale("pt-br");
 LocaleConfig.locales["pt-br"] = ptBR;
@@ -33,18 +33,21 @@ export default function App() {
   );
 }
 
-// Componente para gerenciar o tema
 function MainApp() {
   const isDarkTheme = useSelector((state) => state.configuration.theme);
 
   useEffect(() => {
-    const unsubscribe = auth().onAuthStateChanged((user) => {
-      if (!user) {
-        signOut();
-      }
-    });
+    const checkAuthState = async () => {
+      const unsubscribe = auth().onAuthStateChanged(async (user) => {
+        if (!user) {
+          await clearLocalUser();
+        }
+      });
 
-    return unsubscribe;
+      return () => unsubscribe();
+    };
+
+    checkAuthState();
   }, []);
 
   return (
