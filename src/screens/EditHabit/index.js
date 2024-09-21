@@ -16,8 +16,8 @@ import { NotificationsToggle } from "../../components/Forms/NotificationsToggle"
 
 import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
 import moment from "moment";
-import { editHabit } from "@services/habitService";
 import { converterParaHora } from "@utils/date";
+import { updateHabit } from "@redux/habitSlice";
 
 export function EditHabit({ route, navigation }) {
   const { habitId } = route.params; // Recebendo o ID do hábito a ser editado
@@ -35,10 +35,10 @@ export function EditHabit({ route, navigation }) {
   );
   const [selectedColor, setSelectedColor] = useState(habit.color || "");
   const [selectedIcon, setSelectedIcon] = useState(habit.icon || "");
-  const [selectedDate, setSelectedDate] = useState(
-    converterParaHora(habit.date)
+  const [frequencyTime, setFrequencyTime] = useState(
+    converterParaHora(habit.frequencyTime)
   );
-  const [selectedDays, setSelectedDays] = useState(habit.days || []);
+  const [frequency, setFrequency] = useState(habit.frequency || []);
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     habit.notificationsEnabled || false
   );
@@ -51,14 +51,14 @@ export function EditHabit({ route, navigation }) {
   const handleNotificationToggle = (value) => {
     setNotificationsEnabled(value);
     if (!value) {
-      setSelectedDays([]);
-      setSelectedDate(converterParaHora());
+      setFrequency([]);
+      setFrequencyTime(converterParaHora());
     }
   };
 
-  const scheduleNotifications = async (habitId, date, selectedDays) => {
+  const scheduleNotifications = async (habitId, date, frequency) => {
     await cancelNotifications(habitId); // Cancelar quaisquer notificações existentes antes de agendar novas
-    for (let day of selectedDays) {
+    for (let day of frequency) {
       await Notifications.scheduleNotificationAsync({
         content: {
           title: "Lembrete de Hábito",
@@ -96,20 +96,21 @@ export function EditHabit({ route, navigation }) {
     }
 
     if (notificationsEnabled) {
-      await scheduleNotifications(habitId, selectedDate, selectedDays);
+      await scheduleNotifications(habitId, frequencyTime, frequency);
     }
 
     const updatedHabit = {
+      ...habit,
       name: data.name,
       description: data.description,
       color: selectedColor,
       icon: selectedIcon,
-      date: selectedDays.length ? selectedDate : "",
-      days: selectedDays,
+      frequencyTime: frequency.length ? frequencyTime : "",
+      frequency: frequency,
       notificationsEnabled,
     };
     try {
-      await dispatch(editHabit(habitId, updatedHabit));
+      await dispatch(updateHabit(updatedHabit));
       navigation.navigate("Home");
     } catch (error) {
       Alert.alert("Erro", "Não foi possível editar o hábito. Tente novamente.");
@@ -162,14 +163,14 @@ export function EditHabit({ route, navigation }) {
           {notificationsEnabled && (
             <>
               <DiasDaSemanaForm
-                selectedDays={selectedDays}
-                setSelectedDays={setSelectedDays}
+                selectedDays={frequency}
+                setSelectedDays={setFrequency}
                 selectedColor={selectedColor}
               />
-              {selectedDays.length > 0 && (
+              {frequency.length > 0 && (
                 <TimePickerForm
-                  selectedDate={selectedDate}
-                  setSelectedDate={setSelectedDate}
+                  selectedDate={frequencyTime}
+                  setSelectedDate={setFrequencyTime}
                 />
               )}
             </>

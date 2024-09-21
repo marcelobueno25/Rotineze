@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
-} from "react-native";
+import { View, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
 import {
   TextInput,
   Button,
@@ -36,30 +30,47 @@ export default function LoginModal() {
   const theme = useTheme();
 
   const onLogin = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
     try {
       const user = await signIn(data.email, data.password);
       dispatch(setUser(user));
-      fetchAllHabits();
-      navigation.goBack(); // Fechar o modal após o login
+      await fetchAllHabits();
+      navigation.navigate("Settings");
     } catch (error) {
       console.error(error);
       setErrorMessage("Falha no login. Verifique suas credenciais.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={styles.container}>
-          {/* Botão para fechar o modal */}
+        <View style={{ flex: 1, justifyContent: "center", padding: 20 }}>
           <IconButton
             icon="close"
             size={30}
             onPress={() => navigation.goBack()}
-            style={styles.closeButton}
+            style={{
+              position: "absolute",
+              top: 40,
+              right: 20,
+              zIndex: 1,
+            }}
           />
 
-          <Text style={styles.title}>Entrar</Text>
+          <Text
+            variant="headlineSmall"
+            style={{
+              fontWeight: "bold",
+              textAlign: "center",
+              marginBottom: 30,
+            }}
+          >
+            Entrar
+          </Text>
 
           <Controller
             control={control}
@@ -80,7 +91,7 @@ export default function LoginModal() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 error={!!errors.email}
-                style={styles.input}
+                style={{ marginBottom: 15 }}
                 left={<TextInput.Icon icon="email" />}
               />
             )}
@@ -88,7 +99,16 @@ export default function LoginModal() {
             defaultValue=""
           />
           {errors.email && (
-            <Text style={styles.errorText}>{errors.email.message}</Text>
+            <Text
+              style={{
+                color: "#ff3333",
+                marginBottom: 10,
+                fontSize: 12,
+                marginLeft: 5,
+              }}
+            >
+              {errors.email.message}
+            </Text>
           )}
 
           <Controller
@@ -115,7 +135,7 @@ export default function LoginModal() {
                 onChangeText={onChange}
                 value={value}
                 error={!!errors.password}
-                style={styles.input}
+                style={{ marginBottom: 15 }}
                 left={<TextInput.Icon icon="lock" />}
               />
             )}
@@ -123,20 +143,38 @@ export default function LoginModal() {
             defaultValue=""
           />
           {errors.password && (
-            <Text style={styles.errorText}>{errors.password.message}</Text>
+            <Text
+              style={{
+                color: "#ff3333",
+                marginBottom: 10,
+                fontSize: 12,
+                marginLeft: 5,
+              }}
+            >
+              {errors.password.message}
+            </Text>
           )}
 
-          <View style={styles.rememberContainer}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 10,
+              marginBottom: 20,
+            }}
+          >
             <Checkbox
               status={rememberPassword ? "checked" : "unchecked"}
               onPress={() => setRememberPassword(!rememberPassword)}
               color={theme.colors.primary}
             />
-            <Text style={styles.rememberText}>Lembrar senha</Text>
+            <Text style={{ marginLeft: 8, color: "#666" }}>Lembrar senha</Text>
           </View>
 
           {errorMessage ? (
-            <Text style={styles.errorText}>{errorMessage}</Text>
+            <Text style={{ color: "#ff3333", marginBottom: 10, fontSize: 12 }}>
+              {errorMessage}
+            </Text>
           ) : null}
 
           <Button
@@ -144,16 +182,26 @@ export default function LoginModal() {
             onPress={handleSubmit(onLogin)}
             loading={loading}
             disabled={loading}
-            style={styles.button}
-            contentStyle={styles.buttonContent}
+            style={{ marginTop: 20 }}
+            contentStyle={{ paddingVertical: 10 }}
           >
             Entrar
           </Button>
 
-          <View style={styles.registerContainer}>
-            <Text style={styles.registerText}>Ainda não tem uma conta?</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              marginTop: 20,
+            }}
+          >
+            <Text style={{ color: "#666" }}>Ainda não tem uma conta?</Text>
             <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-              <Text style={styles.registerLink}>Cadastre-se</Text>
+              <Text
+                style={{ color: "#6200ee", marginLeft: 5, fontWeight: "bold" }}
+              >
+                Cadastre-se
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -161,61 +209,3 @@ export default function LoginModal() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 30,
-  },
-  closeButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    zIndex: 1,
-  },
-  input: {
-    marginBottom: 15,
-  },
-  errorText: {
-    color: "#ff3333",
-    marginBottom: 10,
-    fontSize: 12,
-    marginLeft: 5,
-  },
-  button: {
-    marginTop: 20,
-  },
-  buttonContent: {
-    paddingVertical: 10,
-  },
-  rememberContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  rememberText: {
-    marginLeft: 8,
-    color: "#666",
-  },
-  registerContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  registerText: {
-    color: "#666",
-  },
-  registerLink: {
-    color: "#6200ee",
-    marginLeft: 5,
-    fontWeight: "bold",
-  },
-});

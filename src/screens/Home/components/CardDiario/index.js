@@ -12,8 +12,8 @@ const LIST_ITEM_HEIGHT = 70;
 export default memo(function CardDiario({ habits }) {
   const sortedHabits = [...habits].sort((a, b) => {
     const today = moment().format("DD/MM/YYYY");
-    const aCompleted = a.completedDates.some((date) => date === today);
-    const bCompleted = b.completedDates.some((date) => date === today);
+    const aCompleted = a.checkIns.some((date) => date === today);
+    const bCompleted = b.checkIns.some((date) => date === today);
 
     // Move hábitos completados para o final
     if (aCompleted && !bCompleted) return 1;
@@ -35,7 +35,7 @@ const Item = ({ item, index }) => {
   const { colors } = useTheme();
   const navigation = useNavigation();
   const today = moment().format("DD/MM/YYYY");
-  const isToday = item.completedDates.some((date) => date === today);
+  const isToday = item.checkIns.some((date) => date === today);
   const swipeableRef = useRef(null);
 
   const handleEditHabit = ({ id }) => {

@@ -3,18 +3,16 @@ import { View, ActivityIndicator } from "react-native";
 import Svg, { Rect } from "react-native-svg";
 import moment from "moment";
 
-const AnnualHeatMap = ({ habit: { completedDates }, color }) => {
+const AnnualHeatMap = ({ habit: { checkIns }, color }) => {
   const currentYear = moment().year(); // Ano atual
 
   // Converter datas concluídas para o formato 'YYYY-MM-DD'
   const completedDaysSet = useMemo(
     () =>
       new Set(
-        completedDates.map((date) =>
-          moment(date, "DD/MM/YYYY").format("DD/MM/YYYY")
-        )
+        checkIns.map((date) => moment(date, "DD/MM/YYYY").format("DD/MM/YYYY"))
       ),
-    [completedDates]
+    [checkIns]
   );
 
   // Obter todos os dias do ano atual

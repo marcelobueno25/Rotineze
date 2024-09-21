@@ -3,10 +3,12 @@ import { Button } from "react-native-paper";
 import uuid from "react-native-uuid";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { useForm } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
 import * as Notifications from "expo-notifications"; // Para notificações
+import moment from "moment";
 
+// Importando componentes
 import { NomeForm } from "@components/Forms/NomeForm";
 import { DescricaoForm } from "@components/Forms/DescricaoForm";
 import { CorForm } from "@components/Forms/CorForm";
@@ -14,7 +16,6 @@ import { IconeForm } from "@components/Forms/IconeForm";
 import { TimePickerForm } from "@components/Forms/TimePickerForm";
 import { DiasDaSemanaForm } from "@components/Forms/DiasDaSemanaForm";
 import { NotificationsToggle } from "@components/Forms/NotificationsToggle";
-import moment from "moment";
 import { converterParaHora } from "@utils/date";
 import { addHabit } from "@redux/habitSlice";
 
@@ -27,21 +28,21 @@ export function CreateHabits({ navigation }) {
   const dispatch = useDispatch();
   const [selectedColor, setSelectedColor] = useState(COLORS_NEW_HABIT[0]);
   const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]);
-  const [selectedDate, setSelectedDate] = useState(converterParaHora());
-  const [selectedDays, setSelectedDays] = useState([]);
+  const [frequencyTime, setFrequencyTime] = useState(converterParaHora());
+  const [frequency, setFrequency] = useState([]);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
   const handleNotificationToggle = (value) => {
     setNotificationsEnabled(value);
     if (!value) {
-      setSelectedDays([]);
-      setSelectedDate(converterParaHora());
+      setFrequency([]);
+      setFrequencyTime(converterParaHora());
     }
   };
 
-  const scheduleNotifications = async (habitId, date, selectedDays) => {
+  const scheduleNotifications = async (habitId, date, frequency) => {
     await cancelNotifications(habitId); // Cancelar quaisquer notificações existentes antes de agendar novas
-    for (let day of selectedDays) {
+    for (let day of frequency) {
       await Notifications.scheduleNotificationAsync({
         content: {
           title: "Lembrete de Hábito",
@@ -80,7 +81,7 @@ export function CreateHabits({ navigation }) {
     const newHabitId = uuid.v4();
 
     if (notificationsEnabled) {
-      await scheduleNotifications(newHabitId, selectedDate, selectedDays);
+      await scheduleNotifications(newHabitId, frequencyTime, frequency);
     }
 
     const habitData = {
@@ -89,10 +90,10 @@ export function CreateHabits({ navigation }) {
       description: data.description,
       color: selectedColor,
       icon: selectedIcon,
-      completedDates: [],
-      criado: moment().format("DD/MM/YYYY"),
-      date: selectedDays.length ? selectedDate : "",
-      days: selectedDays,
+      checkIns: [],
+      createdAt: moment().format("DD/MM/YYYY"),
+      frequency: frequency,
+      frequencyTime: frequency.length ? frequencyTime : "",
       notificationsEnabled,
     };
     dispatch(addHabit(habitData));
@@ -123,14 +124,14 @@ export function CreateHabits({ navigation }) {
           {notificationsEnabled && (
             <>
               <DiasDaSemanaForm
-                selectedDays={selectedDays}
-                setSelectedDays={setSelectedDays}
+                selectedDays={frequency}
+                setSelectedDays={setFrequency}
                 selectedColor={selectedColor}
               />
-              {selectedDays.length > 0 && (
+              {frequency.length > 0 && (
                 <TimePickerForm
-                  selectedDate={selectedDate}
-                  setSelectedDate={setSelectedDate}
+                  selectedDate={frequencyTime}
+                  setSelectedDate={setFrequencyTime}
                 />
               )}
             </>

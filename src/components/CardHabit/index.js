@@ -10,14 +10,14 @@ const HabitCard = ({ habit, children }) => {
   const navigation = useNavigation(); // Usa o hook para obter o objeto de navegação
   const [expanded, setExpanded] = useState(false);
   const today = moment().format("DD/MM/YYYY");
-  const isToday = habit.completedDates.some((date) => date === today);
+  const isToday = habit.checkIns.some((date) => date === today);
 
   const handleEditHabit = (id) => {
     Vibration.vibrate(100);
     navigation.navigate("EditHabit", { habitId: id });
   };
 
-  const handleCompletedDates = (id) => {
+  const handlecheckIns = (id) => {
     Vibration.vibrate(100);
     dispatch({
       type: "TOGGLE_COMPLETE_HABIT",
@@ -56,7 +56,7 @@ const HabitCard = ({ habit, children }) => {
               }`}
               iconColor={`${isToday ? habit.color : "lightgrey"}`}
               size={24}
-              onPress={() => handleCompletedDates(habit.id)}
+              onPress={() => handlecheckIns(habit.id)}
               style={{ margin: 0 }}
             />
             <IconButton
@@ -88,7 +88,7 @@ const HabitCard = ({ habit, children }) => {
         >
           <Text>
             <Text style={{ fontWeight: "bold" }}>Concluídos:</Text>{" "}
-            {habit.completedDates.length}
+            {habit.checkIns.length}
           </Text>
           <Text>
             <Text style={{ fontWeight: "bold" }}>Criado:</Text> {habit.criado}

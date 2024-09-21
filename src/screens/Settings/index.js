@@ -128,12 +128,12 @@ export function Settings({ navigation }) {
         <List.Item
           title="Backup"
           description={`Último Backup: ${formatDateTime(lastBackup)}`}
-          descriptionStyle={{ color: "#A1A1A1", fontSize: 13 }} // Cor igual ao "Desativado"
+          descriptionStyle={{ color: "#A1A1A1", fontSize: 13 }}
           left={() => (
             <List.Icon icon="cloud-refresh" color={theme.colors.primary} />
           )}
           onPress={() => {
-            setLastBackup(new Date()); // Atualiza a data do último backup
+            setLastBackup(new Date());
             backupHabits();
           }}
         />
@@ -190,7 +190,9 @@ export function Settings({ navigation }) {
           right={() => (
             <IconButton icon="open-in-new" color={theme.colors.primary} />
           )}
-          onPress={() => Linking.openURL("https://instagram.com")}
+          onPress={() =>
+            Linking.openURL("https://www.instagram.com/m_bueno.dev/")
+          }
         />
         <View style={{ marginBottom: 20, marginTop: 10, alignItems: "center" }}>
           {!!user && (

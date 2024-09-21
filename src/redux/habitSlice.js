@@ -26,16 +26,12 @@ const habitSlice = createSlice({
 
       state.habits = state.habits.map((habit) => {
         if (habit.id === action.payload.id) {
-          const dateIndex = habit.completedDates.indexOf(today);
+          const dateIndex = habit.checkIns.indexOf(today);
 
           if (dateIndex > -1) {
-            // Se a data já estiver marcada, removê-la da lista
-            habit.completedDates = habit.completedDates.filter(
-              (date) => date !== today
-            );
+            habit.checkIns = habit.checkIns.filter((date) => date !== today);
           } else {
-            // Se a data não estiver marcada, adicioná-la à lista
-            habit.completedDates = [...habit.completedDates, today];
+            habit.checkIns = [...habit.checkIns, today];
           }
         }
         return habit;
@@ -95,18 +91,18 @@ export default habitSlice.reducer;
 //         ...state,
 //         habits: state.habits.map((habit) => {
 //           if (habit.id === action.payload.id) {
-//             const dateIndex = habit.completedDates.indexOf(today);
+//             const dateIndex = habit.checkIns.indexOf(today);
 //             if (dateIndex > -1) {
 //               return {
 //                 ...habit,
-//                 completedDates: habit.completedDates.filter(
+//                 checkIns: habit.checkIns.filter(
 //                   (date) => date !== today
 //                 ),
 //               };
 //             } else {
 //               return {
 //                 ...habit,
-//                 completedDates: [...habit.completedDates, today],
+//                 checkIns: [...habit.checkIns, today],
 //               };
 //             }
 //           }

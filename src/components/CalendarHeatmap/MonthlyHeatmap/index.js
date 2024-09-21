@@ -15,14 +15,14 @@ const daysOfWeek = [
   { label: "S", value: 6 }, // Sábado
 ];
 
-const MonthlyHeatMap = ({ habit: { completedDates, id }, color }) => {
+const MonthlyHeatMap = ({ habit: { checkIns, id }, color }) => {
   const dispatch = useDispatch();
   const daysInMonth = moment().daysInMonth(); // Número de dias no mês atual
   const currentYear = moment().year(); // Ano atual
   const monthIndex = moment().month(); // Índice do mês atual
 
   // Converter datas concluídas para o formato 'YYYY-MM-DD'
-  const completedDays = completedDates.map((date) =>
+  const completedDays = checkIns.map((date) =>
     moment(date, "DD/MM/YYYY").format("DD/MM/YYYY")
   );
 

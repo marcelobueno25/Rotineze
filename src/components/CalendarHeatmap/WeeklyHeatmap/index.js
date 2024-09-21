@@ -15,13 +15,11 @@ const daysOfWeek = [
   { label: "S", value: "sab" },
 ];
 
-const WeeklyHeatmap = ({ habit: { completedDates, id }, color }) => {
+const WeeklyHeatmap = ({ habit: { checkIns, id }, color }) => {
   const dispatch = useDispatch();
 
   const isCheckedOut = (date) => {
-    return completedDates.includes(
-      moment(date, "DD/MM/YYYY").format("DD/MM/YYYY")
-    );
+    return checkIns.includes(moment(date, "DD/MM/YYYY").format("DD/MM/YYYY"));
   };
 
   const handleToggleDate = (date) => {

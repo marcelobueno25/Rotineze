@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
-} from "react-native";
+import { View, TouchableOpacity, ScrollView, SafeAreaView } from "react-native";
 import {
   TextInput,
   Button,
@@ -43,9 +37,11 @@ const validateDate = (date) => {
 export default function RegisterModal() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const {
     control,
     handleSubmit,
+    clearErrors,
     formState: { errors },
   } = useForm();
   const navigation = useNavigation();
@@ -53,6 +49,8 @@ export default function RegisterModal() {
   const theme = useTheme();
 
   const onRegister = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
     try {
       const user = await signUp(
         data.email,
@@ -62,40 +60,66 @@ export default function RegisterModal() {
         data.gender
       );
       dispatch(setUser(user));
-      navigation.goBack(); // Fechar o modal após o cadastro
+      navigation.navigate("Settings");
     } catch (error) {
       console.error(error);
       setErrorMessage("Erro ao cadastrar. Por favor, tente novamente.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={styles.container}>
-          {/* Botão para fechar o modal */}
+        <View style={{ flex: 1, justifyContent: "center", padding: 20 }}>
           <IconButton
             icon="close"
             size={30}
             onPress={() => navigation.goBack()}
-            style={styles.closeButton}
+            style={{
+              position: "absolute",
+              top: 40,
+              right: 20,
+              zIndex: 1,
+            }}
           />
 
-          <Text style={styles.title}>Cadastro</Text>
+          <Text
+            variant="headlineSmall"
+            style={{
+              fontWeight: "bold",
+              textAlign: "center",
+              marginBottom: 30,
+            }}
+          >
+            Cadastro
+          </Text>
 
           <Controller
             control={control}
-            rules={{ required: "Nome é obrigatório" }}
+            rules={{
+              required: "Nome é obrigatório",
+              minLength: {
+                value: 3,
+                message: "O nome deve ter no mínimo 3 caracteres",
+              },
+              maxLength: {
+                value: 20,
+                message: "O nome deve ter no máximo 20 caracteres",
+              },
+            }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 label="Nome"
                 mode="outlined"
                 onBlur={onBlur}
+                onFocus={() => clearErrors()}
                 onChangeText={onChange}
                 value={value}
                 autoCapitalize="words"
                 error={!!errors.name}
-                style={styles.input}
+                style={{ marginBottom: 15 }}
                 left={<TextInput.Icon icon="account" />}
               />
             )}
@@ -103,7 +127,9 @@ export default function RegisterModal() {
             defaultValue=""
           />
           {errors.name && (
-            <Text style={styles.errorText}>{errors.name.message}</Text>
+            <Text style={{ color: "red", marginBottom: 10, fontSize: 12 }}>
+              {errors.name.message}
+            </Text>
           )}
 
           <Controller
@@ -120,12 +146,13 @@ export default function RegisterModal() {
                 label="Email"
                 mode="outlined"
                 onBlur={onBlur}
+                onFocus={() => clearErrors()}
                 onChangeText={onChange}
                 value={value}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 error={!!errors.email}
-                style={styles.input}
+                style={{ marginBottom: 15 }}
                 left={<TextInput.Icon icon="email" />}
               />
             )}
@@ -133,7 +160,9 @@ export default function RegisterModal() {
             defaultValue=""
           />
           {errors.email && (
-            <Text style={styles.errorText}>{errors.email.message}</Text>
+            <Text style={{ color: "red", marginBottom: 10, fontSize: 12 }}>
+              {errors.email.message}
+            </Text>
           )}
 
           <Controller
@@ -149,12 +178,19 @@ export default function RegisterModal() {
               <TextInput
                 label="Senha"
                 mode="outlined"
-                secureTextEntry
+                secureTextEntry={!showPassword}
+                right={
+                  <TextInput.Icon
+                    icon={showPassword ? "eye-off" : "eye"}
+                    onPress={() => setShowPassword(!showPassword)}
+                  />
+                }
                 onBlur={onBlur}
+                onFocus={() => clearErrors()}
                 onChangeText={onChange}
                 value={value}
                 error={!!errors.password}
-                style={styles.input}
+                style={{ marginBottom: 15 }}
                 left={<TextInput.Icon icon="lock" />}
               />
             )}
@@ -162,7 +198,9 @@ export default function RegisterModal() {
             defaultValue=""
           />
           {errors.password && (
-            <Text style={styles.errorText}>{errors.password.message}</Text>
+            <Text style={{ color: "red", marginBottom: 10, fontSize: 12 }}>
+              {errors.password.message}
+            </Text>
           )}
 
           <Controller
@@ -176,12 +214,13 @@ export default function RegisterModal() {
                 label="Data de Nascimento"
                 mode="outlined"
                 onBlur={onBlur}
+                onFocus={() => clearErrors()}
                 onChangeText={(text) => onChange(formatDate(text))}
                 value={value}
                 placeholder="DD/MM/AAAA"
                 keyboardType="numeric"
                 error={!!errors.birthDate}
-                style={styles.input}
+                style={{ marginBottom: 15 }}
                 maxLength={10}
                 left={<TextInput.Icon icon="calendar" />}
               />
@@ -190,30 +229,43 @@ export default function RegisterModal() {
             defaultValue=""
           />
           {errors.birthDate && (
-            <Text style={styles.errorText}>{errors.birthDate.message}</Text>
+            <Text style={{ color: "red", marginBottom: 10, fontSize: 12 }}>
+              {errors.birthDate.message}
+            </Text>
           )}
 
           <Controller
             control={control}
             rules={{ required: "Sexo é obrigatório" }}
             render={({ field: { onChange, value } }) => (
-              <View style={styles.genderContainer}>
-                <Text style={styles.genderLabel}>Sexo:</Text>
-                <View style={styles.radioGroup}>
-                  <View style={styles.radioButton}>
+              <View style={{ marginBottom: 10 }}>
+                <Text style={{ marginBottom: 8 }}>Sexo:</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-around",
+                  }}
+                >
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <RadioButton
                       value="Masculino"
                       status={value === "Masculino" ? "checked" : "unchecked"}
-                      onPress={() => onChange("Masculino")}
+                      onPress={() => {
+                        clearErrors();
+                        onChange("Masculino");
+                      }}
                       color={theme.colors.primary}
                     />
                     <Text>Masculino</Text>
                   </View>
-                  <View style={styles.radioButton}>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <RadioButton
                       value="Feminino"
                       status={value === "Feminino" ? "checked" : "unchecked"}
-                      onPress={() => onChange("Feminino")}
+                      onPress={() => {
+                        clearErrors();
+                        onChange("Feminino");
+                      }}
                       color={theme.colors.primary}
                     />
                     <Text>Feminino</Text>
@@ -225,11 +277,15 @@ export default function RegisterModal() {
             defaultValue=""
           />
           {errors.gender && (
-            <Text style={styles.errorText}>{errors.gender.message}</Text>
+            <Text style={{ color: "red", marginBottom: 10, fontSize: 12 }}>
+              {errors.gender.message}
+            </Text>
           )}
 
           {errorMessage ? (
-            <Text style={styles.errorText}>{errorMessage}</Text>
+            <Text style={{ color: "red", marginBottom: 10, fontSize: 12 }}>
+              {errorMessage}
+            </Text>
           ) : null}
 
           <Button
@@ -237,15 +293,25 @@ export default function RegisterModal() {
             onPress={handleSubmit(onRegister)}
             loading={loading}
             disabled={loading}
-            style={styles.button}
+            style={{ marginTop: 20, paddingVertical: 8 }}
           >
             Cadastrar
           </Button>
 
-          <View style={styles.loginContainer}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              marginTop: 20,
+            }}
+          >
             <Text>Já tem uma conta?</Text>
             <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-              <Text style={styles.loginLink}>Entre aqui</Text>
+              <Text
+                style={{ color: "#6200ee", marginLeft: 5, fontWeight: "bold" }}
+              >
+                Entre aqui
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -253,56 +319,3 @@ export default function RegisterModal() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  closeButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    zIndex: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 30,
-  },
-  input: {
-    marginBottom: 15,
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 10,
-    fontSize: 12,
-  },
-  button: {
-    marginTop: 20,
-    paddingVertical: 8,
-  },
-  loginContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  loginLink: {
-    color: "#6200ee",
-    marginLeft: 5,
-    fontWeight: "bold",
-  },
-  genderContainer: {
-    marginBottom: 10,
-  },
-  radioGroup: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  radioButton: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-});
