@@ -84,6 +84,7 @@ export const signIn = async (email, password) => {
 export const signOut = async () => {
   try {
     await clearLocalUser();
+    getStore().dispatch(resetHabit());
     await auth().signOut();
   } catch (error) {
     throw error;
@@ -92,7 +93,6 @@ export const signOut = async () => {
 
 export const clearLocalUser = async () => {
   try {
-    getStore().dispatch(resetHabit());
     getStore().dispatch(clearUser());
   } catch (error) {
     throw error;

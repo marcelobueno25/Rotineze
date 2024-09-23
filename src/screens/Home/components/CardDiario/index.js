@@ -2,18 +2,41 @@ import React, { memo, useRef } from "react";
 import { Swipeable } from "react-native-gesture-handler";
 import { StyleSheet, Vibration, View, TouchableOpacity } from "react-native";
 import { Text, IconButton, useTheme } from "react-native-paper";
-import { useDispatch } from "react-redux";
-import moment from "moment";
-import { useNavigation } from "@react-navigation/native"; // Importa o hook
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigation } from "@react-navigation/native";
 import { checkHabit, removeHabit } from "@redux/habitSlice";
+import moment from "moment";
 
 const LIST_ITEM_HEIGHT = 70;
 
-export default memo(function CardDiario({ habits }) {
-  const sortedHabits = [...habits].sort((a, b) => {
-    const today = moment().format("DD/MM/YYYY");
-    const aCompleted = a.checkIns.some((date) => date === today);
-    const bCompleted = b.checkIns.some((date) => date === today);
+export default memo(function CardDiario({ habits, selectedDate }) {
+  const dispatch = useDispatch();
+  const { colors } = useTheme();
+  const navigation = useNavigation();
+  const dateSelected = moment(selectedDate, "DD/MM/YYYY");
+
+  // Filtrar hábitos criados até a data selecionada
+  const filteredHabits = habits.filter((habit) => {
+    const createdAtDate = moment(habit.createdAt, "DD/MM/YYYY");
+    return createdAtDate.isSameOrBefore(dateSelected);
+  });
+
+  // Obter dailyRecords do Redux
+  const dailyRecords = useSelector((state) => state.habits.dailyRecords);
+
+  // Encontrar o registro diário para a data selecionada
+  const formattedDate = selectedDate; // Certifique-se de que selectedDate está no formato "DD/MM/YYYY"
+  const dailyRecord = dailyRecords.find(
+    (record) => record.date === formattedDate
+  );
+
+  // Obter os IDs dos hábitos completados na data selecionada
+  const completedHabitsIds = dailyRecord ? dailyRecord.completedHabits : [];
+
+  // Ordenar os hábitos com base na conclusão
+  const sortedHabits = [...filteredHabits].sort((a, b) => {
+    const aCompleted = completedHabitsIds.includes(a.id);
+    const bCompleted = completedHabitsIds.includes(b.id);
 
     // Move hábitos completados para o final
     if (aCompleted && !bCompleted) return 1;
@@ -24,18 +47,23 @@ export default memo(function CardDiario({ habits }) {
   return (
     <View style={styles.container}>
       {sortedHabits.map((habit, index) => (
-        <Item item={habit} index={index} key={habit.id} />
+        <Item
+          item={habit}
+          index={index}
+          key={habit.id}
+          selectedDate={formattedDate}
+          isCompleted={completedHabitsIds.includes(habit.id)}
+        />
       ))}
     </View>
   );
 });
 
-const Item = ({ item, index }) => {
+const Item = ({ item, index, selectedDate, isCompleted }) => {
   const dispatch = useDispatch();
   const { colors } = useTheme();
   const navigation = useNavigation();
-  const today = moment().format("DD/MM/YYYY");
-  const isToday = item.checkIns.some((date) => date === today);
+  const date = selectedDate;
   const swipeableRef = useRef(null);
 
   const handleEditHabit = ({ id }) => {
@@ -45,7 +73,7 @@ const Item = ({ item, index }) => {
 
   const handleCheckHabit = (habit) => {
     Vibration.vibrate(100);
-    dispatch(checkHabit(habit));
+    dispatch(checkHabit({ id: habit.id, date: date }));
   };
 
   const handleDeleteHabit = ({ id }) => {
@@ -178,46 +206,33 @@ const Item = ({ item, index }) => {
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
           <IconButton
             icon={item.icon}
-            iconColor={`${isToday ? "lightgrey" : item.color}`}
+            iconColor={isCompleted ? "lightgrey" : item.color}
             size={25}
             style={{
               borderRadius: 10,
               margin: 0,
             }}
           />
-          <View>
-            <Text
-              style={{
-                fontWeight: "bold",
-                textDecorationLine: `${isToday ? "line-through" : "none"}`,
-                color: `${isToday ? "#999" : colors.onSurface}`,
-              }}
-            >
-              {item?.name}
-            </Text>
-            <Text
-              style={{
-                textDecorationLine: `${isToday ? "line-through" : "none"}`,
-                color: `${isToday ? "#999" : colors.onSurface}`,
-              }}
-            >
-              {item.name}
-            </Text>
-          </View>
+          <Text
+            style={{
+              fontWeight: "bold",
+              textDecorationLine: isCompleted ? "line-through" : "none",
+              color: isCompleted ? "#999" : colors.onSurface,
+            }}
+          >
+            {item.name}
+          </Text>
         </View>
-        <View>
-          <TouchableOpacity>
-            <IconButton
-              icon={`${
-                isToday ? "check-circle" : "checkbox-blank-circle-outline"
-              }`}
-              iconColor={`${isToday ? colors.success : "lightgrey"}`}
-              size={24}
-              onPress={() => handleCheckHabit(item)}
-              style={{ margin: 0, padding: 0 }}
-            />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={() => handleCheckHabit(item)}>
+          <IconButton
+            icon={
+              isCompleted ? "check-circle" : "checkbox-blank-circle-outline"
+            }
+            iconColor={isCompleted ? colors.success : "lightgrey"}
+            size={24}
+            style={{ margin: 0, padding: 0 }}
+          />
+        </TouchableOpacity>
       </View>
     </Swipeable>
   );
@@ -239,5 +254,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginVertical: 5,
   },
 });

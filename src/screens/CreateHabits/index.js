@@ -90,7 +90,7 @@ export function CreateHabits({ navigation }) {
       description: data.description,
       color: selectedColor,
       icon: selectedIcon,
-      checkIns: [],
+      initialDate: moment().format("DD/MM/YYYY"),
       createdAt: moment().format("DD/MM/YYYY"),
       frequency: frequency,
       frequencyTime: frequency.length ? frequencyTime : "",
