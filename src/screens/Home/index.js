@@ -5,23 +5,26 @@ import {
   RefreshControl,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Text, useTheme, IconButton } from "react-native-paper";
 import moment from "moment";
 import "moment/locale/pt-br";
 import { CalendarProvider, WeekCalendar } from "react-native-calendars";
 
 import CardDiario from "./components/CardDiario";
+import { setSelectedDate } from "@redux/habitSlice";
 
 moment.locale("pt-br"); // Define o locale para português
 
 export function Home() {
   const theme = useTheme();
+  const dispatch = useDispatch();
   const habits = useSelector((state) => state.habits.habits) || [];
 
   // Estado para gerenciar a data selecionada
-  const [selectedDate, setSelectedDate] = useState(
+  const [selectedDate, setSelectedDatee] = useState(
     moment().format("YYYY-MM-DD")
   );
   // Estado para controlar a visibilidade do calendário
@@ -45,20 +48,22 @@ export function Home() {
     [selectedDate]
   );
 
-  // Filtra os hábitos com base na data de criação (se necessário)
+  // Filtra os hábitos com base na data selecionada
   const filteredHabits = useMemo(() => {
-    // Adicione lógica para filtrar hábitos com base na data de criação, se necessário
-    return habits;
-  }, [habits]);
-
-  // Obtém o registro diário para a data selecionada
-  const dailyRecord = useSelector((state) =>
-    state.habits.dailyRecords.find((record) => record.date === formattedDate)
-  );
+    return habits.filter((habit) => {
+      // Verifica se a data de criação do hábito é menor ou igual à data selecionada
+      return moment(habit.initialDate, "DD/MM/YYYY").isSameOrBefore(
+        selectedDate,
+        "day"
+      );
+    });
+  }, [habits, selectedDate]);
 
   // Calcula métricas de conclusão
   const totalHabits = filteredHabits.length;
-  const completedHabits = dailyRecord?.completedHabits.length || 0;
+  const completedHabits = filteredHabits.filter((habit) =>
+    habit.checkIns.includes(formattedDate)
+  ).length;
   const completionPercentage =
     totalHabits > 0 ? Math.floor((completedHabits / totalHabits) * 100) : 0;
 
@@ -78,11 +83,13 @@ export function Home() {
     setIsCalendarVisible((prev) => !prev);
   };
 
+  const handleDateChange = (date) => {
+    dispatch(setSelectedDate(moment(date).format("DD/MM/YYYY")));
+    setSelectedDatee(date);
+  };
+
   return (
-    <CalendarProvider
-      date={selectedDate}
-      onDateChanged={(date) => setSelectedDate(date)}
-    >
+    <CalendarProvider date={selectedDate} onDateChanged={handleDateChange}>
       {/* Cabeçalho do mês com data selecionada e seta para ocultar/exibir o calendário */}
       <View style={styles.monthContainer}>
         <Text style={styles.monthText}>{currentMonth}</Text>
@@ -100,7 +107,7 @@ export function Home() {
       {isCalendarVisible && (
         <WeekCalendar
           firstDay={1} // Inicia a semana na segunda-feira
-          onDayPress={(day) => setSelectedDate(day.dateString)}
+          onDayPress={(day) => setSelectedDatee(day.dateString)}
           markedDates={markedDates}
           theme={{
             selectedDayBackgroundColor: theme.colors.primary,
@@ -199,6 +206,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    paddingBottom: 100,
   },
   emptyContainer: {
     alignItems: "center",

@@ -3,7 +3,7 @@ import { Button } from "react-native-paper";
 import uuid from "react-native-uuid";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
 import * as Notifications from "expo-notifications"; // Para notificações
 import moment from "moment";
@@ -31,6 +31,8 @@ export function CreateHabits({ navigation }) {
   const [frequencyTime, setFrequencyTime] = useState(converterParaHora());
   const [frequency, setFrequency] = useState([]);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  const selectedDate = useSelector((state) => state.habits.selectedDate);
 
   const handleNotificationToggle = (value) => {
     setNotificationsEnabled(value);
@@ -90,7 +92,8 @@ export function CreateHabits({ navigation }) {
       description: data.description,
       color: selectedColor,
       icon: selectedIcon,
-      initialDate: moment().format("DD/MM/YYYY"),
+      checkIns: [],
+      initialDate: selectedDate,
       createdAt: moment().format("DD/MM/YYYY"),
       frequency: frequency,
       frequencyTime: frequency.length ? frequencyTime : "",
