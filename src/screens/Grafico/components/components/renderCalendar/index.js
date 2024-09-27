@@ -1,7 +1,16 @@
 import React from "react";
-import { TouchableOpacity, Text, View } from "react-native";
+import { TouchableOpacity, Text, View, Image } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
+// Importa as imagens dos estados de humor
+const moodImages = {
+  superTriste: require("@assets/expressionface/gatobravo.png"),
+  triste: require("@assets/expressionface/gatolingua.png"),
+  normal: require("@assets/expressionface/gatonormal.png"),
+  feliz: require("@assets/expressionface/gatofeliz.png"),
+  superFeliz: require("@assets/expressionface/gatoapaixonado.png"),
+};
 
 export const renderCalendar = (
   dayProps,
@@ -52,6 +61,23 @@ export const renderCalendar = (
     : theme.colors.background;
   const strokeDashoffset = 283 - (283 * completionPercentage) / 100;
 
+  // Função para escolher a imagem com base na porcentagem de conclusão
+  const getMoodImage = (percentage) => {
+    if (percentage === 100) {
+      return moodImages.superFeliz;
+    } else if (percentage >= 60) {
+      return moodImages.feliz;
+    } else if (percentage >= 40) {
+      return moodImages.normal;
+    } else if (percentage >= 20) {
+      return moodImages.triste;
+    } else {
+      return moodImages.superTriste;
+    }
+  };
+
+  const moodImage = getMoodImage(completionPercentage);
+
   return (
     <TouchableOpacity
       onPress={() => setSelectedDate(dateString)}
@@ -65,7 +91,7 @@ export const renderCalendar = (
         }}
       >
         <Svg height="40" width="40" viewBox="0 0 100 100">
-          <Circle
+          {/* <Circle
             cx="50"
             cy="50"
             r="45"
@@ -84,22 +110,15 @@ export const renderCalendar = (
             strokeDashoffset={strokeDashoffset}
             rotation="-90"
             origin="50,50"
-          />
+          /> */}
         </Svg>
-        {completionPercentage === 100 ? (
-          <Icon
-            name="check-outline"
-            size={18}
-            color={textColor}
-            style={{ position: "absolute" }}
-          />
-        ) : (
-          <Text
-            style={{ position: "absolute", color: textColor, fontSize: 14 }}
-          >
-            {date.day}
-          </Text>
-        )}
+
+        {/* Exibe a imagem baseada na porcentagem */}
+        <Image
+          source={moodImage}
+          style={{ position: "absolute", width: 45, height: 45 }}
+          resizeMode="contain"
+        />
       </View>
     </TouchableOpacity>
   );
