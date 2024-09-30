@@ -11,11 +11,12 @@ export const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
     <>
       <TouchableOpacity onPress={() => setVisible(true)}>
         <TextInput
-          label="Selecione a Hora"
+          label="Horário da Notificação"
           value={selectedDate}
           mode="outlined"
           editable={false}
           pointerEvents="none"
+          style={{ marginTop: 8 }}
         />
       </TouchableOpacity>
 

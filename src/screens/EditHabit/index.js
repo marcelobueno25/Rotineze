@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, ScrollView, Alert } from "react-native";
-import { Button, MD3Colors } from "react-native-paper";
+import { Button, MD3Colors, Card } from "react-native-paper";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import * as Notifications from "expo-notifications";
 
 // Importando componentes
-import { NomeForm } from "../../components/Forms/NomeForm";
-import { DescricaoForm } from "../../components/Forms/DescricaoForm";
-import { CorForm } from "../../components/Forms/CorForm";
-import { IconeForm } from "../../components/Forms/IconeForm";
-import { TimePickerForm } from "../../components/Forms/TimePickerForm";
-import { DiasDaSemanaForm } from "../../components/Forms/DiasDaSemanaForm";
-import { NotificationsToggle } from "../../components/Forms/NotificationsToggle";
+import { NomeForm } from "@components/Forms/NomeForm";
+import DateSelection from "@components/Forms/DateSelection";
+import { CorForm } from "@components/Forms/CorForm";
+import { IconeForm } from "@components/Forms/IconeForm";
+import { TimePickerForm } from "@components/Forms/TimePickerForm";
+import { DiasDaSemanaForm } from "@components/Forms/DiasDaSemanaForm";
+import { NotificationsToggle } from "@components/Forms/NotificationsToggle";
 
 import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
 import moment from "moment";
@@ -41,6 +41,14 @@ export function EditHabit({ route, navigation }) {
   const [frequency, setFrequency] = useState(habit.frequency || []);
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     habit.notificationsEnabled || false
+  );
+
+  const [enableEndDate, setEnableEndDate] = useState(!!habit.endDate);
+  const [initialDate, setInitialDate] = useState(
+    moment(habit.initialDate, "DD/MM/YYYY").toDate() || new Date()
+  );
+  const [endDate, setEndDate] = useState(
+    !!habit.endDate ? moment(habit.endDate, "DD/MM/YYYY").toDate() : null
   );
 
   useEffect(() => {
@@ -105,8 +113,10 @@ export function EditHabit({ route, navigation }) {
       description: data.description,
       color: selectedColor,
       icon: selectedIcon,
-      frequencyTime: frequency.length ? frequencyTime : "",
+      initialDate: moment(initialDate).format("DD/MM/YYYY"),
+      endDate: enableEndDate ? moment(endDate).format("DD/MM/YYYY") : null,
       frequency: frequency,
+      frequencyTime: frequency.length ? frequencyTime : "",
       notificationsEnabled,
     };
     try {
@@ -141,40 +151,74 @@ export function EditHabit({ route, navigation }) {
 
   return (
     <>
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-        <View style={styles.container}>
-          <NomeForm control={control} errors={errors} />
-          <DescricaoForm control={control} errors={errors} />
-          <CorForm
-            selectedColor={selectedColor}
-            setSelectedColor={setSelectedColor}
-            listColors={COLORS_NEW_HABIT}
-          />
-          <IconeForm
+      <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
+        <View style={styles.formContainer}>
+          <NomeForm
+            control={control}
+            errors={errors}
             selectedIcon={selectedIcon}
-            setSelectedIcon={setSelectedIcon}
             selectedColor={selectedColor}
-            listIcons={ICONS_NEW_HABIT}
           />
-          <NotificationsToggle
-            notificationsEnabled={notificationsEnabled}
-            onToggle={handleNotificationToggle}
-          />
-          {notificationsEnabled && (
-            <>
-              <DiasDaSemanaForm
-                selectedDays={frequency}
-                setSelectedDays={setFrequency}
+          <Card style={styles.card}>
+            <Card.Title title="Cor" />
+            <Card.Content>
+              <CorForm
                 selectedColor={selectedColor}
+                setSelectedColor={setSelectedColor}
+                listColors={COLORS_NEW_HABIT}
               />
-              {frequency.length > 0 && (
-                <TimePickerForm
-                  selectedDate={frequencyTime}
-                  setSelectedDate={setFrequencyTime}
-                />
+            </Card.Content>
+          </Card>
+
+          <Card style={styles.card}>
+            <Card.Title title="Icone" />
+            <Card.Content>
+              <IconeForm
+                selectedIcon={selectedIcon}
+                setSelectedIcon={setSelectedIcon}
+                selectedColor={selectedColor}
+                listIcons={ICONS_NEW_HABIT}
+              />
+            </Card.Content>
+          </Card>
+
+          <Card style={styles.card}>
+            <Card.Content>
+              <DateSelection
+                initialDate={initialDate}
+                setInitialDate={setInitialDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+                enableEndDate={enableEndDate}
+                setEnableEndDate={setEnableEndDate}
+              />
+            </Card.Content>
+          </Card>
+
+          <Card style={styles.card}>
+            <Card.Title title="Notificações" />
+            <Card.Content>
+              <NotificationsToggle
+                notificationsEnabled={notificationsEnabled}
+                onToggle={handleNotificationToggle}
+              />
+              {notificationsEnabled && (
+                <>
+                  <DiasDaSemanaForm
+                    selectedDays={frequency}
+                    setSelectedDays={setFrequency}
+                    selectedColor={selectedColor}
+                  />
+                  {frequency.length > 0 && (
+                    <TimePickerForm
+                      selectedDate={frequencyTime}
+                      setSelectedDate={setFrequencyTime}
+                    />
+                  )}
+                </>
               )}
-            </>
-          )}
+            </Card.Content>
+          </Card>
           <Button
             onPress={handleRemoveHabit}
             mode="text"
@@ -185,13 +229,24 @@ export function EditHabit({ route, navigation }) {
           </Button>
         </View>
       </ScrollView>
-      <View style={styles.floatingButtonContainer}>
+      <View
+        style={{
+          position: "absolute",
+          bottom: 20,
+          left: 0,
+          right: 0,
+          paddingHorizontal: 16,
+        }}
+      >
         <Button
           mode="contained"
           onPress={handleSubmit(onSubmit)}
-          style={styles.floatingButton}
+          style={{ borderRadius: 10, backgroundColor: selectedColor }}
+          labelStyle={{ fontSize: 16 }}
+          contentStyle={{ padding: 5 }}
+          theme={{ roundness: 50 }}
         >
-          Salvar Alterações
+          Salvar
         </Button>
       </View>
     </>
@@ -218,7 +273,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   deleteButton: {
-    marginTop: 20,
+    marginTop: 10,
     alignSelf: "center",
+  },
+  formContainer: {
+    padding: 16,
+  },
+  card: {
+    marginBottom: 16,
   },
 });

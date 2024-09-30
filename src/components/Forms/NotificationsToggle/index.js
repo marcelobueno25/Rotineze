@@ -5,7 +5,7 @@ import { StyleSheet } from "react-native";
 
 export const NotificationsToggle = ({ notificationsEnabled, onToggle }) => (
   <View style={styles.switchContainer}>
-    <Text>Notificações</Text>
+    <Text variant="bodyMedium">Ativar Notificações</Text>
     <Switch value={notificationsEnabled} onValueChange={onToggle} />
   </View>
 );

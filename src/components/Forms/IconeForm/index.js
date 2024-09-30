@@ -31,7 +31,6 @@ export const IconeForm = memo(
 
     return (
       <>
-        <Text>Ícone</Text>
         <View style={styles.iconContainer}>
           {!!icons.length &&
             icons.slice(0, 10).map((icon, index) => (

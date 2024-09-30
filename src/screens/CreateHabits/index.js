@@ -1,16 +1,15 @@
-import React, { useState } from "react";
-import { Button } from "react-native-paper";
+import React, { useState, useEffect } from "react";
+import { Button, Card } from "react-native-paper";
 import uuid from "react-native-uuid";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, ScrollView, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
-import * as Notifications from "expo-notifications"; // Para notificações
+import * as Notifications from "expo-notifications";
 import moment from "moment";
 
-// Importando componentes
 import { NomeForm } from "@components/Forms/NomeForm";
-import { DescricaoForm } from "@components/Forms/DescricaoForm";
+import DateSelection from "@components/Forms/DateSelection";
 import { CorForm } from "@components/Forms/CorForm";
 import { IconeForm } from "@components/Forms/IconeForm";
 import { TimePickerForm } from "@components/Forms/TimePickerForm";
@@ -32,7 +31,18 @@ export function CreateHabits({ navigation }) {
   const [frequency, setFrequency] = useState([]);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
+  const [enableEndDate, setEnableEndDate] = useState(false);
+  const [initialDate, setInitialDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(null);
+
   const selectedDate = useSelector((state) => state.habits.selectedDate);
+
+  useEffect(() => {
+    console.log(selectedDate, new Date());
+    if (selectedDate) {
+      setInitialDate(moment(selectedDate, "DD/MM/YYYY").toDate());
+    }
+  }, [selectedDate]);
 
   const handleNotificationToggle = (value) => {
     setNotificationsEnabled(value);
@@ -43,14 +53,14 @@ export function CreateHabits({ navigation }) {
   };
 
   const scheduleNotifications = async (habitId, date, frequency) => {
-    await cancelNotifications(habitId); // Cancelar quaisquer notificações existentes antes de agendar novas
+    await cancelNotifications(habitId);
     for (let day of frequency) {
       await Notifications.scheduleNotificationAsync({
         content: {
           title: "Lembrete de Hábito",
           body: "Está na hora de completar seu hábito!",
         },
-        identifier: `${habitId}-${day}`, // Usando o ID do hábito e o dia como identificador de notificação
+        identifier: `${habitId}-${day}`,
         trigger: {
           weekday: day + 1,
           hour: moment(date, "HH:mm").hour(),
@@ -89,11 +99,11 @@ export function CreateHabits({ navigation }) {
     const habitData = {
       id: newHabitId,
       name: data.name,
-      description: data.description,
       color: selectedColor,
       icon: selectedIcon,
       checkIns: [],
-      initialDate: selectedDate,
+      initialDate: moment(initialDate).format("DD/MM/YYYY"),
+      endDate: enableEndDate ? moment(endDate).format("DD/MM/YYYY") : null,
       createdAt: moment().format("DD/MM/YYYY"),
       frequency: frequency,
       frequencyTime: frequency.length ? frequencyTime : "",
@@ -105,47 +115,92 @@ export function CreateHabits({ navigation }) {
 
   return (
     <>
-      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-        <View style={styles.container}>
-          <NomeForm control={control} errors={errors} />
-          <DescricaoForm control={control} errors={errors} />
-          <CorForm
-            selectedColor={selectedColor}
-            setSelectedColor={setSelectedColor}
-            listColors={COLORS_NEW_HABIT}
-          />
-          <IconeForm
+      <ScrollView contentContainerStyle={{ paddingBottom: 60 }}>
+        <View style={styles.formContainer}>
+          <NomeForm
+            control={control}
+            errors={errors}
             selectedIcon={selectedIcon}
-            setSelectedIcon={setSelectedIcon}
             selectedColor={selectedColor}
-            listIcons={ICONS_NEW_HABIT}
           />
-          <NotificationsToggle
-            notificationsEnabled={notificationsEnabled}
-            onToggle={handleNotificationToggle}
-          />
-          {notificationsEnabled && (
-            <>
-              <DiasDaSemanaForm
-                selectedDays={frequency}
-                setSelectedDays={setFrequency}
+          <Card style={styles.card}>
+            <Card.Title title="Cor" />
+            <Card.Content>
+              <CorForm
                 selectedColor={selectedColor}
+                setSelectedColor={setSelectedColor}
+                listColors={COLORS_NEW_HABIT}
               />
-              {frequency.length > 0 && (
-                <TimePickerForm
-                  selectedDate={frequencyTime}
-                  setSelectedDate={setFrequencyTime}
-                />
+            </Card.Content>
+          </Card>
+
+          <Card style={styles.card}>
+            <Card.Title title="Icone" />
+            <Card.Content>
+              <IconeForm
+                selectedIcon={selectedIcon}
+                setSelectedIcon={setSelectedIcon}
+                selectedColor={selectedColor}
+                listIcons={ICONS_NEW_HABIT}
+              />
+            </Card.Content>
+          </Card>
+
+          <Card style={styles.card}>
+            <Card.Content>
+              <DateSelection
+                initialDate={initialDate}
+                setInitialDate={setInitialDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+                enableEndDate={enableEndDate}
+                setEnableEndDate={setEnableEndDate}
+              />
+            </Card.Content>
+          </Card>
+
+          <Card style={styles.card}>
+            <Card.Title title="Notificações" />
+            <Card.Content>
+              <NotificationsToggle
+                notificationsEnabled={notificationsEnabled}
+                onToggle={handleNotificationToggle}
+              />
+              {notificationsEnabled && (
+                <>
+                  <DiasDaSemanaForm
+                    selectedDays={frequency}
+                    setSelectedDays={setFrequency}
+                    selectedColor={selectedColor}
+                  />
+                  {frequency.length > 0 && (
+                    <TimePickerForm
+                      selectedDate={frequencyTime}
+                      setSelectedDate={setFrequencyTime}
+                    />
+                  )}
+                </>
               )}
-            </>
-          )}
+            </Card.Content>
+          </Card>
         </View>
       </ScrollView>
-      <View style={styles.floatingButtonContainer}>
+      <View
+        style={{
+          position: "absolute",
+          bottom: 20,
+          left: 0,
+          right: 0,
+          paddingHorizontal: 16,
+        }}
+      >
         <Button
           mode="contained"
           onPress={handleSubmit(onSubmit)}
-          style={styles.floatingButton}
+          style={{ borderRadius: 10, backgroundColor: selectedColor }}
+          labelStyle={{ fontSize: 16 }}
+          contentStyle={{ padding: 5 }}
+          theme={{ roundness: 50 }}
         >
           Salvar
         </Button>
@@ -154,24 +209,11 @@ export function CreateHabits({ navigation }) {
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    gap: 10,
+  formContainer: {
     padding: 16,
   },
-  floatingButtonContainer: {
-    position: "absolute",
-    bottom: 20,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 16,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  floatingButton: {
-    width: "100%",
-    borderRadius: 10,
+  card: {
+    marginBottom: 16,
   },
 });
