@@ -7,7 +7,7 @@ const Tabs = ({ onTabSelect }) => {
   const [selectedTab, setSelectedTab] = useState("Diário"); // Define a aba padrão
 
   // Lista de abas
-  const tabs = useMemo(() => ["Semanal", "Diário", "Mensal"], []);
+  const tabs = useMemo(() => ["Diário", "Mensal"], []);
 
   // Função para atualizar a aba selecionada e chamar o callback do componente pai
   const handleTabSelect = (tab) => {

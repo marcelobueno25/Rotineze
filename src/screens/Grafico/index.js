@@ -9,8 +9,6 @@ export function Grafico() {
 
   const renderContent = () => {
     switch (selectedTab) {
-      case "Semanal":
-        return <></>;
       case "Mensal":
         return <GraficoMensal />;
       default:
