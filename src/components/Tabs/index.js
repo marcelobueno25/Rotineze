@@ -45,8 +45,8 @@ const Tabs = ({ onTabSelect }) => {
           onPress={() => handleTabSelect(tab)}
         >
           <Text
+            variant="bodyMedium"
             style={{
-              fontSize: 12,
               fontWeight: "bold",
               color:
                 selectedTab === tab
