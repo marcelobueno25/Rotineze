@@ -169,3 +169,76 @@ export const getTopHabitSequencesForMonth = (monthString, habits) => {
 
   return top3Habits;
 };
+
+export const getHabitStatsForMonth = (dateString, habit) => {
+  const formattedMonth = moment(dateString, "YYYY-MM-DD").format("MM/YYYY");
+
+  // Encontra o hábito correspondente pelo ID
+
+  if (!habit) {
+    return {
+      error: "Hábito não encontrado",
+    };
+  }
+
+  const habitInitialDate = moment(habit.initialDate, "DD/MM/YYYY");
+  const habitEndDate = habit.endDate
+    ? moment(habit.endDate, "DD/MM/YYYY")
+    : null;
+
+  // Filtra os check-ins do hábito para o mês selecionado
+  const monthlyCheckIns = habit.checkIns
+    .filter(
+      (date) => moment(date, "DD/MM/YYYY").format("MM/YYYY") === formattedMonth
+    )
+    .sort((a, b) => moment(a, "DD/MM/YYYY").diff(moment(b, "DD/MM/YYYY")));
+
+  let completedHabitsCount = 0; // Quantidade de check-ins concluídos no mês
+  let notCompletedHabitsCount = 0; // Quantidade de hábitos não completados no mês
+  let maxSequence = 0; // Maior sequência de dias consecutivos
+  let totalHabitDays = 0; // Total de dias válidos no mês para o hábito
+
+  // Verifica cada dia do mês e contabiliza hábitos completos e incompletos
+  const daysInMonth = moment(dateString).daysInMonth();
+  let currentSequence = 0; // Sequência atual de check-ins consecutivos
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dayString = moment(dateString).date(day).format("DD/MM/YYYY");
+    const currentDate = moment(dayString, "DD/MM/YYYY");
+
+    // Considera apenas dias dentro do intervalo de `initialDate` e `endDate` (se existir)
+    if (
+      currentDate.isSameOrAfter(habitInitialDate, "day") &&
+      (!habitEndDate || currentDate.isSameOrBefore(habitEndDate, "day"))
+    ) {
+      totalHabitDays++; // Conta o dia como válido para o hábito
+
+      if (monthlyCheckIns.includes(dayString)) {
+        completedHabitsCount++; // Se o hábito foi concluído neste dia, incrementa o contador
+        currentSequence++; // Incrementa a sequência de check-ins consecutivos
+      } else {
+        notCompletedHabitsCount++; // Incrementa o contador de hábitos pendentes
+        maxSequence = Math.max(maxSequence, currentSequence); // Atualiza a maior sequência
+        currentSequence = 0; // Reinicia a sequência
+      }
+    }
+  }
+
+  // Verifica se a última sequência foi a maior
+  maxSequence = Math.max(maxSequence, currentSequence);
+
+  // Calcula a porcentagem de conclusão
+  const completionPercentage =
+    totalHabitDays > 0
+      ? Math.floor((completedHabitsCount / totalHabitDays) * 100)
+      : 0;
+
+  return {
+    habitName: habit.name,
+    month: formattedMonth,
+    completedHabitsCount,
+    notCompletedHabitsCount,
+    completionPercentage,
+    maxSequence,
+  };
+};

@@ -42,6 +42,11 @@ const Item = ({ item, selectedDate }) => {
     navigation.navigate("EditHabit", { habitId: item.id });
   };
 
+  const handleViewDetails = () => {
+    Vibration.vibrate(100);
+    navigation.navigate("HabitDetails", { habit: item });
+  };
+
   const handleCheckHabit = () => {
     Vibration.vibrate(100);
     dispatch(checkHabit({ id: item.id, date: selectedDate }));
@@ -115,7 +120,11 @@ const Item = ({ item, selectedDate }) => {
       rightThreshold={30}
       overshootLeft={false}
     >
-      <View style={[styles.item, { backgroundColor: colors.background }]}>
+      <TouchableOpacity
+        onPress={handleViewDetails}
+        activeOpacity={0.5}
+        style={[styles.item, { backgroundColor: colors.background }]}
+      >
         <View style={styles.itemContent}>
           <IconButton
             icon={item.icon}
@@ -135,7 +144,10 @@ const Item = ({ item, selectedDate }) => {
             {item.name}
           </Text>
         </View>
-        <TouchableOpacity onPress={handleCheckHabit}>
+        <TouchableOpacity
+          onPress={handleCheckHabit}
+          onLongPress={handleViewDetails}
+        >
           <IconButton
             icon={
               isCompleted ? "check-circle" : "checkbox-blank-circle-outline"
@@ -145,7 +157,7 @@ const Item = ({ item, selectedDate }) => {
             style={{ margin: 0, padding: 0 }}
           />
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     </Swipeable>
   );
 };

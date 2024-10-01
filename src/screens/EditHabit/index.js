@@ -122,7 +122,7 @@ export function EditHabit({ route, navigation }) {
     };
     try {
       await dispatch(updateHabit(updatedHabit));
-      navigation.navigate("Home");
+      navigation.goBack();
     } catch (error) {
       Alert.alert("Erro", "Não foi possível editar o hábito. Tente novamente.");
     }

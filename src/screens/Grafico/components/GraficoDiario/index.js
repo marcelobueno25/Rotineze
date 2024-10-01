@@ -67,11 +67,17 @@ export function GraficoDiario() {
         style={[styles.mainCard, { backgroundColor: theme.colors.primary }]}
       >
         <View style={{ alignItems: "center" }}>
-          <Text variant="headlineLarge" style={styles.whiteText}>
+          <Text
+            variant="headlineLarge"
+            style={{ color: theme.colors.background, fontWeight: "bold" }}
+          >
             {result.completionPercentage}%
           </Text>
-          <Text variant="titleMedium" style={styles.whiteText}>
-            Porcentagem de conclusão
+          <Text
+            variant="titleMedium"
+            style={{ color: theme.colors.background, fontWeight: "bold" }}
+          >
+            Porcentagem de Conclusão
           </Text>
         </View>
       </Card>
@@ -103,33 +109,18 @@ export function GraficoDiario() {
 
       <View style={styles.cardRow}>
         <CardGrafico
-          icon="chart-bar"
-          label="Hábitos no dia"
+          icon="clipboard-list-outline"
+          label="Total de Hábitos"
           number={result.totalHabits}
-          color="#E91E63"
+          color="#3F51B5"
         />
         <CardGrafico
           icon="check-circle"
-          label="Hábitos concluídos"
+          label="Concluídos"
           number={result.completedHabits.length}
           color="#4CAF50"
         />
       </View>
-
-      {/* <View style={styles.cardRow}>
-        <CardGrafico
-          icon="chart-line"
-          label="Taxa total de conclusão"
-          number={`${result.completionPercentage}%`}
-          color="#FF5722"
-        />
-        <CardGrafico
-          icon="calendar"
-          label="Total de dias perfeitos"
-          number="1 dia"
-          color="#9C27B0"
-        />
-      </View> */}
 
       {result.completedHabits.map((habit) => (
         <HabitCard key={habit.id} habit={habit} isCompleted={true} />
@@ -152,9 +143,5 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 20,
-  },
-  whiteText: {
-    color: "white",
-    fontWeight: "bold",
   },
 });

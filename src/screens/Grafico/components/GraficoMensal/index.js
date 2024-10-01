@@ -94,15 +94,15 @@ export function GraficoMensal() {
         <View style={{ alignItems: "center" }}>
           <Text
             variant="headlineLarge"
-            style={{ color: "white", fontWeight: "bold" }}
+            style={{ color: theme.colors.background, fontWeight: "bold" }}
           >
             {monthStats.completionPercentage}%
           </Text>
           <Text
             variant="titleMedium"
-            style={{ color: "white", fontWeight: "bold" }}
+            style={{ color: theme.colors.background, fontWeight: "bold" }}
           >
-            Porcentagem de conclusão
+            Porcentagem de Conclusão
           </Text>
         </View>
       </Card>
@@ -122,14 +122,14 @@ export function GraficoMensal() {
         }}
       >
         <CardGrafico
-          icon="calendar"
-          label="Hábitos Pendentes"
+          icon="alert-circle"
+          label="Pendentes"
           number={monthStats.totalHabitDays}
-          color="#9C27B0"
+          color="#eead2d"
         />
         <CardGrafico
           icon="check-circle"
-          label="Hábitos Concluídos"
+          label="Concluídos"
           number={monthStats.completedHabitsCount}
           color="#4CAF50"
         />
@@ -143,13 +143,13 @@ export function GraficoMensal() {
         }}
       >
         <CardGrafico
-          icon="chart-line"
-          label="Taxa de Conclusão Mensal"
+          icon="chart-pie"
+          label="Taxa Conclusão Mensal"
           number={`${monthStats.completionPercentage}%`}
           color="#FF5722"
         />
         <CardGrafico
-          icon="checkbox-marked-circle-outline"
+          icon="clipboard-list-outline"
           label="Total de Hábitos"
           number={monthStats.totalHabitsInMonth}
           color="#3F51B5"

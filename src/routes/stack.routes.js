@@ -13,6 +13,7 @@ import { Aparencia } from "@screens/Settings/components/Aparencia";
 import LoginModal from "@screens/Login";
 import Register from "@screens/Register";
 import { Avancado } from "@screens/Settings/components/Avançado/indes";
+import HabitDetails from "@screens/HabitDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -92,6 +93,11 @@ export function StackRoutes() {
           name="CreateHabits"
           component={CreateHabits}
           options={{ title: "Novo Hábito" }}
+        />
+        <Stack.Screen
+          name="HabitDetails"
+          component={HabitDetails}
+          options={{ title: "Detalhe do Hábito" }}
         />
         <Stack.Screen
           name="Settings"
