@@ -29,7 +29,6 @@ const DateSelection = ({
         <Switch
           value={enableEndDate}
           onValueChange={() => setEnableEndDate(!enableEndDate)}
-          color="#6200EE"
         />
       </View>
 

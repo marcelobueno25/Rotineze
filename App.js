@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import { PaperProvider } from "react-native-paper";
 import { Provider, useSelector } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
@@ -16,8 +16,8 @@ import { Routes } from "@routes";
 import { store, persistor } from "@redux/store";
 import { ptBR } from "@utils/localecalendarConfig";
 import "moment/locale/pt-br";
-import auth from "@react-native-firebase/auth";
-import { clearLocalUser } from "@services/authService";
+// import auth from "@react-native-firebase/auth";
+// import { clearLocalUser } from "@services/authService";
 
 moment.locale("pt-br");
 LocaleConfig.locales["pt-br"] = ptBR;
@@ -36,19 +36,19 @@ export default function App() {
 function MainApp() {
   const isDarkTheme = useSelector((state) => state.configuration.theme);
 
-  useEffect(() => {
-    const checkAuthState = async () => {
-      const unsubscribe = auth().onAuthStateChanged(async (user) => {
-        if (!user) {
-          await clearLocalUser();
-        }
-      });
+  // useEffect(() => {
+  //   const checkAuthState = async () => {
+  //     const unsubscribe = auth().onAuthStateChanged(async (user) => {
+  //       if (!user) {
+  //         await clearLocalUser();
+  //       }
+  //     });
 
-      return () => unsubscribe();
-    };
+  //     return () => unsubscribe();
+  //   };
 
-    checkAuthState();
-  }, []);
+  //   checkAuthState();
+  // }, []);
 
   return (
     <PaperProvider theme={isDarkTheme ? darkTheme : lightTheme}>

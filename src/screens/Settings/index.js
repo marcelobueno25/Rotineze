@@ -9,18 +9,18 @@ import {
   useTheme,
   Button,
 } from "react-native-paper";
-import { useSelector } from "react-redux";
-import { signOut } from "@services/authService";
-import { backupHabits } from "@services/habitService";
-import { PremiumCard } from "./components/PremiumCard";
-import { AvatarUser } from "./components/AvatarUser";
+// import { useSelector } from "react-redux";
+// import { signOut } from "@services/authService";
+// import { backupHabits } from "@services/habitService";
+// import { PremiumCard } from "./components/PremiumCard";
+// import { AvatarUser } from "./components/AvatarUser";
 import { ModalBottom } from "@components/Modal";
 
 export function Settings({ navigation }) {
-  const user = useSelector((state) => state.auth.user);
+  // const user = useSelector((state) => state.auth.user);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
-  const [lastBackup, setLastBackup] = useState(new Date()); // Armazena a data do último backup
+  // const [lastBackup, setLastBackup] = useState(new Date()); // Armazena a data do último backup
   const theme = useTheme();
 
   const toggleNotifications = () =>
@@ -28,19 +28,19 @@ export function Settings({ navigation }) {
   const showModal = () => setModalVisible(true);
   const hideModal = () => setModalVisible(false);
 
-  const formatDateTime = (date) => {
-    return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    })}`;
-  };
+  // const formatDateTime = (date) => {
+  //   return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {
+  //     hour: "2-digit",
+  //     minute: "2-digit",
+  //   })}`;
+  // };
 
   return (
     <>
       <ScrollView style={{ flex: 1, paddingHorizontal: 25 }}>
-        {!!user ? <AvatarUser user={user} /> : <></>}
-        <PremiumCard />
-        <View style={{ marginVertical: 0, alignItems: "center" }}>
+        {/* {!!user ? <AvatarUser user={user} /> : <></>} */}
+        {/* <PremiumCard /> */}
+        {/* <View style={{ marginVertical: 0, alignItems: "center" }}>
           {!user && (
             <View
               style={{
@@ -88,7 +88,7 @@ export function Settings({ navigation }) {
               </View>
             </View>
           )}
-        </View>
+        </View> */}
         <Text
           style={{
             fontSize: 14,
@@ -118,14 +118,14 @@ export function Settings({ navigation }) {
             navigation.navigate("Aparencia");
           }}
         />
-        <Divider />
-        <List.Item
+        {/* <Divider /> */}
+        {/* <List.Item
           title="Avançado"
           left={() => <List.Icon icon="cog" color={theme.colors.primary} />}
           onPress={() => {}}
         />
-        <Divider />
-        <List.Item
+        <Divider /> */}
+        {/* <List.Item
           title="Backup"
           description={`Último Backup: ${formatDateTime(lastBackup)}`}
           descriptionStyle={{ color: "#A1A1A1", fontSize: 13 }}
@@ -136,7 +136,7 @@ export function Settings({ navigation }) {
             setLastBackup(new Date());
             backupHabits();
           }}
-        />
+        /> */}
         <Text
           style={{
             fontSize: 14,
@@ -148,14 +148,14 @@ export function Settings({ navigation }) {
         >
           Suporte
         </Text>
-        <List.Item
+        {/* <List.Item
           title="Ajuda e Feedback"
           left={() => (
             <List.Icon icon="help-circle" color={theme.colors.primary} />
           )}
           onPress={() => {}}
         />
-        <Divider />
+        <Divider /> */}
         <List.Item
           title="Sobre a Rotinize"
           left={() => (
@@ -194,7 +194,7 @@ export function Settings({ navigation }) {
             Linking.openURL("https://www.instagram.com/m_bueno.dev/")
           }
         />
-        <View style={{ marginBottom: 20, marginTop: 10, alignItems: "center" }}>
+        {/* <View style={{ marginBottom: 20, marginTop: 10, alignItems: "center" }}>
           {!!user && (
             <Button
               mode="text"
@@ -212,7 +212,7 @@ export function Settings({ navigation }) {
               Sair da conta
             </Button>
           )}
-        </View>
+        </View> */}
       </ScrollView>
       <ModalBottom
         title="Notificações e Alertas" // Passando uma string como título

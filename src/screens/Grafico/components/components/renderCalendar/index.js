@@ -1,7 +1,7 @@
 import React from "react";
 import { TouchableOpacity, Text, View, Image } from "react-native";
 import Svg, { Circle } from "react-native-svg";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+// import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 // Importa as imagens dos estados de humor
 const moodImages = {
@@ -55,11 +55,11 @@ export const renderCalendar = (
   }
 
   const completionPercentage = record.completionPercentage;
-  const textColor = theme.colors.onBackground;
+  // const textColor = theme.colors.onBackground;
   const backgroundColor = isSelected
     ? theme.colors.primaryContainer
     : theme.colors.background;
-  const strokeDashoffset = 283 - (283 * completionPercentage) / 100;
+  // const strokeDashoffset = 283 - (283 * completionPercentage) / 100;
 
   // Função para escolher a imagem com base na porcentagem de conclusão
   const getMoodImage = (percentage) => {
@@ -91,15 +91,15 @@ export const renderCalendar = (
         }}
       >
         <Svg height="40" width="40" viewBox="0 0 100 100">
-          {/* <Circle
+          <Circle
             cx="50"
             cy="50"
-            r="45"
-            stroke={theme.colors.background}
-            strokeWidth="10"
+            r="50"
+            //stroke={theme.colors.background}
+            strokeWidth="20"
             fill={backgroundColor}
           />
-          <Circle
+          {/* <Circle
             cx="50"
             cy="50"
             r="45"
@@ -112,11 +112,23 @@ export const renderCalendar = (
             origin="50,50"
           /> */}
         </Svg>
-
-        {/* Exibe a imagem baseada na porcentagem */}
+        {/* {completionPercentage === 100 ? (
+          <Icon
+            name="check-outline"
+            size={18}
+            color={textColor}
+            style={{ position: "absolute" }}
+          />
+        ) : (
+          <Text
+            style={{ position: "absolute", color: textColor, fontSize: 14 }}
+          >
+            {date.day}
+          </Text>
+        )} */}
         <Image
           source={moodImage}
-          style={{ position: "absolute", width: 45, height: 45 }}
+          style={{ position: "absolute", width: 35, height: 45 }}
           resizeMode="contain"
         />
       </View>

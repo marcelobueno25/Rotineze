@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, ScrollView, Alert } from "react-native";
-import { Button, MD3Colors, Card } from "react-native-paper";
+import { Button, MD3Colors, Card, useTheme } from "react-native-paper";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import * as Notifications from "expo-notifications";
@@ -22,6 +22,7 @@ import { updateHabit } from "@redux/habitSlice";
 export function EditHabit({ route, navigation }) {
   const { habitId } = route.params; // Recebendo o ID do hábito a ser editado
   const dispatch = useDispatch();
+  const theme = useTheme();
   const {
     control,
     handleSubmit,
@@ -242,7 +243,7 @@ export function EditHabit({ route, navigation }) {
           mode="contained"
           onPress={handleSubmit(onSubmit)}
           style={{ borderRadius: 10, backgroundColor: selectedColor }}
-          labelStyle={{ fontSize: 16 }}
+          labelStyle={{ fontSize: 16, color: theme.colors.background }}
           contentStyle={{ padding: 5 }}
           theme={{ roundness: 50 }}
         >

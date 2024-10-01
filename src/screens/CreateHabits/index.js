@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Card } from "react-native-paper";
+import { Button, Card, useTheme } from "react-native-paper";
 import uuid from "react-native-uuid";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
@@ -25,6 +25,7 @@ export function CreateHabits({ navigation }) {
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
+  const theme = useTheme();
   const [selectedColor, setSelectedColor] = useState(COLORS_NEW_HABIT[0]);
   const [selectedIcon, setSelectedIcon] = useState(ICONS_NEW_HABIT[0]);
   const [frequencyTime, setFrequencyTime] = useState(converterParaHora());
@@ -38,7 +39,6 @@ export function CreateHabits({ navigation }) {
   const selectedDate = useSelector((state) => state.habits.selectedDate);
 
   useEffect(() => {
-    console.log(selectedDate, new Date());
     if (selectedDate) {
       setInitialDate(moment(selectedDate, "DD/MM/YYYY").toDate());
     }
@@ -198,7 +198,7 @@ export function CreateHabits({ navigation }) {
           mode="contained"
           onPress={handleSubmit(onSubmit)}
           style={{ borderRadius: 10, backgroundColor: selectedColor }}
-          labelStyle={{ fontSize: 16 }}
+          labelStyle={{ fontSize: 16, color: theme.colors.background }}
           contentStyle={{ padding: 5 }}
           theme={{ roundness: 50 }}
         >

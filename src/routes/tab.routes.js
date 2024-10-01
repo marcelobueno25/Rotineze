@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { IconButton } from "react-native-paper";
 import { Grafico } from "@screens/Grafico";
 import { Home } from "@screens/Home";
-import { Explorar } from "@screens/Explorar";
+// import { Explorar } from "@screens/Explorar";
 
 const Tab = createBottomTabNavigator();
 
@@ -72,7 +72,7 @@ export function TabRoutes({ navigation }) {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Explorar"
         component={Explorar}
         options={{
@@ -86,7 +86,7 @@ export function TabRoutes({ navigation }) {
             />
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Grafico"
         component={Grafico}
