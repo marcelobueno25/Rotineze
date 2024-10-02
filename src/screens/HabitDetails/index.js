@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { View, ScrollView } from "react-native";
+import React, { useState, useMemo } from "react";
+import { View, ScrollView, StyleSheet } from "react-native";
 import {
   Text,
   Card,
@@ -9,43 +9,62 @@ import {
   useTheme,
 } from "react-native-paper";
 import moment from "moment";
+import "moment/locale/pt-br";
+import { useDispatch, useSelector } from "react-redux";
 import { getHabitStatsForMonth } from "@utils/habits";
+import MonthlyHeatmap from "./components/MonthlyHeatmap";
 
-// Componente para exibir linhas de informações
-const InfoRow = ({ label, value, theme, last = false }) => (
-  <View
-    style={{
-      flexDirection: "row",
-      justifyContent: "space-between",
-      marginBottom: last ? 0 : 12,
-    }}
-  >
-    <Text style={{ color: theme.colors.primary, fontWeight: "bold" }}>
-      {label}
-    </Text>
-    <Text style={{ color: theme.colors.onBackground }}>{value}</Text>
-  </View>
-);
+const InfoRow = ({ label, value, last = false }) => {
+  const theme = useTheme();
+  return (
+    <View style={[styles.infoRow, { marginBottom: last ? 0 : 12 }]}>
+      <Text style={[styles.infoLabel, { color: theme.colors.primary }]}>
+        {label}
+      </Text>
+      <Text style={{ color: theme.colors.onBackground }}>{value}</Text>
+    </View>
+  );
+};
 
-// Componente para exibir cartões de estatísticas
-const StatCard = ({ label, value, icon, color, theme }) => (
-  <View style={{ justifyContent: "center", alignItems: "center" }}>
-    <IconButton
-      icon={icon}
-      size={30}
-      iconColor={color}
-      style={{ margin: 0, padding: 0 }}
-    />
-    <Text style={{ fontSize: 18, fontWeight: "bold", color }}>{value}</Text>
-    <Text style={{ color: theme.colors.onBackground }}>{label}</Text>
-  </View>
-);
+const StatCard = ({ label, value, icon, color }) => {
+  const theme = useTheme();
+  return (
+    <View style={styles.statCard}>
+      <IconButton
+        icon={icon}
+        size={30}
+        iconColor={color}
+        style={{ margin: 0, padding: 0 }}
+      />
+      <Text style={{ fontSize: 18, fontWeight: "bold", color }}>{value}</Text>
+      <Text style={{ color: theme.colors.onBackground }}>{label}</Text>
+    </View>
+  );
+};
 
 const HabitDetails = ({ route, navigation }) => {
-  const { habit } = route.params;
+  const dispatch = useDispatch();
   const theme = useTheme();
+  const { habitId } = route.params;
 
-  // Datas formatadas
+  const habit = useSelector((state) =>
+    state.habits.habits.find((h) => h.id === habitId)
+  );
+
+  // Verifica se o hábito existe
+  if (!habit) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ color: theme.colors.error }}>
+          Hábito não encontrado.
+        </Text>
+      </View>
+    );
+  }
+
+  const [selectedMonth, setSelectedMonth] = useState(moment());
+
+  // Formatação de datas
   const formattedInitialDate = moment(habit.initialDate, "DD/MM/YYYY").format(
     "DD/MM/YYYY"
   );
@@ -53,51 +72,62 @@ const HabitDetails = ({ route, navigation }) => {
     ? moment(habit.endDate, "DD/MM/YYYY").format("DD/MM/YYYY")
     : "Indeterminado";
 
-  // Mapeamento dos dias da semana
-  const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  // Nomes dos dias da semana em português
+  moment.locale("pt-br");
+  const weekDays = moment.weekdaysShort(true);
   const formattedFrequency = habit.frequency
     .map((day) => weekDays[day])
     .join(", ");
 
-  // Obtém o horário da notificação formatado
+  // Horário da notificação formatado
   const notificationTime = habit.frequencyTime
     ? moment(habit.frequencyTime, "HH:mm").format("HH:mm")
     : null;
 
-  // Data atual para obter as métricas mensais
-  const currentDate = moment().format("YYYY-MM-DD");
+  // Dados estatísticos mensais
+  const currentDate = selectedMonth.format("YYYY-MM-DD");
   const monthlyStats = useMemo(
     () => getHabitStatsForMonth(currentDate, habit),
-    [habit.id, currentDate]
+    [habit, currentDate]
   );
 
+  // Datas de conclusão do hábito no mês selecionado
+  const completionDates = useMemo(() => {
+    if (!habit.checks) return [];
+
+    return Object.keys(habit.checks)
+      .filter((date) => {
+        const isCompleted = habit.checks[date];
+        const isSameMonth = moment(date, "DD/MM/YYYY").isSame(
+          moment(currentDate),
+          "month"
+        );
+        return isCompleted && isSameMonth;
+      })
+      .map((date) => moment(date, "DD/MM/YYYY").format("YYYY-MM-DD"));
+  }, [habit.checks, currentDate]);
+
+  const handlePreviousMonth = () => {
+    setSelectedMonth((prev) => prev.clone().subtract(1, "month"));
+  };
+
+  const handleNextMonth = () => {
+    setSelectedMonth((prev) => prev.clone().add(1, "month"));
+  };
+
   return (
-    <ScrollView contentContainerStyle={{ padding: 16 }}>
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
       {/* Cabeçalho com Nome e Ícone */}
-      <Card
-        style={{
-          marginBottom: 16,
-          padding: 16,
-          alignItems: "center",
-          borderRadius: 15,
-          marginTop: 40,
-        }}
-      >
-        <View style={{ alignItems: "center", paddingTop: 30 }}>
+      <Card style={styles.headerCard}>
+        <View style={styles.headerContent}>
           <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              position: "absolute",
-              backgroundColor: theme.colors.primary,
-              borderWidth: 5,
-              borderColor: theme.colors.background,
-              borderStyle: "solid",
-              borderRadius: 50,
-              top: -60,
-              height: 85,
-              width: 85,
-            }}
+            style={[
+              styles.iconContainer,
+              {
+                backgroundColor: theme.colors.primary,
+                borderColor: theme.colors.background,
+              },
+            ]}
           >
             <IconButton
               icon={habit.icon}
@@ -115,22 +145,17 @@ const HabitDetails = ({ route, navigation }) => {
       </Card>
 
       {/* Informações Básicas */}
-      <Card style={{ marginBottom: 16, borderRadius: 15 }}>
+      <Card style={styles.infoCard}>
         <Card.Title
           title="Informações do Hábito"
           titleStyle={{ fontWeight: "bold" }}
         />
         <Card.Content>
-          <InfoRow
-            label="Data Inicial"
-            value={formattedInitialDate}
-            theme={theme}
-          />
-          <InfoRow label="Data Final" value={formattedEndDate} theme={theme} />
+          <InfoRow label="Data Inicial" value={formattedInitialDate} />
+          <InfoRow label="Data Final" value={formattedEndDate} />
           <InfoRow
             label="Notificações"
             value={habit.notificationsEnabled ? "Sim" : "Não"}
-            theme={theme}
             last={!habit.notificationsEnabled}
           />
           {habit.notificationsEnabled && (
@@ -138,12 +163,10 @@ const HabitDetails = ({ route, navigation }) => {
               <InfoRow
                 label="Frequência"
                 value={formattedFrequency || "Sem frequência definida"}
-                theme={theme}
               />
               <InfoRow
                 label="Horário"
                 value={notificationTime || "Sem horário definido"}
-                theme={theme}
                 last
               />
             </>
@@ -152,42 +175,54 @@ const HabitDetails = ({ route, navigation }) => {
       </Card>
 
       {/* Resumo Mensal */}
-      <Card style={{ marginBottom: 16, borderRadius: 15 }}>
-        <Card.Title
-          title="Resumo do Mês Atual"
-          titleStyle={{ fontWeight: "bold" }}
-        />
+      <Card style={styles.summaryCard}>
+        <Card.Title title="Resumo do Mês" titleStyle={{ fontWeight: "bold" }} />
         <Card.Content>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-around",
-              marginBottom: 16,
-            }}
-          >
+          {/* Botões de Navegação de Mês */}
+          <View style={styles.monthNav}>
+            <IconButton
+              icon="chevron-left"
+              size={30}
+              onPress={handlePreviousMonth}
+            />
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                color: theme.colors.onBackground,
+              }}
+            >
+              {selectedMonth.format("MMMM [de] YYYY")}
+            </Text>
+            <IconButton
+              icon="chevron-right"
+              size={30}
+              onPress={handleNextMonth}
+            />
+          </View>
+
+          {/* Estatísticas */}
+          <View style={styles.statsContainer}>
             <StatCard
               label="Pendentes"
               value={monthlyStats.notCompletedHabitsCount}
               icon="alert-circle"
               color="#eead2d"
-              theme={theme}
             />
             <StatCard
               label="Concluídos"
               value={monthlyStats.completedHabitsCount}
               icon="check-circle"
               color="#4CAF50"
-              theme={theme}
             />
             <StatCard
               label="Maior Série"
               value={`${monthlyStats.maxSequence} dias`}
               icon="fire"
               color="#FF5722"
-              theme={theme}
             />
           </View>
-          <View style={{ alignItems: "center", marginBottom: 12 }}>
+          <View style={styles.percentageContainer}>
             <Text
               style={{
                 fontSize: 22,
@@ -204,7 +239,14 @@ const HabitDetails = ({ route, navigation }) => {
           <ProgressBar
             progress={monthlyStats.completionPercentage / 100}
             color={theme.colors.primary}
-            style={{ height: 10, borderRadius: 5 }}
+            style={styles.progressBar}
+          />
+
+          {/* Heatmap Mensal */}
+          <MonthlyHeatmap
+            habit={habit}
+            currentDate={currentDate}
+            completionDates={completionDates}
           />
         </Card.Content>
       </Card>
@@ -213,7 +255,7 @@ const HabitDetails = ({ route, navigation }) => {
       <Button
         mode="contained"
         onPress={() => navigation.navigate("EditHabit", { habitId: habit.id })}
-        style={{ borderRadius: 15, marginBottom: 16 }}
+        style={styles.editButton}
         contentStyle={{ padding: 8 }}
       >
         Editar Hábito
@@ -221,5 +263,79 @@ const HabitDetails = ({ route, navigation }) => {
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  scrollContainer: {
+    padding: 16,
+  },
+  headerCard: {
+    marginBottom: 16,
+    padding: 16,
+    alignItems: "center",
+    borderRadius: 15,
+    marginTop: 40,
+  },
+  headerContent: {
+    alignItems: "center",
+    paddingTop: 30,
+  },
+  iconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    borderWidth: 5,
+    borderStyle: "solid",
+    borderRadius: 50,
+    top: -60,
+    height: 85,
+    width: 85,
+  },
+  infoCard: {
+    marginBottom: 16,
+    borderRadius: 15,
+  },
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  infoLabel: {
+    fontWeight: "bold",
+  },
+  summaryCard: {
+    marginBottom: 16,
+    borderRadius: 15,
+  },
+  monthNav: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 16,
+  },
+  statCard: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  percentageContainer: {
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  progressBar: {
+    height: 10,
+    borderRadius: 5,
+    marginBottom: 40,
+  },
+  editButton: {
+    borderRadius: 15,
+    marginBottom: 16,
+  },
+  container: {
+    padding: 16,
+  },
+});
 
 export default HabitDetails;

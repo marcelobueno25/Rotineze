@@ -44,7 +44,7 @@ const Item = ({ item, selectedDate }) => {
 
   const handleViewDetails = () => {
     Vibration.vibrate(100);
-    navigation.navigate("HabitDetails", { habit: item });
+    navigation.navigate("HabitDetails", { habitId: item.id });
   };
 
   const handleCheckHabit = () => {

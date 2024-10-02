@@ -59,6 +59,7 @@ export function CreateHabits({ navigation }) {
         content: {
           title: "Lembrete de Hábito",
           body: "Está na hora de completar seu hábito!",
+          sound: true,
         },
         identifier: `${habitId}-${day}`,
         trigger: {

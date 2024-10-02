@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { View, ScrollView, RefreshControl } from "react-native";
+import { View, ScrollView } from "react-native";
 import { useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -56,7 +56,6 @@ export function Home() {
             padding: 10,
             justifyContent: totalHabits === 0 ? "center" : "flex-start",
           }}
-          refreshControl={<RefreshControl refreshing={false} />}
         >
           {totalHabits === 0 ? (
             <EmptyState />

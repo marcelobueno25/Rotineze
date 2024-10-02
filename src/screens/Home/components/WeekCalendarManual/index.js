@@ -2,6 +2,7 @@ import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import { useTheme, Text } from "react-native-paper";
 import moment from "moment";
+import { LinearGradient } from "expo-linear-gradient";
 
 export const WeekCalendarManual = ({ selectedDate, onDayPress }) => {
   const theme = useTheme();
@@ -16,16 +17,26 @@ export const WeekCalendarManual = ({ selectedDate, onDayPress }) => {
   return (
     <View
       style={{
+        position: "relative",
         flexDirection: "row",
         justifyContent: "space-between",
         paddingHorizontal: 20,
         paddingVertical: 5,
         gap: 3,
-        backgroundColor: theme.colors.inverseOnSurface,
         borderBottomEndRadius: 25,
         borderBottomLeftRadius: 25,
       }}
     >
+      <LinearGradient
+        colors={[theme.colors.primaryContainer, "transparent"]}
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          height: "100%",
+        }}
+      />
       {daysOfWeek.map((day) => {
         const isSelected = day.isSame(selectedDate, "day");
         const isToday = day.isSame(moment(), "day");
@@ -41,10 +52,11 @@ export const WeekCalendarManual = ({ selectedDate, onDayPress }) => {
                 ? theme.colors.primaryContainer
                 : "transparent",
               borderRadius: 10,
-              borderColor: isToday
+              borderColor: isSelected ? theme.colors.primary : "transparent",
+              borderWidth: isSelected ? 2 : 0,
+              backgroundColor: isToday
                 ? theme.colors.primaryContainer
                 : "transparent",
-              borderWidth: isToday ? 2 : 0,
               marginVertical: 10,
               paddingVertical: 5,
             }}
@@ -55,6 +67,7 @@ export const WeekCalendarManual = ({ selectedDate, onDayPress }) => {
                 color: isSelected
                   ? theme.colors.onBackground
                   : theme.colors.onSurface,
+                fontWeight: isSelected ? "bold" : "100",
               }}
             >
               {day.format("ddd")}
@@ -65,6 +78,7 @@ export const WeekCalendarManual = ({ selectedDate, onDayPress }) => {
                 color: isSelected
                   ? theme.colors.onBackground
                   : theme.colors.onSurface,
+                fontWeight: isSelected ? "bold" : "100",
               }}
             >
               {day.format("DD")}
