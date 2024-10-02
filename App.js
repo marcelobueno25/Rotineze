@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-// import { useEffect } from "react";
+import { useEffect } from "react";
 import { PaperProvider } from "react-native-paper";
 import { Provider, useSelector } from "react-redux";
 import { NavigationContainer } from "@react-navigation/native";
@@ -16,6 +16,7 @@ import { Routes } from "@routes";
 import { store, persistor } from "@redux/store";
 import { ptBR } from "@utils/localecalendarConfig";
 import "moment/locale/pt-br";
+import * as Notifications from "expo-notifications";
 // import auth from "@react-native-firebase/auth";
 // import { clearLocalUser } from "@services/authService";
 
@@ -49,6 +50,31 @@ function MainApp() {
 
   //   checkAuthState();
   // }, []);
+
+  // Função para verificar a permissão de notificações
+  const verificarPermissaoNotificacao = async () => {
+    // Verifica o status da permissão
+    const { status } = await Notifications.getPermissionsAsync();
+    console.log("status: ", status, status !== "granted");
+
+    if (status !== "granted") {
+      // Se não estiver concedida, solicita permissão
+      const { status: novoStatus } =
+        await Notifications.requestPermissionsAsync();
+      if (novoStatus !== "granted") {
+        console.log(
+          "Permissão Negada",
+          "Permita as notificações para usar este recurso!"
+        );
+        return;
+      }
+    }
+  };
+
+  // Verifica a permissão assim que o componente é montado
+  useEffect(() => {
+    verificarPermissaoNotificacao();
+  }, []);
 
   return (
     <PaperProvider theme={isDarkTheme ? darkTheme : lightTheme}>

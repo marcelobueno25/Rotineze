@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, ScrollView, Linking } from "react-native";
 import {
   List,
@@ -15,18 +15,27 @@ import {
 // import { PremiumCard } from "./components/PremiumCard";
 // import { AvatarUser } from "./components/AvatarUser";
 import { ModalBottom } from "@components/Modal";
+import * as Notifications from "expo-notifications";
 
 export function Settings({ navigation }) {
   // const user = useSelector((state) => state.auth.user);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [isModalVisible, setModalVisible] = useState(false);
+  // const [isModalVisible, setModalVisible] = useState(false);
   // const [lastBackup, setLastBackup] = useState(new Date()); // Armazena a data do último backup
   const theme = useTheme();
 
-  const toggleNotifications = () =>
-    setNotificationsEnabled(!notificationsEnabled);
-  const showModal = () => setModalVisible(true);
-  const hideModal = () => setModalVisible(false);
+  useEffect(() => {
+    verificarPermissaoNotificacoes(); // Verifica permissões na inicialização
+  }, []);
+
+  // Verifica se a permissão de notificação foi concedida
+  const verificarPermissaoNotificacoes = async () => {
+    const { status } = await Notifications.getPermissionsAsync(); // Verifica o status da permissão
+    setNotificationsEnabled(status === "granted"); // Atualiza o estado com base na permissão
+  };
+
+  // const showModal = () => setModalVisible(true);
+  // const hideModal = () => setModalVisible(false);
 
   // const formatDateTime = (date) => {
   //   return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {
@@ -108,7 +117,7 @@ export function Settings({ navigation }) {
             </Text>
           )}
           left={() => <List.Icon icon="bell" color={theme.colors.primary} />}
-          onPress={showModal}
+          // onPress={showModal}
         />
         <Divider />
         <List.Item
@@ -214,7 +223,7 @@ export function Settings({ navigation }) {
           )}
         </View> */}
       </ScrollView>
-      <ModalBottom
+      {/* <ModalBottom
         title="Notificações e Alertas" // Passando uma string como título
         visible={isModalVisible}
         setVisible={hideModal}
@@ -232,7 +241,7 @@ export function Settings({ navigation }) {
             onValueChange={toggleNotifications}
           />
         </View>
-      </ModalBottom>
+      </ModalBottom> */}
     </>
   );
 }
