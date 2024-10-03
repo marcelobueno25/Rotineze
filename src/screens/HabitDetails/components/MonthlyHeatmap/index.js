@@ -1,7 +1,7 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Vibration } from "react-native";
+import { View, TouchableOpacity, Vibration } from "react-native";
 import moment from "moment";
-import { useTheme } from "react-native-paper";
+import { useTheme, Text } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { checkHabit } from "@redux/habitSlice";
 
@@ -45,10 +45,16 @@ const MonthlyHeatmap = ({ habit, currentDate }) => {
   return (
     <View style={{ padding: 5 }}>
       {/* Cabeçalhos dos dias da semana */}
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: "row", marginBottom: 5 }}>
         {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((dayName) => (
           <View key={dayName} style={{ flex: 1, alignItems: "center" }}>
-            <Text style={{ fontSize: 12, color: theme.colors.onBackground }}>
+            <Text
+              variant="labelMedium"
+              style={{
+                color: theme.colors.onBackground,
+                fontWeight: "bold",
+              }}
+            >
               {dayName}
             </Text>
           </View>

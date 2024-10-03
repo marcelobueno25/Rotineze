@@ -15,8 +15,7 @@ const MonthSelector = ({ selectedMonth, onChangeMonth }) => {
   const handleMonthChange = (direction) => {
     const newMonth = moment(selectedMonth)
       .add(direction, "month")
-      .startOf("month")
-      .format("YYYY-MM-DD");
+      .startOf("month");
     onChangeMonth(newMonth);
   };
 
@@ -64,9 +63,7 @@ export function GraficoMensal() {
   const habits = useSelector((state) => state.habits.habits) || [];
 
   // Estado para controlar o mês selecionado
-  const [selectedMonth, setSelectedMonth] = useState(
-    moment().startOf("month").format("YYYY-MM-DD")
-  );
+  const [selectedMonth, setSelectedMonth] = useState(moment().startOf("month"));
 
   // Obtém as informações do mês usando `getHabitsForMonth`
   const monthStats = useMemo(

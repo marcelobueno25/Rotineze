@@ -40,9 +40,11 @@ export const getHabitsForDate = (dateString, habits) => {
 };
 
 export const getHabitsForMonth = (monthString, habits) => {
-  const formattedMonth = moment(monthString, "YYYY-MM-DD").format("MM/YYYY");
+  const monthMoment = moment(monthString, "DD/MM/YYYY");
+  const startOfMonth = monthMoment.clone().startOf("month");
+  const endOfMonth = monthMoment.clone().endOf("month");
 
-  // Filtra os hábitos que têm a data inicial dentro ou antes do mês selecionado e (se existir) não passaram do endDate
+  // Filtra os hábitos ativos no mês selecionado
   const filteredHabits = habits.filter((habit) => {
     const habitInitialDate = moment(habit.initialDate, "DD/MM/YYYY");
     const habitEndDate = habit.endDate
@@ -50,57 +52,60 @@ export const getHabitsForMonth = (monthString, habits) => {
       : null;
 
     return (
-      habitInitialDate.isSameOrBefore(monthString, "month") &&
-      (!habitEndDate || habitEndDate.isSameOrAfter(monthString, "month"))
+      habitInitialDate.isSameOrBefore(endOfMonth, "day") &&
+      (!habitEndDate || habitEndDate.isSameOrAfter(startOfMonth, "day"))
     );
   });
 
-  let completedHabitsCount = 0; // Quantidade de check-ins completados no mês
-  let totalHabitDays = 0; // Quantidade de dias de hábitos válidos no mês
-  const totalHabitsInMonth = filteredHabits.length; // Total de hábitos ativos no mês
+  let completedHabitsCount = 0; // Quantidade de check-ins concluídos no mês
+  let totalExpectedHabitDays = 0; // Quantidade total de dias esperados para os hábitos no mês
 
-  // Itera por cada hábito e verifica os check-ins para o mês selecionado
   filteredHabits.forEach((habit) => {
     const habitInitialDate = moment(habit.initialDate, "DD/MM/YYYY");
     const habitEndDate = habit.endDate
       ? moment(habit.endDate, "DD/MM/YYYY")
       : null;
 
-    // Filtra os check-ins para o mês específico
-    const monthlyCheckIns = habit.checkIns.filter(
-      (date) => moment(date, "DD/MM/YYYY").format("MM/YYYY") === formattedMonth
-    );
+    // Calcula o intervalo de datas em que o hábito está ativo no mês selecionado
+    const habitStartInMonth = moment.max(habitInitialDate, startOfMonth);
+    const habitEndInMonth = habitEndDate
+      ? moment.min(habitEndDate, endOfMonth)
+      : endOfMonth;
 
-    const daysInMonth = moment(monthString).daysInMonth();
+    // Calcula o total de dias que o hábito deveria ser praticado neste mês
+    const daysActive = habitEndInMonth.diff(habitStartInMonth, "days") + 1; // +1 para incluir o dia final
 
-    // Verifica cada dia do mês selecionado para ver se o hábito está ativo e contabiliza dias válidos
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dayString = moment(monthString).date(day).format("DD/MM/YYYY");
-      const currentDate = moment(dayString, "DD/MM/YYYY");
+    if (daysActive > 0) {
+      totalExpectedHabitDays += daysActive;
 
-      // Considera apenas dias a partir da `initialDate` e antes ou igual a `endDate` (se existir)
-      if (
-        currentDate.isSameOrAfter(habitInitialDate, "day") &&
-        (!habitEndDate || currentDate.isSameOrBefore(habitEndDate, "day"))
-      ) {
-        totalHabitDays++; // Contabiliza o dia como válido para o hábito
+      // Filtra os check-ins que estão dentro do intervalo de atividade do hábito neste mês
+      const monthlyCheckIns = habit.checkIns.filter((date) => {
+        const checkInDate = moment(date, "DD/MM/YYYY");
+        return (
+          checkInDate.isSameOrAfter(habitStartInMonth, "day") &&
+          checkInDate.isSameOrBefore(habitEndInMonth, "day")
+        );
+      });
 
-        if (monthlyCheckIns.includes(dayString)) {
-          completedHabitsCount++; // Se o hábito foi concluído neste dia, incrementa o contador
-        }
-      }
+      completedHabitsCount += monthlyCheckIns.length;
     }
   });
 
+  const totalHabitDays = totalExpectedHabitDays - completedHabitsCount; // Dias restantes para concluir os hábitos
+  const totalHabitsInMonth = filteredHabits.length; // Total de hábitos ativos no mês
+
+  // Cálculo da porcentagem de conclusão sem casas decimais
+  const completionPercentage =
+    totalExpectedHabitDays > 0
+      ? Math.round((completedHabitsCount / totalExpectedHabitDays) * 100)
+      : 0;
+
   return {
-    month: formattedMonth,
     totalHabitsInMonth,
+    totalExpectedHabitDays,
     completedHabitsCount,
     totalHabitDays,
-    completionPercentage:
-      totalHabitDays > 0
-        ? Math.floor((completedHabitsCount / totalHabitDays) * 100)
-        : 0,
+    completionPercentage,
   };
 };
 

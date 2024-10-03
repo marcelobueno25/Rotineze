@@ -10,7 +10,7 @@ import {
 } from "react-native-paper";
 import moment from "moment";
 import "moment/locale/pt-br";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { getHabitStatsForMonth } from "@utils/habits";
 import MonthlyHeatmap from "./components/MonthlyHeatmap";
 
@@ -29,21 +29,30 @@ const InfoRow = ({ label, value, last = false }) => {
 const StatCard = ({ label, value, icon, color }) => {
   const theme = useTheme();
   return (
-    <View style={styles.statCard}>
-      <IconButton
-        icon={icon}
-        size={25}
-        iconColor={color}
-        style={{ margin: 0, padding: 0 }}
-      />
-      <Text style={{ fontSize: 18, fontWeight: "bold", color }}>{value}</Text>
-      <Text style={{ color: theme.colors.onBackground }}>{label}</Text>
+    <View style={{ justifyContent: "center", alignItems: "center" }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <IconButton
+          icon={icon}
+          size={25}
+          iconColor={color}
+          style={{ margin: 0, padding: 0 }}
+        />
+        <Text style={{ fontSize: 18, fontWeight: "bold" }}>{value}</Text>
+      </View>
+      <View>
+        <Text style={{ color: theme.colors.onBackground }}>{label}</Text>
+      </View>
     </View>
   );
 };
 
 const HabitDetails = ({ route, navigation }) => {
-  const dispatch = useDispatch();
   const theme = useTheme();
   const { habitId } = route.params;
 
@@ -178,6 +187,47 @@ const HabitDetails = ({ route, navigation }) => {
       <Card style={styles.summaryCard}>
         <Card.Title title="Resumo do Mês" titleStyle={{ fontWeight: "bold" }} />
         <Card.Content>
+          {/* Estatísticas */}
+          <View style={styles.statsContainer}>
+            <StatCard
+              label="Pendentes"
+              value={monthlyStats.notCompletedHabitsCount}
+              icon="alert-circle"
+              color={theme.colors.warning}
+            />
+            <StatCard
+              label="Concluídos"
+              value={monthlyStats.completedHabitsCount}
+              icon="check-circle"
+              color={theme.colors.success}
+            />
+            <StatCard
+              label="Maior Série"
+              value={`${monthlyStats.maxSequence}`}
+              icon="fire-circle"
+              color={theme.colors.orange}
+            />
+          </View>
+
+          <View style={styles.percentageContainer}>
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "bold",
+                color: theme.colors.primary,
+              }}
+            >
+              {monthlyStats.completionPercentage}%
+            </Text>
+            <Text style={{ color: theme.colors.onBackground }}>
+              Porcentagem de Conclusão
+            </Text>
+          </View>
+          <ProgressBar
+            progress={monthlyStats.completionPercentage / 100}
+            color={theme.colors.primary}
+            style={styles.progressBar}
+          />
           {/* Botões de Navegação de Mês */}
           <View style={styles.monthNav}>
             <IconButton
@@ -200,47 +250,6 @@ const HabitDetails = ({ route, navigation }) => {
               onPress={handleNextMonth}
             />
           </View>
-
-          {/* Estatísticas */}
-          <View style={styles.statsContainer}>
-            <StatCard
-              label="Pendentes"
-              value={monthlyStats.notCompletedHabitsCount}
-              icon="alert-circle"
-              color={theme.colors.warning}
-            />
-            <StatCard
-              label="Concluídos"
-              value={monthlyStats.completedHabitsCount}
-              icon="check-circle"
-              color={theme.colors.success}
-            />
-            <StatCard
-              label="Maior Série"
-              value={`${monthlyStats.maxSequence} dias`}
-              icon="fire-circle"
-              color={theme.colors.orange}
-            />
-          </View>
-          <View style={styles.percentageContainer}>
-            <Text
-              style={{
-                fontSize: 22,
-                fontWeight: "bold",
-                color: theme.colors.primary,
-              }}
-            >
-              {monthlyStats.completionPercentage}%
-            </Text>
-            <Text style={{ color: theme.colors.onBackground }}>
-              Porcentagem de Conclusão
-            </Text>
-          </View>
-          <ProgressBar
-            progress={monthlyStats.completionPercentage / 100}
-            color={theme.colors.primary}
-            style={styles.progressBar}
-          />
 
           {/* Heatmap Mensal */}
           <MonthlyHeatmap
@@ -309,16 +318,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 16,
+    marginBottom: 5,
   },
   statsContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     marginBottom: 16,
-  },
-  statCard: {
-    justifyContent: "center",
-    alignItems: "center",
   },
   percentageContainer: {
     alignItems: "center",
@@ -327,7 +332,7 @@ const styles = StyleSheet.create({
   progressBar: {
     height: 10,
     borderRadius: 5,
-    marginBottom: 40,
+    marginBottom: 15,
   },
   editButton: {
     borderRadius: 15,
