@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { Vibration } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import { useTheme as navigationTheme } from "@react-navigation/native";
+import { useTheme as paperTheme } from "react-native-paper";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useSelector } from "react-redux";
@@ -18,7 +19,7 @@ import HabitDetails from "@screens/HabitDetails";
 const Stack = createNativeStackNavigator();
 
 const HeaderIcon = ({ name, onPress, size = 26, style }) => {
-  const { colors } = useTheme();
+  const { colors } = navigationTheme();
   return (
     <MaterialCommunityIcons
       name={name}
@@ -33,25 +34,34 @@ const HeaderIcon = ({ name, onPress, size = 26, style }) => {
   );
 };
 
-const stackScreenOptions = ({ navigation }) => ({
-  title: "Rotinize",
-  headerShown: true,
-  animation: "fade_from_bottom",
-  headerRight: () => (
-    <HeaderIcon
-      name="plus-circle-outline"
-      onPress={() => navigation.navigate("CreateHabits")}
-    />
-  ),
-  headerLeft: () => (
-    <HeaderIcon
-      name="format-list-bulleted"
-      onPress={() => navigation.navigate("Settings")}
-      size={24}
-      style={{ marginRight: 10 }}
-    />
-  ),
-});
+const stackScreenOptions = ({ navigation }) => {
+  const paper = paperTheme(); // Captura o tema do react-native-paper
+
+  return {
+    title: "Rotinize",
+    headerShown: true,
+    animation: "fade_from_bottom",
+    headerStyle: {
+      backgroundColor: paper.colors.primaryContainer, // Definir a cor de fundo do `header` usando `paper.colors.primary`
+    },
+    headerShadowVisible: false,
+    headerTintColor: paper.colors.onBackground, // Cor do texto do header
+    headerRight: () => (
+      <HeaderIcon
+        name="plus-circle-outline"
+        onPress={() => navigation.navigate("CreateHabits")}
+      />
+    ),
+    headerLeft: () => (
+      <HeaderIcon
+        name="format-list-bulleted"
+        onPress={() => navigation.navigate("Settings")}
+        size={24}
+        style={{ marginRight: 10 }}
+      />
+    ),
+  };
+};
 
 export function StackRoutes() {
   const hasSeenOnboarding = useSelector(

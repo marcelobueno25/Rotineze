@@ -223,7 +223,7 @@ export function EditHabit({ route, navigation }) {
           <Button
             onPress={handleRemoveHabit}
             mode="text"
-            textColor={MD3Colors.error50}
+            textColor={theme.colors.error}
             style={styles.deleteButton}
           >
             Excluir Hábito

@@ -55,8 +55,6 @@ function MainApp() {
   const verificarPermissaoNotificacao = async () => {
     // Verifica o status da permissão
     const { status } = await Notifications.getPermissionsAsync();
-    console.log("status: ", status, status !== "granted");
-
     if (status !== "granted") {
       // Se não estiver concedida, solicita permissão
       const { status: novoStatus } =

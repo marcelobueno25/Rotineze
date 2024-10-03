@@ -10,6 +10,7 @@ import { WeekCalendarManual } from "./components/WeekCalendarManual";
 import { StatsSummary } from "./components/StatsSummary";
 import { EmptyState } from "@components/Empty";
 import CardDiario from "./components/CardDiario";
+import { Layout } from "../index";
 
 export function Home() {
   const theme = useTheme();
@@ -42,38 +43,58 @@ export function Home() {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <WeekCalendarManual
-        selectedDate={selectedDate}
-        onDayPress={handleDateChange}
-        theme={theme}
-      />
-
-      <View style={{ flex: 1, paddingBottom: 100 }}>
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-            padding: 10,
-            justifyContent: totalHabits === 0 ? "center" : "flex-start",
-          }}
-        >
-          {totalHabits === 0 ? (
-            <EmptyState />
-          ) : (
-            <>
-              <StatsSummary
-                completionPercentage={completionPercentage}
-                completedHabits={completedHabits.length}
-                totalHabits={totalHabits}
-              />
-              <CardDiario
-                habits={completedHabits.concat(notCompletedHabits)}
-                selectedDate={formattedDate}
-              />
-            </>
-          )}
-        </ScrollView>
+    <Layout>
+      <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, zIndex: 2 }}>
+          <View
+            style={{
+              backgroundColor: theme.colors.primaryContainer,
+              borderBottomLeftRadius: 25,
+              borderBottomRightRadius: 25,
+            }}
+          >
+            <View
+              style={{
+                borderTopColor: theme.colors.primary,
+                borderTopWidth: 3,
+                width: "80%",
+                borderRadius: 20,
+                margin: "auto",
+              }}
+            />
+            <WeekCalendarManual
+              selectedDate={selectedDate}
+              onDayPress={handleDateChange}
+              theme={theme}
+            />
+          </View>
+          <View style={{ flex: 1 }}>
+            <ScrollView
+              contentContainerStyle={{
+                flexGrow: 1,
+                padding: 10,
+                justifyContent: totalHabits === 0 ? "center" : "flex-start",
+              }}
+            >
+              {totalHabits === 0 ? (
+                <EmptyState />
+              ) : (
+                <>
+                  <StatsSummary
+                    completionPercentage={completionPercentage}
+                    completedHabits={completedHabits.length}
+                    totalHabits={totalHabits}
+                  />
+                  <CardDiario
+                    habits={completedHabits.concat(notCompletedHabits)}
+                    selectedDate={formattedDate}
+                  />
+                </>
+              )}
+            </ScrollView>
+          </View>
+        </View>
       </View>
-    </View>
+    </Layout>
   );
 }

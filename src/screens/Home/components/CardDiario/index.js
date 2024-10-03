@@ -61,7 +61,7 @@ const Item = ({ item, selectedDate }) => {
     <View style={styles.leftSwipeContainer}>
       <TouchableOpacity
         onPress={handleCheckHabit}
-        style={styles.leftSwipeButton}
+        style={[styles.leftSwipeButton, { backgroundColor: colors.success }]}
       >
         <IconButton
           icon="check-circle"
@@ -201,7 +201,6 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
   },
   leftSwipeButton: {
-    backgroundColor: "#4CAF50",
     elevation: 2,
     height: "100%",
     justifyContent: "center",

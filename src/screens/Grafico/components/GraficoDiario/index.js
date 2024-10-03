@@ -109,16 +109,16 @@ export function GraficoDiario() {
 
       <View style={styles.cardRow}>
         <CardGrafico
-          icon="clipboard-list-outline"
+          icon="checkbox-multiple-blank-circle"
           label="Total de Hábitos"
           number={result.totalHabits}
-          color="#3F51B5"
+          color={theme.colors.primary}
         />
         <CardGrafico
           icon="check-circle"
           label="Concluídos"
           number={result.completedHabits.length}
-          color="#4CAF50"
+          color={theme.colors.success}
         />
       </View>
 

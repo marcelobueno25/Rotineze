@@ -32,7 +32,7 @@ const StatCard = ({ label, value, icon, color }) => {
     <View style={styles.statCard}>
       <IconButton
         icon={icon}
-        size={30}
+        size={25}
         iconColor={color}
         style={{ margin: 0, padding: 0 }}
       />
@@ -207,19 +207,19 @@ const HabitDetails = ({ route, navigation }) => {
               label="Pendentes"
               value={monthlyStats.notCompletedHabitsCount}
               icon="alert-circle"
-              color="#eead2d"
+              color={theme.colors.warning}
             />
             <StatCard
               label="Concluídos"
               value={monthlyStats.completedHabitsCount}
               icon="check-circle"
-              color="#4CAF50"
+              color={theme.colors.success}
             />
             <StatCard
               label="Maior Série"
               value={`${monthlyStats.maxSequence} dias`}
-              icon="fire"
-              color="#FF5722"
+              icon="fire-circle"
+              color={theme.colors.orange}
             />
           </View>
           <View style={styles.percentageContainer}>

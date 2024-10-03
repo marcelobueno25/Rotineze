@@ -1,7 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { Text } from "react-native-paper";
-import { useTheme } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 
 export const StatsSummary = ({
   completionPercentage,
@@ -20,15 +19,15 @@ export const StatsSummary = ({
       }}
     >
       <Text
+        variant="titleMedium"
         style={{
-          fontSize: 18,
           fontWeight: "bold",
           color: theme.colors.primary,
         }}
       >
         <Text
+          variant="titleMedium"
           style={{
-            fontSize: 18,
             fontWeight: "bold",
             color: theme.colors.onBackground,
           }}
@@ -38,10 +37,10 @@ export const StatsSummary = ({
         {completionPercentage}%
       </Text>
       <Text
+        variant="titleMedium"
         style={{
-          fontSize: 18,
           fontWeight: "bold",
-          color: theme.colors.onBackground,
+          color: theme.colors.primary,
         }}
       >
         {completedHabits}/{totalHabits}

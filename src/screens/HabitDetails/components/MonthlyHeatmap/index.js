@@ -38,8 +38,6 @@ const MonthlyHeatmap = ({ habit, currentDate }) => {
   }
 
   const handleCheckHabit = (date) => {
-    console.log(date);
-    console.log(habit.id);
     Vibration.vibrate(100);
     dispatch(checkHabit({ id: habit.id, date }));
   };

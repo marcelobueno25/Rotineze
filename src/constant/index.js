@@ -1,16 +1,28 @@
 export const COLORS_NEW_HABIT = [
-  "#1E90FF", // Dodger Blue
-  "#FF4500", // Orange Red
-  "#006400", // Dark Green
-  "#DAA520", // Goldenrod
-  "#8B008B", // Dark Magenta
-  "#FF1493", // Deep Pink
-  "#A52A2A", // Brown
-  "#008B8B", // Dark Cyan
-  "#FF6347", // Tomato
-  "#556B2F", // Dark Olive Green
-  "#4682B4", // Steel Blue
-  "#8B4513", // Saddle Brown
+  "#4F378B",
+  "#b392ef",
+  "#81C784",
+  "#eead2d",
+  "#ff7474",
+  "#FF5722",
+  "#4FC3F7",
+  "#F06292",
+  "#4DB6AC",
+  "#C0CA33",
+  "#1DE9B6",
+  "#607D8B",
+  // "#1E90FF", // Dodger Blue
+  // "#FF4500", // Orange Red
+  // "#006400", // Dark Green
+  // "#DAA520", // Goldenrod
+  // "#8B008B", // Dark Magenta
+  // "#FF1493", // Deep Pink
+  // "#A52A2A", // Brown
+  // "#008B8B", // Dark Cyan
+  // "#FF6347", // Tomato
+  // "#556B2F", // Dark Olive Green
+  // "#4682B4", // Steel Blue
+  // "#8B4513", // Saddle Brown
 ];
 
 export const ICONS_NEW_HABIT = [

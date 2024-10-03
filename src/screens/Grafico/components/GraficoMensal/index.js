@@ -125,13 +125,13 @@ export function GraficoMensal() {
           icon="alert-circle"
           label="Pendentes"
           number={monthStats.totalHabitDays}
-          color="#eead2d"
+          color={theme.colors.warning}
         />
         <CardGrafico
           icon="check-circle"
           label="Concluídos"
           number={monthStats.completedHabitsCount}
-          color="#4CAF50"
+          color={theme.colors.success}
         />
       </View>
 
@@ -149,10 +149,10 @@ export function GraficoMensal() {
           color="#FF5722"
         />
         <CardGrafico
-          icon="clipboard-list-outline"
+          icon="checkbox-multiple-blank-circle"
           label="Total de Hábitos"
           number={monthStats.totalHabitsInMonth}
-          color="#3F51B5"
+          color={theme.colors.primary}
         />
       </View>
 
@@ -197,7 +197,7 @@ export function GraficoMensal() {
                 <Icon
                   name="fire"
                   size={24}
-                  color="#FF5722"
+                  color={theme.colors.orange}
                   style={{ marginRight: 10 }}
                 />
                 <Text

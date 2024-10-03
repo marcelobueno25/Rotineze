@@ -2,7 +2,6 @@ import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import { useTheme, Text } from "react-native-paper";
 import moment from "moment";
-import { LinearGradient } from "expo-linear-gradient";
 
 export const WeekCalendarManual = ({ selectedDate, onDayPress }) => {
   const theme = useTheme();
@@ -27,16 +26,6 @@ export const WeekCalendarManual = ({ selectedDate, onDayPress }) => {
         borderBottomLeftRadius: 25,
       }}
     >
-      <LinearGradient
-        colors={[theme.colors.primaryContainer, "transparent"]}
-        style={{
-          position: "absolute",
-          left: 0,
-          right: 0,
-          top: 0,
-          height: "100%",
-        }}
-      />
       {daysOfWeek.map((day) => {
         const isSelected = day.isSame(selectedDate, "day");
         const isToday = day.isSame(moment(), "day");
@@ -48,15 +37,10 @@ export const WeekCalendarManual = ({ selectedDate, onDayPress }) => {
             style={{
               flex: 1,
               alignItems: "center",
-              backgroundColor: isSelected
-                ? theme.colors.primaryContainer
-                : "transparent",
               borderRadius: 10,
               borderColor: isSelected ? theme.colors.primary : "transparent",
-              borderWidth: isSelected ? 2 : 0,
-              backgroundColor: isToday
-                ? theme.colors.primaryContainer
-                : "transparent",
+              borderWidth: isSelected ? 2 : 2,
+              backgroundColor: isToday ? theme.colors.secondary : "transparent",
               marginVertical: 10,
               paddingVertical: 5,
             }}
