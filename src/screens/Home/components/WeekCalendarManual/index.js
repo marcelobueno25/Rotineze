@@ -8,7 +8,6 @@ export const WeekCalendarManual = ({ selectedDate, onDayPress }) => {
 
   const startOfWeek = moment().startOf("week").add(1, "days");
 
-  // Gera um array de 7 dias para a semana
   const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
     moment(startOfWeek).add(i, "days")
   );

@@ -30,11 +30,11 @@ export const PremiumCard = () => {
         >
           <View
             style={{
-              backgroundColor: theme.colors.primary, // Fundo preto do badge Premium
+              backgroundColor: theme.colors.primary,
               paddingHorizontal: 15,
               paddingVertical: 3,
               borderRadius: 5,
-              alignSelf: "flex-start", // Para alinhar o badge no topo esquerdo
+              alignSelf: "flex-start",
               marginBottom: 15,
             }}
           >

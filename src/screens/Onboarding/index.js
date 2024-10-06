@@ -9,9 +9,9 @@ import { CustomButton } from "./components/CustomButton";
 import { Pagination } from "./components/Pagination";
 import { RenderItem } from "./components/RenderItem";
 
-import anima from "../../assets/antimationsol.json";
-import plant from "../../assets/plant.json";
-import notepeople from "../../assets/animation1.json";
+import anima from "@assets/antimationsol.json";
+import plant from "@assets/plant.json";
+import notepeople from "@assets/animation1.json";
 
 const data = [
   {

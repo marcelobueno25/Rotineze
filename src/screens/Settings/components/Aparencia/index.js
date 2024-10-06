@@ -38,13 +38,12 @@ export function Aparencia() {
     });
   };
 
-  // Determina a imagem do mascote com base no animal selecionado
   const getAnimalImage = (animal) => {
     switch (animal) {
       case "cat":
-        return require("@assets/expressionface/cat_completo.png"); // Atualize com o caminho correto da imagem do gato
+        return require("@assets/expressionface/cat_completo.png");
       case "dog":
-        return require("@assets/expressionface/dog_completo.png"); // Atualize com o caminho correto da imagem do cachorro
+        return require("@assets/expressionface/dog_completo.png");
       default:
         return null;
     }
@@ -52,12 +51,11 @@ export function Aparencia() {
 
   const animalImage = getAnimalImage(animalChecked);
 
-  // Determina a imagem de fundo com base no tema selecionado
   const getBackgroundImage = (theme) => {
     if (theme === "dark") {
-      return require("@assets/fundo_dark.png"); // Imagem de noite
+      return require("@assets/fundo_dark.png");
     } else {
-      return require("@assets/fundo_light.png"); // Imagem de dia
+      return require("@assets/fundo_light.png");
     }
   };
 
@@ -77,7 +75,6 @@ export function Aparencia() {
         Aparência
       </Text>
 
-      {/* Seleção de Tema */}
       <List.Item
         title="Tema"
         description={() => (
@@ -109,7 +106,6 @@ export function Aparencia() {
       />
       <Divider />
 
-      {/* Seleção de Mascote */}
       <List.Item
         title="Mascote"
         description={() => (
@@ -140,7 +136,6 @@ export function Aparencia() {
         left={() => <List.Icon icon="paw" color={theme.colors.primary} />}
       />
 
-      {/* Exibe a imagem do mascote com o fundo correspondente */}
       {animalImage && (
         <View style={{ marginBottom: 20, position: "relative" }}>
           <ImageBackground

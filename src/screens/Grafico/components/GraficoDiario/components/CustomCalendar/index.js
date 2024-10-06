@@ -1,11 +1,9 @@
-// components/CustomCalendar.js
 import React, { useState, useMemo, useCallback } from "react";
 import { View, TouchableOpacity, Vibration } from "react-native";
+import { useTheme, IconButton, Text } from "react-native-paper";
 import moment from "moment";
 import MoodImage from "./MoodImage";
-import { useTheme, IconButton, Text } from "react-native-paper"; // Importar o IconButton do react-native-paper
 
-// Componentes Memoizados
 const Header = React.memo(
   ({ currentMonth, setCurrentMonth, goToToday, showTodayButton }) => {
     const theme = useTheme();
@@ -192,13 +190,10 @@ export const CustomCalendar = ({
   setSelectedDate,
   dailyRecordsMap,
 }) => {
-  const theme = useTheme();
   const [currentMonth, setCurrentMonth] = useState(moment());
 
-  // Data atual
   const today = moment();
 
-  // Memoizar o calendário para evitar cálculos desnecessários
   const calendar = useMemo(() => {
     const startOfMonth = currentMonth.clone().startOf("month").startOf("week");
     const endOfMonth = currentMonth.clone().endOf("month").endOf("week");
@@ -230,13 +225,11 @@ export const CustomCalendar = ({
     [currentMonth, selectedDate, setSelectedDate, dailyRecordsMap]
   );
 
-  // Função para definir o mês atual como o mês selecionado
   const goToToday = () => {
     setCurrentMonth(today);
     setSelectedDate(today.format("YYYY-MM-DD"));
   };
 
-  // Mostrar o botão "Hoje" apenas se não estiver no mês atual
   const showTodayButton = !today.isSame(currentMonth, "month");
 
   return (

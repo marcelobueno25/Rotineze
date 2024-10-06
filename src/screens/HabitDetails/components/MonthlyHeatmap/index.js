@@ -9,17 +9,13 @@ const MonthlyHeatmap = ({ habit, currentDate, initialDate, endDate }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
 
-  // Obter o início e o fim do mês atual
   const startOfMonth = moment(currentDate).startOf("month");
   const endOfMonth = moment(currentDate).endOf("month");
 
-  // Obter o primeiro dia da semana (Segunda-feira)
   const startDayOfWeek = startOfMonth.clone().startOf("isoWeek");
 
-  // Obter o último dia da semana (Domingo)
   const endDayOfWeek = endOfMonth.clone().endOf("isoWeek");
 
-  // Gerar um array de dias de startDayOfWeek até endDayOfWeek
   const daysArray = [];
   const day = startDayOfWeek.clone();
   while (day.isBefore(endDayOfWeek) || day.isSame(endDayOfWeek, "day")) {
@@ -27,11 +23,8 @@ const MonthlyHeatmap = ({ habit, currentDate, initialDate, endDate }) => {
     day.add(1, "day");
   }
 
-  // Obter as datas em que o hábito foi concluído
-  // Supondo que habit.completionDates seja um array de datas no formato 'YYYY-MM-DD'
   const completionDates = habit.checkIns || [];
 
-  // Construir as semanas para o calendário
   const weeks = [];
   for (let i = 0; i < daysArray.length; i += 7) {
     weeks.push(daysArray.slice(i, i + 7));
@@ -55,7 +48,6 @@ const MonthlyHeatmap = ({ habit, currentDate, initialDate, endDate }) => {
 
   return (
     <View style={{ padding: 5 }}>
-      {/* Cabeçalhos dos dias da semana */}
       <View style={{ flexDirection: "row", marginBottom: 5 }}>
         {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((dayName) => (
           <View key={dayName} style={{ flex: 1, alignItems: "center" }}>
@@ -71,7 +63,7 @@ const MonthlyHeatmap = ({ habit, currentDate, initialDate, endDate }) => {
           </View>
         ))}
       </View>
-      {/* Semanas */}
+
       {weeks.map((weekDays, index) => (
         <View key={index} style={{ flexDirection: "row" }}>
           {weekDays.map((day) => {
@@ -97,7 +89,7 @@ const MonthlyHeatmap = ({ habit, currentDate, initialDate, endDate }) => {
                     : theme.colors.background,
                   alignItems: "center",
                   justifyContent: "center",
-                  opacity: enabled ? 1 : 0.3, // Reduz a opacidade se desativado
+                  opacity: enabled ? 1 : 0.3,
                 }}
               >
                 {isCurrentMonth &&
@@ -132,7 +124,7 @@ const MonthlyHeatmap = ({ habit, currentDate, initialDate, endDate }) => {
                         width: 30,
                         height: 30,
                         borderRadius: 15,
-                        backgroundColor: theme.colors.disabled, // Cor para indicar desativado
+                        backgroundColor: theme.colors.disabled,
                         alignItems: "center",
                         justifyContent: "center",
                       }}

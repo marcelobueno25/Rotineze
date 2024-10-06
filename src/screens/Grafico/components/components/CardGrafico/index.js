@@ -3,7 +3,6 @@ import { View, StyleSheet } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-// Componente para exibir informações em forma de gráfico
 export const CardGrafico = React.memo(({ icon, color, number, label }) => {
   const theme = useTheme();
 

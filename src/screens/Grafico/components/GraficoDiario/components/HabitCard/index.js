@@ -3,7 +3,6 @@ import { View, StyleSheet } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-// Componente para exibir um hábito específico
 export const HabitCard = React.memo(({ habit, isCompleted }) => {
   const theme = useTheme();
   const iconColor = isCompleted ? habit.color : "#B0B0B0";

@@ -4,7 +4,6 @@ import { getStore } from "@redux/store";
 import { resetHabit } from "@redux/habitSlice";
 import { clearUser } from "@redux/authSlice";
 
-// Função para criar documento no Firestore
 const createUserInFirestore = async (uid, userData) => {
   try {
     await firestore().collection("users").doc(uid).set(userData);
@@ -14,7 +13,6 @@ const createUserInFirestore = async (uid, userData) => {
   }
 };
 
-// Função para obter informações do usuário no Firestore
 const getUserFromFirestore = async (uid) => {
   try {
     const userDoc = await firestore().collection("users").doc(uid).get();
@@ -28,20 +26,16 @@ const getUserFromFirestore = async (uid) => {
   }
 };
 
-// Função de cadastro de usuário
 export const signUp = async (email, password, name, birthDate, gender) => {
   try {
-    // Criar usuário no Firebase Auth
     const userCredential = await auth().createUserWithEmailAndPassword(
       email,
       password
     );
     const uid = userCredential.user.uid;
 
-    // Atualizar o nome do usuário no perfil do Firebase Auth
     await userCredential.user.updateProfile({ displayName: name });
 
-    // Dados do usuário para salvar no Firestore
     const userData = {
       uid,
       name,
@@ -50,10 +44,8 @@ export const signUp = async (email, password, name, birthDate, gender) => {
       gender,
     };
 
-    // Salvar dados no Firestore
     await createUserInFirestore(uid, userData);
 
-    // Retornar os dados do Firestore
     return getUserFromFirestore(uid);
   } catch (error) {
     console.error("Erro no cadastro:", error);
@@ -61,17 +53,14 @@ export const signUp = async (email, password, name, birthDate, gender) => {
   }
 };
 
-// Função de login de usuário
 export const signIn = async (email, password) => {
   try {
-    // Autenticar o usuário no Firebase Auth
     const userCredential = await auth().signInWithEmailAndPassword(
       email,
       password
     );
     const uid = userCredential.user.uid;
 
-    // Buscar e retornar os dados do usuário no Firestore
     return getUserFromFirestore(uid);
   } catch (error) {
     console.error("Erro no login:", error);

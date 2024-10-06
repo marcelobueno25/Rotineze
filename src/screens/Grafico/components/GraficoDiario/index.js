@@ -4,10 +4,10 @@ import { View, StyleSheet, ScrollView } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import { getHabitsForDate } from "@utils/habits";
 import { CardGrafico } from "../components/CardGrafico";
-import { HabitCard } from "../components/HabitCard";
-import { CustomCalendar } from "../components/CustomCalendar"; // Importar o novo componente
-import { getHabitsForDate } from "@utils/habits"; // Importar a função criada
+import { HabitCard } from "./components/HabitCard";
+import { CustomCalendar } from "./components/CustomCalendar";
 
 export function GraficoDiario() {
   const theme = useTheme();
@@ -16,7 +16,6 @@ export function GraficoDiario() {
   );
   const habits = useSelector((state) => state.habits.habits) || [];
 
-  // Mapeia registros diários com base nos hábitos para o calendário
   const dailyRecordsMap = useMemo(() => {
     const records = {};
 
@@ -38,7 +37,6 @@ export function GraficoDiario() {
     return records;
   }, [habits]);
 
-  // Obtém os hábitos completos, não completos, porcentagem e total de hábitos para a data selecionada
   const result = useMemo(
     () => getHabitsForDate(selectedDate, habits),
     [selectedDate, habits]

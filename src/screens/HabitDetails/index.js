@@ -59,7 +59,6 @@ const HabitDetails = ({ route, navigation }) => {
     state.habits.habits.find((h) => h.id === habitId)
   );
 
-  // Verifica se o hábito existe
   if (!habit) {
     return (
       <View style={styles.container}>
@@ -72,7 +71,6 @@ const HabitDetails = ({ route, navigation }) => {
 
   const [selectedMonth, setSelectedMonth] = useState(moment());
 
-  // Formatação de datas
   const initialDate = moment(habit.initialDate, "DD/MM/YYYY");
   const endDate = habit.endDate ? moment(habit.endDate, "DD/MM/YYYY") : null;
 
@@ -81,26 +79,22 @@ const HabitDetails = ({ route, navigation }) => {
     ? endDate.format("DD/MM/YYYY")
     : "Indeterminado";
 
-  // Nomes dos dias da semana em português
   moment.locale("pt-br");
   const weekDays = moment.weekdaysShort(true);
   const formattedFrequency = habit.frequency
     .map((day) => weekDays[day])
     .join(", ");
 
-  // Horário da notificação formatado
   const notificationTime = habit.frequencyTime
     ? moment(habit.frequencyTime, "HH:mm").format("HH:mm")
     : null;
 
-  // Dados estatísticos mensais
   const currentDate = selectedMonth.format("YYYY-MM-DD");
   const monthlyStats = useMemo(
     () => getHabitStatsForMonth(currentDate, habit),
     [habit, currentDate]
   );
 
-  // Datas de conclusão do hábito no mês selecionado
   const completionDates = useMemo(() => {
     if (!habit.checks) return [];
 
@@ -118,31 +112,26 @@ const HabitDetails = ({ route, navigation }) => {
 
   const handlePreviousMonth = () => {
     const newMonth = selectedMonth.clone().subtract(1, "month");
-    // Verifica se o novo mês não é anterior ao mês da data inicial
     if (newMonth.isSameOrAfter(initialDate.clone().startOf("month"))) {
       Vibration.vibrate(50);
       setSelectedMonth(newMonth);
     } else {
-      // Opcional: Feedback para o usuário
       Vibration.vibrate(100);
     }
   };
 
   const handleNextMonth = () => {
     const newMonth = selectedMonth.clone().add(1, "month");
-    // Verifica se o novo mês não é posterior ao mês da data final, se existir
     if (!endDate || newMonth.isSameOrBefore(endDate.clone().endOf("month"))) {
       Vibration.vibrate(50);
       setSelectedMonth(newMonth);
     } else {
-      // Opcional: Feedback para o usuário
       Vibration.vibrate(100);
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      {/* Cabeçalho com Nome e Ícone */}
       <Card style={styles.headerCard}>
         <View style={styles.headerContent}>
           <View
@@ -169,7 +158,6 @@ const HabitDetails = ({ route, navigation }) => {
         </View>
       </Card>
 
-      {/* Informações Básicas */}
       <Card style={styles.infoCard}>
         <Card.Title
           title="Informações do Hábito"
@@ -199,11 +187,9 @@ const HabitDetails = ({ route, navigation }) => {
         </Card.Content>
       </Card>
 
-      {/* Resumo Mensal */}
       <Card style={styles.summaryCard}>
         <Card.Title title="Resumo do Mês" titleStyle={{ fontWeight: "bold" }} />
         <Card.Content>
-          {/* Estatísticas */}
           <View style={styles.statsContainer}>
             <StatCard
               label="Pendentes"
@@ -244,7 +230,6 @@ const HabitDetails = ({ route, navigation }) => {
             color={theme.colors.primary}
             style={styles.progressBar}
           />
-          {/* Botões de Navegação de Mês */}
           <View style={styles.monthNav}>
             <IconButton
               icon="chevron-left"
@@ -289,7 +274,6 @@ const HabitDetails = ({ route, navigation }) => {
             />
           </View>
 
-          {/* Heatmap Mensal */}
           <MonthlyHeatmap
             habit={habit}
             currentDate={currentDate}
@@ -300,7 +284,6 @@ const HabitDetails = ({ route, navigation }) => {
         </Card.Content>
       </Card>
 
-      {/* Botão de Edição */}
       <Button
         mode="contained"
         onPress={() => {

@@ -14,7 +14,6 @@ const CardDiario = memo(function CardDiario({ habits, selectedDate }) {
       const aCompleted = a.checkIns.includes(selectedDate);
       const bCompleted = b.checkIns.includes(selectedDate);
 
-      // Move hábitos completados para o final
       if (aCompleted && !bCompleted) return 1;
       if (!aCompleted && bCompleted) return -1;
       return 0;

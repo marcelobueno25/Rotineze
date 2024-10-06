@@ -1,17 +1,15 @@
 import React, { useMemo, useState } from "react";
 import { View, Vibration } from "react-native";
+import { useSelector } from "react-redux";
 import { Card, Text, useTheme, IconButton } from "react-native-paper";
 import moment from "moment";
-import { useSelector } from "react-redux";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { CardGrafico } from "../components/CardGrafico";
 import { getHabitsForMonth, getTopHabitSequencesForMonth } from "@utils/habits";
+import { CardGrafico } from "../components/CardGrafico";
 
-// Componente de Seleção de Mês
 const MonthSelector = ({ selectedMonth, onChangeMonth }) => {
   const theme = useTheme();
 
-  // Função para manipular a mudança de mês (anterior e próximo)
   const handleMonthChange = (direction) => {
     const newMonth = moment(selectedMonth)
       .add(direction, "month")
@@ -69,16 +67,13 @@ export function GraficoMensal() {
   const theme = useTheme();
   const habits = useSelector((state) => state.habits.habits) || [];
 
-  // Estado para controlar o mês selecionado
   const [selectedMonth, setSelectedMonth] = useState(moment().startOf("month"));
 
-  // Obtém as informações do mês usando `getHabitsForMonth`
   const monthStats = useMemo(
     () => getHabitsForMonth(selectedMonth, habits),
     [selectedMonth, habits]
   );
 
-  // Obtém o Rank dos hábitos com maior sequência no mês
   const topHabits = useMemo(
     () => getTopHabitSequencesForMonth(selectedMonth, habits),
     [selectedMonth, habits]
@@ -86,7 +81,6 @@ export function GraficoMensal() {
 
   return (
     <>
-      {/* Cartão principal com a porcentagem de conclusão */}
       <Card
         style={{
           borderRadius: 10,
@@ -111,13 +105,11 @@ export function GraficoMensal() {
         </View>
       </Card>
 
-      {/* Componente de Seleção de Mês */}
       <MonthSelector
         selectedMonth={selectedMonth}
         onChangeMonth={setSelectedMonth}
       />
 
-      {/* Cartões com estatísticas do mês */}
       <View
         style={{
           flexDirection: "row",
@@ -160,7 +152,6 @@ export function GraficoMensal() {
         />
       </View>
 
-      {/* Rank dos Hábitos com maior sequência de check-ins */}
       <View style={{ marginBottom: 20 }}>
         <Text
           variant="titleMedium"
@@ -190,14 +181,13 @@ export function GraficoMensal() {
                   variant="titleMedium"
                   style={{
                     fontWeight: "bold",
-                    //fontSize: 18,
                     color: theme.colors.primary,
                     marginRight: 15,
                   }}
                 >
                   #{index + 1}
                 </Text>
-                {/* Ícone de fogo para indicar sequência */}
+
                 <Icon
                   name="fire"
                   size={24}

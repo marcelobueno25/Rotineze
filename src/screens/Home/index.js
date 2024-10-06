@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from "react";
 import { View, ScrollView, Vibration } from "react-native";
-import { useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
+import { useTheme } from "react-native-paper";
 import moment from "moment";
 import { setSelectedDate } from "@redux/habitSlice";
 import { getHabitsForDate } from "@utils/habits";
+import { EmptyState } from "@components/Empty";
 import { WeekCalendarManual } from "./components/WeekCalendarManual";
 import { StatsSummary } from "./components/StatsSummary";
-import { EmptyState } from "@components/Empty";
 import CardDiario from "./components/CardDiario";
 import { Layout } from "../index";
 

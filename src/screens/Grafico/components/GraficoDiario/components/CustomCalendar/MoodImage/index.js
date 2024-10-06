@@ -1,9 +1,7 @@
-// MoodImage.js
 import React from "react";
 import { Image } from "react-native";
 import { useSelector } from "react-redux";
 
-// Import images for both cats and dogs
 const moodImages = {
   cat: {
     bravo: require("@assets/expressionface/cat_bravo.png"),
