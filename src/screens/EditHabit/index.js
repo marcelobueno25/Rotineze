@@ -195,6 +195,7 @@ export function EditHabit({ route, navigation }) {
                 setEndDate={setEndDate}
                 enableEndDate={enableEndDate}
                 setEnableEndDate={setEnableEndDate}
+                disabled={true}
               />
             </Card.Content>
           </Card>

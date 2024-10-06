@@ -11,6 +11,7 @@ const DateSelection = ({
   setEndDate,
   enableEndDate,
   setEnableEndDate,
+  disabled = false,
 }) => {
   const [showInitialDate, setShowInitialDate] = useState(false);
   const [showEndDate, setShowEndDate] = useState(false);
@@ -32,6 +33,7 @@ const DateSelection = ({
             Vibration.vibrate(50);
             setEnableEndDate(!enableEndDate);
           }}
+          disabled={disabled}
         />
       </View>
 
@@ -44,14 +46,14 @@ const DateSelection = ({
       >
         <TouchableOpacity
           style={{ flex: 1, marginHorizontal: 4 }}
-          onPress={() => setShowInitialDate(true)}
+          onPress={() => !disabled && setShowInitialDate(true)}
         >
           <TextInput
             label="Data Inicial"
             value={moment(initialDate).format("DD/MM/YYYY")}
             mode="outlined"
             editable={false}
-            style={{ backgroundColor: "transparent" }}
+            style={{ backgroundColor: disabled ? "#f0f0f0" : "transparent" }}
           />
           <DatePicker
             modal
@@ -73,18 +75,17 @@ const DateSelection = ({
           />
         </TouchableOpacity>
 
-        {/* Data Final */}
         {enableEndDate && (
           <TouchableOpacity
             style={{ flex: 1, marginHorizontal: 4 }}
-            onPress={() => setShowEndDate(true)}
+            onPress={() => !disabled && setShowEndDate(true)}
           >
             <TextInput
               label="Data Final"
               value={endDate ? moment(endDate).format("DD/MM/YYYY") : ""}
               mode="outlined"
               editable={false}
-              style={{ backgroundColor: "transparent" }}
+              style={{ backgroundColor: disabled ? "#f0f0f0" : "transparent" }}
             />
             <DatePicker
               modal
