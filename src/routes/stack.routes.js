@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { Vibration } from "react-native";
 import { useTheme as navigationTheme } from "@react-navigation/native";
 import { useTheme as paperTheme } from "react-native-paper";
@@ -11,9 +11,6 @@ import { Onboarding } from "@screens/Onboarding";
 import { CreateHabits } from "@screens/CreateHabits";
 import { Settings } from "@screens/Settings";
 import { Aparencia } from "@screens/Settings/components/Aparencia";
-import LoginModal from "@screens/Login";
-import Register from "@screens/Register";
-import { Avancado } from "@screens/Settings/components/Avançado/indes";
 import HabitDetails from "@screens/HabitDetails";
 
 const Stack = createNativeStackNavigator();
@@ -34,18 +31,22 @@ const HeaderIcon = ({ name, onPress, size = 26, style }) => {
   );
 };
 
-const stackScreenOptions = ({ navigation }) => {
-  const paper = paperTheme(); // Captura o tema do react-native-paper
+export function StackRoutes() {
+  const hasSeenOnboarding = useSelector(
+    (state) => state.auth.hasSeenOnboarding
+  );
 
-  return {
+  const paper = paperTheme();
+
+  const stackScreenOptions = ({ navigation }) => ({
     title: "Rotinize",
     headerShown: true,
     animation: "fade_from_bottom",
     headerStyle: {
-      backgroundColor: paper.colors.primaryContainer, // Definir a cor de fundo do `header` usando `paper.colors.primary`
+      backgroundColor: paper.colors.primaryContainer,
     },
     headerShadowVisible: false,
-    headerTintColor: paper.colors.onBackground, // Cor do texto do header
+    headerTintColor: paper.colors.onBackground,
     headerRight: () => (
       <HeaderIcon
         name="plus-circle-outline"
@@ -60,79 +61,47 @@ const stackScreenOptions = ({ navigation }) => {
         style={{ marginRight: 10 }}
       />
     ),
-  };
-};
+  });
 
-export function StackRoutes() {
-  const hasSeenOnboarding = useSelector(
-    (state) => state.auth.hasSeenOnboarding
+  return (
+    <Stack.Navigator>
+      {!hasSeenOnboarding && (
+        <Stack.Screen
+          name="Onboarding"
+          component={Onboarding}
+          options={{ headerShown: false }}
+        />
+      )}
+      <Stack.Screen
+        name="Home"
+        component={TabRoutes}
+        options={stackScreenOptions}
+      />
+      <Stack.Screen
+        name="CreateHabits"
+        component={CreateHabits}
+        options={{ title: "Novo Hábito" }}
+      />
+      <Stack.Screen
+        name="HabitDetails"
+        component={HabitDetails}
+        options={{ title: "Detalhe do Hábito" }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={Settings}
+        options={{ title: "Configuração" }}
+      />
+      <Stack.Screen
+        name="Aparencia"
+        component={Aparencia}
+        options={{ title: "Aparência" }}
+      />
+      <Stack.Screen
+        name="EditHabit"
+        component={EditHabit}
+        options={{ title: "Editar" }}
+      />
+    </Stack.Navigator>
   );
-
-  const AuthenticatedStack = useCallback(
-    () => (
-      <>
-        {!hasSeenOnboarding && (
-          <Stack.Screen
-            name="Onboarding"
-            component={Onboarding}
-            options={{ headerShown: false }}
-          />
-        )}
-        <Stack.Screen
-          name="Home"
-          component={TabRoutes}
-          options={stackScreenOptions}
-        />
-        <Stack.Screen
-          name="Login"
-          component={LoginModal}
-          options={{
-            presentation: "modal",
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="Register"
-          component={Register}
-          options={{
-            presentation: "modal",
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="CreateHabits"
-          component={CreateHabits}
-          options={{ title: "Novo Hábito" }}
-        />
-        <Stack.Screen
-          name="HabitDetails"
-          component={HabitDetails}
-          options={{ title: "Detalhe do Hábito" }}
-        />
-        <Stack.Screen
-          name="Settings"
-          component={Settings}
-          options={{ title: "Configuração" }}
-        />
-        <Stack.Screen
-          name="Aparencia"
-          component={Aparencia}
-          options={{ title: "Aparência" }}
-        />
-        <Stack.Screen
-          name="Avançado"
-          component={Avancado}
-          options={{ title: "Avançado" }}
-        />
-        <Stack.Screen
-          name="EditHabit"
-          component={EditHabit}
-          options={{ title: "Editar" }}
-        />
-      </>
-    ),
-    [hasSeenOnboarding]
-  );
-
-  return <Stack.Navigator>{AuthenticatedStack()}</Stack.Navigator>;
 }
