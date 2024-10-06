@@ -5,7 +5,7 @@ import { useTheme, Text } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { checkHabit } from "@redux/habitSlice";
 
-const MonthlyHeatmap = ({ habit, currentDate }) => {
+const MonthlyHeatmap = ({ habit, currentDate, initialDate, endDate }) => {
   const dispatch = useDispatch();
   const theme = useTheme();
 
@@ -42,6 +42,17 @@ const MonthlyHeatmap = ({ habit, currentDate }) => {
     dispatch(checkHabit({ id: habit.id, date }));
   };
 
+  const isDateEnabled = (day) => {
+    const date = day.clone().startOf("day");
+    if (endDate) {
+      return (
+        date.isSameOrAfter(initialDate, "day") &&
+        date.isSameOrBefore(endDate, "day")
+      );
+    }
+    return date.isSameOrAfter(initialDate, "day");
+  };
+
   return (
     <View style={{ padding: 5 }}>
       {/* Cabeçalhos dos dias da semana */}
@@ -69,6 +80,8 @@ const MonthlyHeatmap = ({ habit, currentDate }) => {
             const isCompleted = completionDates.includes(
               day.format("DD/MM/YYYY")
             );
+            const enabled = isCurrentMonth && isDateEnabled(day);
+
             return (
               <View
                 key={day.format("DD/MM/YYYY")}
@@ -84,34 +97,56 @@ const MonthlyHeatmap = ({ habit, currentDate }) => {
                     : theme.colors.background,
                   alignItems: "center",
                   justifyContent: "center",
+                  opacity: enabled ? 1 : 0.3, // Reduz a opacidade se desativado
                 }}
               >
-                {isCurrentMonth && (
-                  <TouchableOpacity
-                    onPress={() => handleCheckHabit(dateString)}
-                    style={{
-                      width: 30,
-                      height: 30,
-                      borderRadius: 15,
-                      backgroundColor: isCompleted
-                        ? theme.colors.primary
-                        : theme.colors.surface,
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Text
+                {isCurrentMonth &&
+                  (enabled ? (
+                    <TouchableOpacity
+                      onPress={() => handleCheckHabit(dateString)}
                       style={{
-                        color: isCompleted
-                          ? theme.colors.onPrimary
-                          : theme.colors.onSurface,
-                        fontSize: 12,
+                        width: 30,
+                        height: 30,
+                        borderRadius: 15,
+                        backgroundColor: isCompleted
+                          ? theme.colors.primary
+                          : theme.colors.surface,
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
-                      {day.date()}
-                    </Text>
-                  </TouchableOpacity>
-                )}
+                      <Text
+                        style={{
+                          color: isCompleted
+                            ? theme.colors.onPrimary
+                            : theme.colors.onSurface,
+                          fontSize: 12,
+                        }}
+                      >
+                        {day.date()}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <View
+                      style={{
+                        width: 30,
+                        height: 30,
+                        borderRadius: 15,
+                        backgroundColor: theme.colors.disabled, // Cor para indicar desativado
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: theme.colors.onSurface,
+                          fontSize: 12,
+                        }}
+                      >
+                        {day.date()}
+                      </Text>
+                    </View>
+                  ))}
               </View>
             );
           })}

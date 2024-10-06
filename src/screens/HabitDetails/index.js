@@ -73,11 +73,12 @@ const HabitDetails = ({ route, navigation }) => {
   const [selectedMonth, setSelectedMonth] = useState(moment());
 
   // Formatação de datas
-  const formattedInitialDate = moment(habit.initialDate, "DD/MM/YYYY").format(
-    "DD/MM/YYYY"
-  );
-  const formattedEndDate = habit.endDate
-    ? moment(habit.endDate, "DD/MM/YYYY").format("DD/MM/YYYY")
+  const initialDate = moment(habit.initialDate, "DD/MM/YYYY");
+  const endDate = habit.endDate ? moment(habit.endDate, "DD/MM/YYYY") : null;
+
+  const formattedInitialDate = initialDate.format("DD/MM/YYYY");
+  const formattedEndDate = endDate
+    ? endDate.format("DD/MM/YYYY")
     : "Indeterminado";
 
   // Nomes dos dias da semana em português
@@ -116,13 +117,27 @@ const HabitDetails = ({ route, navigation }) => {
   }, [habit.checks, currentDate]);
 
   const handlePreviousMonth = () => {
-    Vibration.vibrate(50);
-    setSelectedMonth((prev) => prev.clone().subtract(1, "month"));
+    const newMonth = selectedMonth.clone().subtract(1, "month");
+    // Verifica se o novo mês não é anterior ao mês da data inicial
+    if (newMonth.isSameOrAfter(initialDate.clone().startOf("month"))) {
+      Vibration.vibrate(50);
+      setSelectedMonth(newMonth);
+    } else {
+      // Opcional: Feedback para o usuário
+      Vibration.vibrate(100);
+    }
   };
 
   const handleNextMonth = () => {
-    Vibration.vibrate(50);
-    setSelectedMonth((prev) => prev.clone().add(1, "month"));
+    const newMonth = selectedMonth.clone().add(1, "month");
+    // Verifica se o novo mês não é posterior ao mês da data final, se existir
+    if (!endDate || newMonth.isSameOrBefore(endDate.clone().endOf("month"))) {
+      Vibration.vibrate(50);
+      setSelectedMonth(newMonth);
+    } else {
+      // Opcional: Feedback para o usuário
+      Vibration.vibrate(100);
+    }
   };
 
   return (
@@ -234,9 +249,16 @@ const HabitDetails = ({ route, navigation }) => {
             <IconButton
               icon="chevron-left"
               size={24}
-              onPress={() => {
-                Vibration.vibrate(50);
-                handlePreviousMonth();
+              onPress={handlePreviousMonth}
+              disabled={selectedMonth.isSameOrBefore(
+                initialDate.clone().startOf("month")
+              )}
+              style={{
+                opacity: selectedMonth.isSameOrBefore(
+                  initialDate.clone().startOf("month")
+                )
+                  ? 0.3
+                  : 1,
               }}
             />
             <Text
@@ -251,9 +273,18 @@ const HabitDetails = ({ route, navigation }) => {
             <IconButton
               icon="chevron-right"
               size={24}
-              onPress={() => {
-                Vibration.vibrate(50);
-                handleNextMonth();
+              onPress={handleNextMonth}
+              disabled={
+                endDate
+                  ? selectedMonth.isSameOrAfter(endDate.clone().endOf("month"))
+                  : false
+              }
+              style={{
+                opacity:
+                  endDate &&
+                  selectedMonth.isSameOrAfter(endDate.clone().endOf("month"))
+                    ? 0.3
+                    : 1,
               }}
             />
           </View>
@@ -263,6 +294,8 @@ const HabitDetails = ({ route, navigation }) => {
             habit={habit}
             currentDate={currentDate}
             completionDates={completionDates}
+            initialDate={initialDate}
+            endDate={endDate}
           />
         </Card.Content>
       </Card>

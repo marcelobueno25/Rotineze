@@ -85,14 +85,15 @@ export function GraficoDiario() {
           color={theme.colors.success}
         />
       </View>
+      <View style={{ padding: 5 }}>
+        {result.completedHabits.map((habit) => (
+          <HabitCard key={habit.id} habit={habit} isCompleted={true} />
+        ))}
 
-      {result.completedHabits.map((habit) => (
-        <HabitCard key={habit.id} habit={habit} isCompleted={true} />
-      ))}
-
-      {result.notCompletedHabits.map((habit) => (
-        <HabitCard key={habit.id} habit={habit} isCompleted={false} />
-      ))}
+        {result.notCompletedHabits.map((habit) => (
+          <HabitCard key={habit.id} habit={habit} isCompleted={false} />
+        ))}
+      </View>
     </ScrollView>
   );
 }
