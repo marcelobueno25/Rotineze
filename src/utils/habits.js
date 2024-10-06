@@ -25,10 +25,10 @@ export const getHabitsForDate = (dateString, habits) => {
   );
 
   // Calcula o total e a porcentagem de conclusão
-  const totalHabits = filteredHabits.length;
+  const totalHabits = filteredHabits?.length;
   const completionPercentage =
     totalHabits > 0
-      ? Math.floor((completedHabits.length / totalHabits) * 100)
+      ? Math.floor((completedHabits?.length / totalHabits) * 100)
       : 0;
   return {
     date: formattedDate,
@@ -87,12 +87,12 @@ export const getHabitsForMonth = (monthString, habits) => {
         );
       });
 
-      completedHabitsCount += monthlyCheckIns.length;
+      completedHabitsCount += monthlyCheckIns?.length;
     }
   });
 
   const totalHabitDays = totalExpectedHabitDays - completedHabitsCount; // Dias restantes para concluir os hábitos
-  const totalHabitsInMonth = filteredHabits.length; // Total de hábitos ativos no mês
+  const totalHabitsInMonth = filteredHabits?.length; // Total de hábitos ativos no mês
 
   // Cálculo da porcentagem de conclusão sem casas decimais
   const completionPercentage =
@@ -136,7 +136,7 @@ export const getTopHabitSequencesForMonth = (monthString, habits) => {
       let currentSequence = 1;
       let maxSequence = 0;
 
-      for (let i = 1; i < monthlyCheckIns.length; i++) {
+      for (let i = 1; i < monthlyCheckIns?.length; i++) {
         const prevDate = moment(monthlyCheckIns[i - 1], "DD/MM/YYYY");
         const currDate = moment(monthlyCheckIns[i], "DD/MM/YYYY");
 

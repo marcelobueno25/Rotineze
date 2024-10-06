@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { View, ScrollView, StyleSheet } from "react-native";
+import { View, ScrollView, StyleSheet, Vibration } from "react-native";
 import {
   Text,
   Card,
@@ -116,10 +116,12 @@ const HabitDetails = ({ route, navigation }) => {
   }, [habit.checks, currentDate]);
 
   const handlePreviousMonth = () => {
+    Vibration.vibrate(50);
     setSelectedMonth((prev) => prev.clone().subtract(1, "month"));
   };
 
   const handleNextMonth = () => {
+    Vibration.vibrate(50);
     setSelectedMonth((prev) => prev.clone().add(1, "month"));
   };
 
@@ -231,12 +233,15 @@ const HabitDetails = ({ route, navigation }) => {
           <View style={styles.monthNav}>
             <IconButton
               icon="chevron-left"
-              size={30}
-              onPress={handlePreviousMonth}
+              size={24}
+              onPress={() => {
+                Vibration.vibrate(50);
+                handlePreviousMonth();
+              }}
             />
             <Text
+              variant="titleMedium"
               style={{
-                fontSize: 18,
                 fontWeight: "bold",
                 color: theme.colors.onBackground,
               }}
@@ -245,8 +250,11 @@ const HabitDetails = ({ route, navigation }) => {
             </Text>
             <IconButton
               icon="chevron-right"
-              size={30}
-              onPress={handleNextMonth}
+              size={24}
+              onPress={() => {
+                Vibration.vibrate(50);
+                handleNextMonth();
+              }}
             />
           </View>
 
@@ -262,7 +270,10 @@ const HabitDetails = ({ route, navigation }) => {
       {/* Botão de Edição */}
       <Button
         mode="contained"
-        onPress={() => navigation.navigate("EditHabit", { habitId: habit.id })}
+        onPress={() => {
+          Vibration.vibrate(100);
+          navigation.navigate("EditHabit", { habitId: habit.id });
+        }}
         style={styles.editButton}
         contentStyle={{ padding: 8 }}
       >

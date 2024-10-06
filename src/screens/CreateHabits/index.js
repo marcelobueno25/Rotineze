@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button, Card, useTheme } from "react-native-paper";
 import uuid from "react-native-uuid";
-import { View, ScrollView, StyleSheet } from "react-native";
+import { View, ScrollView, StyleSheet, Vibration } from "react-native";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { COLORS_NEW_HABIT, ICONS_NEW_HABIT } from "../../constant";
@@ -87,6 +87,7 @@ export function CreateHabits({ navigation }) {
   };
 
   const onSubmit = async (data) => {
+    Vibration.vibrate(100);
     if (!selectedColor || !selectedIcon) {
       alert("Por favor, selecione uma cor e um ícone.");
       return;

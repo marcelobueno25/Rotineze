@@ -1,20 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, Linking } from "react-native";
-import {
-  List,
-  Divider,
-  Text,
-  IconButton,
-  Switch,
-  useTheme,
-  Button,
-} from "react-native-paper";
+import { ScrollView, Linking, Vibration } from "react-native";
+import { List, Divider, Text, IconButton, useTheme } from "react-native-paper";
 // import { useSelector } from "react-redux";
 // import { signOut } from "@services/authService";
 // import { backupHabits } from "@services/habitService";
 // import { PremiumCard } from "./components/PremiumCard";
 // import { AvatarUser } from "./components/AvatarUser";
-import { ModalBottom } from "@components/Modal";
+// import { ModalBottom } from "@components/Modal";
 import * as Notifications from "expo-notifications";
 
 export function Settings({ navigation }) {
@@ -124,6 +116,7 @@ export function Settings({ navigation }) {
           title="Aparência"
           left={() => <List.Icon icon="palette" color={theme.colors.primary} />}
           onPress={() => {
+            Vibration.vibrate(100);
             navigation.navigate("Aparencia");
           }}
         />

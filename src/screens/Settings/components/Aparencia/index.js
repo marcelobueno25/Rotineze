@@ -1,9 +1,15 @@
 import React, { useState } from "react";
-import { View, ScrollView, Image, ImageBackground } from "react-native";
+import {
+  View,
+  ScrollView,
+  Image,
+  ImageBackground,
+  Vibration,
+} from "react-native";
 import { List, Divider, Text, RadioButton, useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 
-export function Aparencia({ navigation }) {
+export function Aparencia() {
   const dispatch = useDispatch();
   const theme = useTheme();
   const currentConfig = useSelector((state) => state.configuration);
@@ -15,6 +21,7 @@ export function Aparencia({ navigation }) {
   );
 
   const handleThemeChange = (value) => {
+    Vibration.vibrate(100);
     setThemeChecked(value);
     dispatch({
       type: "UPDATE_CONFIG",
@@ -23,6 +30,7 @@ export function Aparencia({ navigation }) {
   };
 
   const handleAnimalChange = (value) => {
+    Vibration.vibrate(100);
     setAnimalChecked(value);
     dispatch({
       type: "UPDATE_CONFIG",

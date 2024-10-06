@@ -1,13 +1,12 @@
 import React, { useState, useEffect, memo } from "react";
 import {
-  Text,
   IconButton,
   Modal,
   Portal,
   Button,
   useTheme,
 } from "react-native-paper";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Vibration } from "react-native";
 
 export const IconeForm = memo(
   ({ selectedIcon, setSelectedIcon, selectedColor, listIcons }) => {
@@ -39,7 +38,10 @@ export const IconeForm = memo(
                   icon={icon}
                   iconColor={selectedIcon === icon ? "#fff" : "#888"}
                   size={22}
-                  onPress={() => setSelectedIcon(icon)}
+                  onPress={() => {
+                    Vibration.vibrate(50);
+                    setSelectedIcon(icon);
+                  }}
                   style={
                     selectedIcon === icon
                       ? { backgroundColor: selectedColor }
@@ -49,7 +51,14 @@ export const IconeForm = memo(
               </View>
             ))}
         </View>
-        <Button onPress={() => setVisible(true)}>Ver mais</Button>
+        <Button
+          onPress={() => {
+            Vibration.vibrate(50);
+            setVisible(true);
+          }}
+        >
+          Ver mais
+        </Button>
         <Portal>
           <Modal
             visible={visible}
@@ -66,7 +75,10 @@ export const IconeForm = memo(
                   icon={icon}
                   iconColor={selectedIcon === icon ? "#fff" : "#888"}
                   size={22}
-                  onPress={() => handleIconSelect(icon)}
+                  onPress={() => {
+                    Vibration.vibrate(50);
+                    handleIconSelect(icon);
+                  }}
                   style={
                     selectedIcon === icon
                       ? { backgroundColor: selectedColor }
@@ -77,7 +89,10 @@ export const IconeForm = memo(
             </View>
             <Button
               mode="outlined"
-              onPress={() => setVisible(false)}
+              onPress={() => {
+                Vibration.vibrate(50);
+                setVisible(false);
+              }}
               style={{ marginTop: 10 }}
             >
               Fechar

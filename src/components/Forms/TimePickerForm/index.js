@@ -1,5 +1,5 @@
 import React, { memo, useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, Vibration } from "react-native";
 import { TextInput } from "react-native-paper";
 import DatePicker from "react-native-date-picker";
 import { converterParaData, converterParaHora } from "@utils/date";
@@ -9,7 +9,12 @@ export const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
 
   return (
     <>
-      <TouchableOpacity onPress={() => setVisible(true)}>
+      <TouchableOpacity
+        onPress={() => {
+          Vibration.vibrate(50);
+          setVisible(true);
+        }}
+      >
         <TextInput
           label="Horário da Notificação"
           value={selectedDate}
@@ -30,10 +35,14 @@ export const TimePickerForm = memo(({ selectedDate, setSelectedDate }) => {
         modal={true}
         open={visible}
         onConfirm={(date) => {
+          Vibration.vibrate(50);
           setSelectedDate(converterParaHora(date));
           setVisible(false);
         }}
-        onCancel={() => setVisible(false)}
+        onCancel={() => {
+          Vibration.vibrate(50);
+          setVisible(false);
+        }}
       />
     </>
   );

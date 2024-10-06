@@ -1,6 +1,6 @@
 // components/CustomCalendar.js
 import React, { useState, useMemo, useCallback } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Vibration } from "react-native";
 import moment from "moment";
 import MoodImage from "./MoodImage";
 import { useTheme, IconButton, Text } from "react-native-paper"; // Importar o IconButton do react-native-paper
@@ -23,9 +23,10 @@ const Header = React.memo(
             icon="chevron-left"
             size={24}
             color={theme.colors.primary}
-            onPress={() =>
-              setCurrentMonth(currentMonth.clone().subtract(1, "month"))
-            }
+            onPress={() => {
+              Vibration.vibrate(50);
+              setCurrentMonth(currentMonth.clone().subtract(1, "month"));
+            }}
           />
         </View>
 
@@ -44,14 +45,18 @@ const Header = React.memo(
             icon="chevron-right"
             size={24}
             color={theme.colors.primary}
-            onPress={() =>
-              setCurrentMonth(currentMonth.clone().add(1, "month"))
-            }
+            onPress={() => {
+              Vibration.vibrate(50);
+              setCurrentMonth(currentMonth.clone().add(1, "month"));
+            }}
           />
 
           {showTodayButton && (
             <TouchableOpacity
-              onPress={goToToday}
+              onPress={() => {
+                Vibration.vibrate(200);
+                goToToday();
+              }}
               style={{ marginLeft: 5, padding: 5 }}
             >
               <Text style={{ color: theme.colors.primary, fontWeight: "bold" }}>

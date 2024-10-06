@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ScrollView, Alert } from "react-native";
-import { Button, MD3Colors, Card, useTheme } from "react-native-paper";
+import { View, StyleSheet, ScrollView, Alert, Vibration } from "react-native";
+import { Button, Card, useTheme } from "react-native-paper";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import * as Notifications from "expo-notifications";
@@ -72,6 +72,7 @@ export function EditHabit({ route, navigation }) {
         content: {
           title: "Lembrete de Hábito",
           body: "Está na hora de completar seu hábito!",
+          sound: true,
         },
         identifier: `${habitId}-${day}`, // Usando o ID do hábito e o dia como identificador de notificação
         trigger: {
@@ -99,6 +100,7 @@ export function EditHabit({ route, navigation }) {
   };
 
   const onSubmit = async (data) => {
+    Vibration.vibrate(100);
     if (!selectedColor || !selectedIcon) {
       alert("Por favor, selecione uma cor e um ícone.");
       return;
@@ -129,6 +131,7 @@ export function EditHabit({ route, navigation }) {
   };
 
   const handleRemoveHabit = () => {
+    Vibration.vibrate(100);
     Alert.alert(
       "Deseja Excluir o Hábito",
       "Tem certeza de que deseja excluir este hábito?",

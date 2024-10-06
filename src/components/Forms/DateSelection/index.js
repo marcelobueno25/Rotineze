@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, Vibration } from "react-native";
 import { TextInput, Switch, Text } from "react-native-paper";
 import DatePicker from "react-native-date-picker";
 import moment from "moment";
@@ -28,7 +28,10 @@ const DateSelection = ({
         <Text variant="bodyMedium">Data de término</Text>
         <Switch
           value={enableEndDate}
-          onValueChange={() => setEnableEndDate(!enableEndDate)}
+          onValueChange={() => {
+            Vibration.vibrate(50);
+            setEnableEndDate(!enableEndDate);
+          }}
         />
       </View>
 
@@ -59,10 +62,14 @@ const DateSelection = ({
             confirmText="Confirmar"
             cancelText="Cancelar"
             onConfirm={(date) => {
+              Vibration.vibrate(50);
               setInitialDate(date);
               setShowInitialDate(false);
             }}
-            onCancel={() => setShowInitialDate(false)}
+            onCancel={() => {
+              Vibration.vibrate(50);
+              setShowInitialDate(false);
+            }}
           />
         </TouchableOpacity>
 
@@ -88,10 +95,14 @@ const DateSelection = ({
               confirmText="Confirmar"
               cancelText="Cancelar"
               onConfirm={(date) => {
+                Vibration.vibrate(50);
                 setEndDate(date);
                 setShowEndDate(false);
               }}
-              onCancel={() => setShowEndDate(false)}
+              onCancel={() => {
+                Vibration.vibrate(50);
+                setShowEndDate(false);
+              }}
             />
           </TouchableOpacity>
         )}

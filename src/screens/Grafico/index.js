@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, Vibration } from "react-native";
 import Tabs from "@components/Tabs";
 import { GraficoDiario } from "./components/GraficoDiario";
 import { GraficoMensal } from "./components/GraficoMensal";
@@ -9,6 +9,7 @@ export function Grafico() {
   const [selectedTab, setSelectedTab] = useState("Diário");
 
   const renderContent = () => {
+    Vibration.vibrate(100);
     switch (selectedTab) {
       case "Mensal":
         return <GraficoMensal />;

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Vibration } from "react-native";
 import { useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -37,6 +37,7 @@ export function Home() {
   } = habitsForSelectedDate;
 
   const handleDateChange = (date) => {
+    Vibration.vibrate(100);
     dispatch(setSelectedDate(moment(date).format("DD/MM/YYYY")));
     setSelectedDatee(date);
   };

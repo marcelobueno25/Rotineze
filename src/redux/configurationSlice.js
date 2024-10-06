@@ -3,6 +3,7 @@ const initialConfigState = {
   notificationsEnabled: true,
   language: "pt-br",
   onboarding: true,
+  animal: "cat",
 };
 
 const configurationReducer = (state = initialConfigState, action) => {

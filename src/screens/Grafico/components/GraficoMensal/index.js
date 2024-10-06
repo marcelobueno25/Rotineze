@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { View } from "react-native";
+import { View, Vibration } from "react-native";
 import { Card, Text, useTheme, IconButton } from "react-native-paper";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -32,7 +32,10 @@ const MonthSelector = ({ selectedMonth, onChangeMonth }) => {
         <IconButton
           icon="chevron-left"
           size={24}
-          onPress={() => handleMonthChange(-1)}
+          onPress={() => {
+            Vibration.vibrate(50);
+            handleMonthChange(-1);
+          }}
           color={theme.colors.primary}
         />
       </View>
@@ -51,7 +54,10 @@ const MonthSelector = ({ selectedMonth, onChangeMonth }) => {
         <IconButton
           icon="chevron-right"
           size={24}
-          onPress={() => handleMonthChange(1)}
+          onPress={() => {
+            Vibration.vibrate(50);
+            handleMonthChange(1);
+          }}
           color={theme.colors.primary}
         />
       </View>
