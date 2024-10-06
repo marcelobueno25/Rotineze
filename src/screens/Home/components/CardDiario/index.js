@@ -1,14 +1,23 @@
-import React, { memo, useRef, useMemo } from "react";
+import React, { memo, useRef, useState, useMemo, useEffect } from "react";
 import { Swipeable } from "react-native-gesture-handler";
 import { StyleSheet, Vibration, View, TouchableOpacity } from "react-native";
 import { Text, IconButton, useTheme } from "react-native-paper";
 import { useDispatch } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { checkHabit, removeHabit } from "@redux/habitSlice";
 
 const LIST_ITEM_HEIGHT = 70;
 
 const CardDiario = memo(function CardDiario({ habits, selectedDate }) {
+  const [openSwipeable, setOpenSwipeable] = useState(null);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (!isFocused && openSwipeable) {
+      openSwipeable.close();
+    }
+  }, [isFocused, openSwipeable]);
+
   const sortedHabits = useMemo(() => {
     return [...habits].sort((a, b) => {
       const aCompleted = a.checkIns.includes(selectedDate);
@@ -23,13 +32,19 @@ const CardDiario = memo(function CardDiario({ habits, selectedDate }) {
   return (
     <View style={styles.container}>
       {sortedHabits.map((habit) => (
-        <Item item={habit} key={habit.id} selectedDate={selectedDate} />
+        <Item
+          item={habit}
+          key={habit.id}
+          selectedDate={selectedDate}
+          openSwipeable={openSwipeable}
+          setOpenSwipeable={setOpenSwipeable}
+        />
       ))}
     </View>
   );
 });
 
-const Item = ({ item, selectedDate }) => {
+const Item = ({ item, selectedDate, openSwipeable, setOpenSwipeable }) => {
   const dispatch = useDispatch();
   const { colors } = useTheme();
   const navigation = useNavigation();
@@ -109,6 +124,10 @@ const Item = ({ item, selectedDate }) => {
       renderRightActions={rightSwipe}
       renderLeftActions={leftSwipe}
       onSwipeableWillOpen={(direction) => {
+        if (openSwipeable && openSwipeable !== swipeableRef.current) {
+          openSwipeable.close();
+        }
+        setOpenSwipeable(swipeableRef.current);
         if (direction === "left") {
           handleCheckHabit();
           swipeableRef.current.close();

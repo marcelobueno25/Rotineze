@@ -7,8 +7,6 @@ export const WeekCalendarManual = ({ selectedDate, onDayPress }) => {
   const theme = useTheme();
 
   const startOfWeek = moment().startOf("week");
-  console.log("startOfWeek: ", startOfWeek);
-
   const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
     moment(startOfWeek).add(i, "days")
   );
