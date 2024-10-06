@@ -6,18 +6,16 @@ import { useSelector } from "react-redux";
 // Import images for both cats and dogs
 const moodImages = {
   cat: {
-    superTriste: require("@assets/expressionface/cat_bravo.png"),
-    triste: require("@assets/expressionface/cat_normal.png"),
+    bravo: require("@assets/expressionface/cat_bravo.png"),
     normal: require("@assets/expressionface/cat_normal.png"),
-    feliz: require("@assets/expressionface/cat_animado.png"),
-    superFeliz: require("@assets/expressionface/cat_feliz.png"),
+    animado: require("@assets/expressionface/cat_animado.png"),
+    feliz: require("@assets/expressionface/cat_feliz.png"),
   },
   dog: {
-    superTriste: require("@assets/expressionface/dog_bravo.png"),
-    triste: require("@assets/expressionface/dog_normal.png"),
+    bravo: require("@assets/expressionface/dog_bravo.png"),
     normal: require("@assets/expressionface/dog_normal.png"),
-    feliz: require("@assets/expressionface/dog_animado.png"),
-    superFeliz: require("@assets/expressionface/dog_feliz.png"),
+    animado: require("@assets/expressionface/dog_animado.png"),
+    feliz: require("@assets/expressionface/dog_feliz.png"),
   },
 };
 
@@ -27,15 +25,13 @@ const MoodImage = ({ completionPercentage }) => {
 
   const getMoodImage = (percentage) => {
     if (percentage === 100) {
-      return moodImages[animal].superFeliz;
-    } else if (percentage >= 60) {
       return moodImages[animal].feliz;
-    } else if (percentage >= 40) {
+    } else if (percentage >= 60) {
+      return moodImages[animal].animado;
+    } else if (percentage >= 30) {
       return moodImages[animal].normal;
-    } else if (percentage >= 20) {
-      return moodImages[animal].triste;
     } else {
-      return moodImages[animal].superTriste;
+      return moodImages[animal].bravo;
     }
   };
 
@@ -44,7 +40,7 @@ const MoodImage = ({ completionPercentage }) => {
   return (
     <Image
       source={moodImage}
-      style={{ position: "absolute", width: 35, height: 45 }}
+      style={{ position: "absolute", width: 40, height: 40 }}
       resizeMode="contain"
     />
   );

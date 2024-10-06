@@ -3,7 +3,6 @@ import { View, ScrollView } from "react-native";
 import { useTheme } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
-import "moment/locale/pt-br";
 import { setSelectedDate } from "@redux/habitSlice";
 import { getHabitsForDate } from "@utils/habits";
 import { WeekCalendarManual } from "./components/WeekCalendarManual";

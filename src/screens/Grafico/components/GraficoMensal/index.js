@@ -23,37 +23,38 @@ const MonthSelector = ({ selectedMonth, onChangeMonth }) => {
     <View
       style={{
         flexDirection: "row",
-        justifyContent: "center",
+        justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 20,
+        marginBottom: 10,
       }}
     >
-      {/* Botão de mês anterior */}
-      <IconButton
-        icon="chevron-left"
-        size={24}
-        onPress={() => handleMonthChange(-1)}
-        color={theme.colors.primary}
-      />
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <IconButton
+          icon="chevron-left"
+          size={24}
+          onPress={() => handleMonthChange(-1)}
+          color={theme.colors.primary}
+        />
+      </View>
 
-      {/* Nome do mês atual */}
       <Text
         variant="titleMedium"
         style={{
-          color: theme.colors.primary,
+          color: theme.colors.onBackground,
           fontWeight: "bold",
         }}
       >
         {moment(selectedMonth).format("MMMM [de] YYYY")}
       </Text>
 
-      {/* Botão de próximo mês */}
-      <IconButton
-        icon="chevron-right"
-        size={24}
-        onPress={() => handleMonthChange(1)}
-        color={theme.colors.primary}
-      />
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <IconButton
+          icon="chevron-right"
+          size={24}
+          onPress={() => handleMonthChange(1)}
+          color={theme.colors.primary}
+        />
+      </View>
     </View>
   );
 };

@@ -1,12 +1,12 @@
+// GraficoDiario.js
 import React, { useState, useMemo } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { Card, Text, useTheme } from "react-native-paper";
-import { CalendarProvider, Calendar } from "react-native-calendars";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import { CardGrafico } from "../components/CardGrafico";
 import { HabitCard } from "../components/HabitCard";
-import { renderCalendar } from "../components/renderCalendar";
+import { CustomCalendar } from "../components/CustomCalendar"; // Importar o novo componente
 import { getHabitsForDate } from "@utils/habits"; // Importar a função criada
 
 export function GraficoDiario() {
@@ -38,23 +38,6 @@ export function GraficoDiario() {
     return records;
   }, [habits]);
 
-  // Define as datas marcadas no calendário
-  const markedDates = useMemo(() => {
-    const marks = {};
-
-    Object.keys(dailyRecordsMap).forEach((date) => {
-      marks[date] = { marked: true };
-    });
-
-    marks[selectedDate] = {
-      ...(marks[selectedDate] || {}),
-      selected: true,
-      selectedColor: theme.colors.primaryContainer,
-    };
-
-    return marks;
-  }, [dailyRecordsMap, selectedDate, theme.colors.primaryContainer]);
-
   // Obtém os hábitos completos, não completos, porcentagem e total de hábitos para a data selecionada
   const result = useMemo(
     () => getHabitsForDate(selectedDate, habits),
@@ -62,7 +45,7 @@ export function GraficoDiario() {
   );
 
   return (
-    <>
+    <ScrollView>
       <Card
         style={[styles.mainCard, { backgroundColor: theme.colors.primary }]}
       >
@@ -82,30 +65,11 @@ export function GraficoDiario() {
         </View>
       </Card>
 
-      <CalendarProvider date={selectedDate} onDateChanged={setSelectedDate}>
-        <Calendar
-          dayComponent={(dayProps) =>
-            renderCalendar(
-              dayProps,
-              selectedDate,
-              setSelectedDate,
-              dailyRecordsMap,
-              theme
-            )
-          }
-          onDayPress={(day) => setSelectedDate(day.dateString)}
-          markedDates={markedDates}
-          theme={{
-            todayTextColor: theme.colors.primary,
-            arrowColor: theme.colors.primary,
-            textSectionTitleColor: theme.colors.primary,
-            backgroundColor: "transparent",
-            calendarBackground: "transparent",
-            selectedDayBackgroundColor: theme.colors.primaryContainer,
-            selectedDayTextColor: theme.colors.onBackground,
-          }}
-        />
-      </CalendarProvider>
+      <CustomCalendar
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        dailyRecordsMap={dailyRecordsMap}
+      />
 
       <View style={styles.cardRow}>
         <CardGrafico
@@ -129,7 +93,7 @@ export function GraficoDiario() {
       {result.notCompletedHabits.map((habit) => (
         <HabitCard key={habit.id} habit={habit} isCompleted={false} />
       ))}
-    </>
+    </ScrollView>
   );
 }
 
@@ -142,6 +106,6 @@ const styles = StyleSheet.create({
   cardRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginVertical: 20,
   },
 });

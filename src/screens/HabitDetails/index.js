@@ -9,7 +9,6 @@ import {
   useTheme,
 } from "react-native-paper";
 import moment from "moment";
-import "moment/locale/pt-br";
 import { useSelector } from "react-redux";
 import { getHabitStatsForMonth } from "@utils/habits";
 import MonthlyHeatmap from "./components/MonthlyHeatmap";
