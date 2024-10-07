@@ -4,6 +4,7 @@ import {
   Text,
   Card,
   Button,
+  Icon,
   IconButton,
   ProgressBar,
   useTheme,
@@ -12,12 +13,13 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { getHabitStatsForMonth } from "@utils/habits";
 import MonthlyHeatmap from "./components/MonthlyHeatmap";
+import { capitalizeFirstLetter } from "@utils/string";
 
 const InfoRow = ({ label, value, last = false }) => {
   const theme = useTheme();
   return (
     <View style={[styles.infoRow, { marginBottom: last ? 0 : 12 }]}>
-      <Text style={[styles.infoLabel, { color: theme.colors.primary }]}>
+      <Text style={{ color: theme.colors.primary, fontWeight: "bold" }}>
         {label}
       </Text>
       <Text style={{ color: theme.colors.onBackground }}>{value}</Text>
@@ -36,16 +38,18 @@ const StatCard = ({ label, value, icon, color }) => {
           alignItems: "center",
         }}
       >
-        <IconButton
-          icon={icon}
-          size={25}
-          iconColor={color}
-          style={{ margin: 0, padding: 0 }}
-        />
-        <Text style={{ fontSize: 18, fontWeight: "bold" }}>{value}</Text>
+        <Icon source={icon} size={25} color={color} />
+        <Text
+          variant="titleMedium"
+          style={{ fontWeight: "bold", marginLeft: 5 }}
+        >
+          {value}
+        </Text>
       </View>
       <View>
-        <Text style={{ color: theme.colors.onBackground }}>{label}</Text>
+        <Text variant="bodyMedium" style={{ color: theme.colors.onBackground }}>
+          {label}
+        </Text>
       </View>
     </View>
   );
@@ -61,7 +65,11 @@ const HabitDetails = ({ route, navigation }) => {
 
   if (!habit) {
     return (
-      <View style={styles.container}>
+      <View
+        style={{
+          padding: 16,
+        }}
+      >
         <Text style={{ color: theme.colors.error }}>
           Hábito não encontrado.
         </Text>
@@ -131,17 +139,40 @@ const HabitDetails = ({ route, navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <Card style={styles.headerCard}>
-        <View style={styles.headerContent}>
+    <ScrollView
+      contentContainerStyle={{
+        padding: 16,
+      }}
+    >
+      <Card
+        style={{
+          marginBottom: 16,
+          padding: 16,
+          alignItems: "center",
+          borderRadius: 15,
+          marginTop: 30,
+        }}
+      >
+        <View
+          style={{
+            alignItems: "center",
+            paddingTop: 25,
+          }}
+        >
           <View
-            style={[
-              styles.iconContainer,
-              {
-                backgroundColor: theme.colors.primary,
-                borderColor: theme.colors.background,
-              },
-            ]}
+            style={{
+              backgroundColor: theme.colors.primary,
+              borderColor: theme.colors.background,
+              alignItems: "center",
+              justifyContent: "center",
+              position: "absolute",
+              borderWidth: 5,
+              borderStyle: "solid",
+              borderRadius: 50,
+              top: -55,
+              height: 75,
+              width: 75,
+            }}
           >
             <IconButton
               icon={habit.icon}
@@ -158,9 +189,158 @@ const HabitDetails = ({ route, navigation }) => {
         </View>
       </Card>
 
-      <Card style={styles.infoCard}>
+      <Card style={styles.summaryCard}>
         <Card.Title
-          title="Informações do Hábito"
+          title="Estatística do mês"
+          titleStyle={{ fontWeight: "bold" }}
+        />
+        <Card.Content>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 12,
+            }}
+          >
+            <Text style={{ color: theme.colors.onBackground }}>
+              Porcentagem de Conclusão
+            </Text>
+            <Text
+              style={{
+                fontSize: 22,
+                fontWeight: "bold",
+                color: theme.colors.primary,
+              }}
+            >
+              {monthlyStats.completionPercentage}%
+            </Text>
+          </View>
+          <ProgressBar
+            progress={monthlyStats.completionPercentage / 100}
+            color={theme.colors.primary}
+            style={styles.progressBar}
+          />
+        </Card.Content>
+      </Card>
+
+      <Card style={styles.summaryCard}>
+        <Card.Content>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 10,
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+              <Text
+                variant="titleLarge"
+                style={{
+                  fontWeight: "bold",
+                  color: theme.colors.onBackground,
+                }}
+              >
+                {capitalizeFirstLetter(selectedMonth.format("MMMM"))}{" "}
+              </Text>
+              <Text
+                variant="bodyLarge"
+                style={{
+                  fontWeight: "bold",
+                  color: theme.colors.primary,
+                }}
+              >
+                {selectedMonth.format("YYYY")}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <IconButton
+                icon="chevron-left"
+                size={24}
+                onPress={handlePreviousMonth}
+                disabled={selectedMonth.isSameOrBefore(
+                  initialDate.clone().startOf("month")
+                )}
+                style={{
+                  opacity: selectedMonth.isSameOrBefore(
+                    initialDate.clone().startOf("month")
+                  )
+                    ? 0.3
+                    : 1,
+                }}
+              />
+              <IconButton
+                icon="chevron-right"
+                size={24}
+                onPress={handleNextMonth}
+                disabled={
+                  endDate
+                    ? selectedMonth.isSameOrAfter(
+                        endDate.clone().endOf("month")
+                      )
+                    : false
+                }
+                style={{
+                  opacity:
+                    endDate &&
+                    selectedMonth.isSameOrAfter(endDate.clone().endOf("month"))
+                      ? 0.3
+                      : 1,
+                }}
+              />
+            </View>
+          </View>
+
+          <MonthlyHeatmap
+            habit={habit}
+            currentDate={currentDate}
+            completionDates={completionDates}
+            initialDate={initialDate}
+            endDate={endDate}
+          />
+        </Card.Content>
+      </Card>
+
+      <Card style={styles.summaryCard}>
+        <Card.Content>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-around",
+              marginBottom: 5,
+            }}
+          >
+            <StatCard
+              label="Pendentes"
+              value={monthlyStats.notCompletedHabitsCount}
+              icon="alert-circle"
+              color={theme.colors.warning}
+            />
+            <StatCard
+              label="Concluídos"
+              value={monthlyStats.completedHabitsCount}
+              icon="check-circle"
+              color={theme.colors.success}
+            />
+            <StatCard
+              label="Maior Série"
+              value={`${monthlyStats.maxSequence}`}
+              icon="fire-circle"
+              color={theme.colors.orange}
+            />
+          </View>
+        </Card.Content>
+      </Card>
+
+      <Card
+        style={{
+          marginBottom: 16,
+          borderRadius: 15,
+        }}
+      >
+        <Card.Title
+          title="Informações do hábito"
           titleStyle={{ fontWeight: "bold" }}
         />
         <Card.Content>
@@ -187,110 +367,16 @@ const HabitDetails = ({ route, navigation }) => {
         </Card.Content>
       </Card>
 
-      <Card style={styles.summaryCard}>
-        <Card.Title title="Resumo do Mês" titleStyle={{ fontWeight: "bold" }} />
-        <Card.Content>
-          <View style={styles.statsContainer}>
-            <StatCard
-              label="Pendentes"
-              value={monthlyStats.notCompletedHabitsCount}
-              icon="alert-circle"
-              color={theme.colors.warning}
-            />
-            <StatCard
-              label="Concluídos"
-              value={monthlyStats.completedHabitsCount}
-              icon="check-circle"
-              color={theme.colors.success}
-            />
-            <StatCard
-              label="Maior Série"
-              value={`${monthlyStats.maxSequence}`}
-              icon="fire-circle"
-              color={theme.colors.orange}
-            />
-          </View>
-
-          <View style={styles.percentageContainer}>
-            <Text
-              style={{
-                fontSize: 22,
-                fontWeight: "bold",
-                color: theme.colors.primary,
-              }}
-            >
-              {monthlyStats.completionPercentage}%
-            </Text>
-            <Text style={{ color: theme.colors.onBackground }}>
-              Porcentagem de Conclusão
-            </Text>
-          </View>
-          <ProgressBar
-            progress={monthlyStats.completionPercentage / 100}
-            color={theme.colors.primary}
-            style={styles.progressBar}
-          />
-          <View style={styles.monthNav}>
-            <IconButton
-              icon="chevron-left"
-              size={24}
-              onPress={handlePreviousMonth}
-              disabled={selectedMonth.isSameOrBefore(
-                initialDate.clone().startOf("month")
-              )}
-              style={{
-                opacity: selectedMonth.isSameOrBefore(
-                  initialDate.clone().startOf("month")
-                )
-                  ? 0.3
-                  : 1,
-              }}
-            />
-            <Text
-              variant="titleMedium"
-              style={{
-                fontWeight: "bold",
-                color: theme.colors.onBackground,
-              }}
-            >
-              {selectedMonth.format("MMMM [de] YYYY")}
-            </Text>
-            <IconButton
-              icon="chevron-right"
-              size={24}
-              onPress={handleNextMonth}
-              disabled={
-                endDate
-                  ? selectedMonth.isSameOrAfter(endDate.clone().endOf("month"))
-                  : false
-              }
-              style={{
-                opacity:
-                  endDate &&
-                  selectedMonth.isSameOrAfter(endDate.clone().endOf("month"))
-                    ? 0.3
-                    : 1,
-              }}
-            />
-          </View>
-
-          <MonthlyHeatmap
-            habit={habit}
-            currentDate={currentDate}
-            completionDates={completionDates}
-            initialDate={initialDate}
-            endDate={endDate}
-          />
-        </Card.Content>
-      </Card>
-
       <Button
         mode="contained"
         onPress={() => {
           Vibration.vibrate(100);
           navigation.navigate("EditHabit", { habitId: habit.id });
         }}
-        style={styles.editButton}
+        style={{
+          borderRadius: 15,
+          marginBottom: 16,
+        }}
         contentStyle={{ padding: 8 }}
       >
         Editar Hábito
@@ -300,72 +386,18 @@ const HabitDetails = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    padding: 16,
-  },
-  headerCard: {
-    marginBottom: 16,
-    padding: 16,
-    alignItems: "center",
-    borderRadius: 15,
-    marginTop: 40,
-  },
-  headerContent: {
-    alignItems: "center",
-    paddingTop: 30,
-  },
-  iconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    position: "absolute",
-    borderWidth: 5,
-    borderStyle: "solid",
-    borderRadius: 50,
-    top: -60,
-    height: 85,
-    width: 85,
-  },
-  infoCard: {
-    marginBottom: 16,
-    borderRadius: 15,
-  },
   infoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  infoLabel: {
-    fontWeight: "bold",
   },
   summaryCard: {
     marginBottom: 16,
     borderRadius: 15,
   },
-  monthNav: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 5,
-  },
-  statsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 16,
-  },
-  percentageContainer: {
-    alignItems: "center",
-    marginBottom: 12,
-  },
   progressBar: {
     height: 10,
     borderRadius: 5,
-    marginBottom: 15,
-  },
-  editButton: {
-    borderRadius: 15,
-    marginBottom: 16,
-  },
-  container: {
-    padding: 16,
+    marginBottom: 10,
   },
 });
 

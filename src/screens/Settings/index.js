@@ -159,7 +159,7 @@ export function Settings({ navigation }) {
         />
         <Divider /> */}
         <List.Item
-          title="Sobre a Rotinize"
+          title="Política de Privacidade"
           left={() => (
             <List.Icon icon="download" color={theme.colors.primary} />
           )}
@@ -167,10 +167,18 @@ export function Settings({ navigation }) {
             <IconButton
               icon="open-in-new"
               color={theme.colors.primary}
-              onPress={() => Linking.openURL("https://structured.app")}
+              onPress={() =>
+                Linking.openURL(
+                  "https://rotinize.blogspot.com/2024/10/privacy-policy.html"
+                )
+              }
             />
           )}
-          onPress={() => Linking.openURL("https://structured.app")}
+          onPress={() =>
+            Linking.openURL(
+              "https://rotinize.blogspot.com/2024/10/privacy-policy.html"
+            )
+          }
         />
         <Text
           style={{

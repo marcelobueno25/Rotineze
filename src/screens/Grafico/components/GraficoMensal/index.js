@@ -5,6 +5,7 @@ import { Card, Text, useTheme, IconButton } from "react-native-paper";
 import moment from "moment";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { getHabitsForMonth, getTopHabitSequencesForMonth } from "@utils/habits";
+import { capitalizeFirstLetter } from "@utils/string";
 import { CardGrafico } from "../components/CardGrafico";
 
 const MonthSelector = ({ selectedMonth, onChangeMonth }) => {
@@ -26,6 +27,26 @@ const MonthSelector = ({ selectedMonth, onChangeMonth }) => {
         marginBottom: 10,
       }}
     >
+      <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+        <Text
+          variant="titleLarge"
+          style={{
+            fontWeight: "bold",
+            color: theme.colors.onBackground,
+          }}
+        >
+          {capitalizeFirstLetter(moment(selectedMonth).format("MMMM"))}{" "}
+        </Text>
+        <Text
+          variant="bodyLarge"
+          style={{
+            fontWeight: "bold",
+            color: theme.colors.primary,
+          }}
+        >
+          {moment(selectedMonth).format("YYYY")}
+        </Text>
+      </View>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <IconButton
           icon="chevron-left"
@@ -36,19 +57,6 @@ const MonthSelector = ({ selectedMonth, onChangeMonth }) => {
           }}
           color={theme.colors.primary}
         />
-      </View>
-
-      <Text
-        variant="titleMedium"
-        style={{
-          color: theme.colors.onBackground,
-          fontWeight: "bold",
-        }}
-      >
-        {moment(selectedMonth).format("MMMM [de] YYYY")}
-      </Text>
-
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
         <IconButton
           icon="chevron-right"
           size={24}

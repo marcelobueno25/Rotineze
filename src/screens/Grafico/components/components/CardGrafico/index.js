@@ -1,7 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Card, Text, useTheme } from "react-native-paper";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Card, Text, useTheme, Icon } from "react-native-paper";
 
 export const CardGrafico = React.memo(({ icon, color, number, label }) => {
   const theme = useTheme();
@@ -11,17 +10,26 @@ export const CardGrafico = React.memo(({ icon, color, number, label }) => {
       style={[styles.smallCard, { backgroundColor: theme.colors.background }]}
     >
       <View style={{ alignItems: "center" }}>
-        <Icon name={icon} size={24} color={color} />
-        <Text
-          variant="titleMedium"
+        <View
           style={{
-            backgroundColor: theme.colors.background,
-            fontWeight: "bold",
-            marginVertical: 5,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {number}
-        </Text>
+          <Icon source={icon} size={24} color={color} />
+          <Text
+            variant="titleMedium"
+            style={{
+              backgroundColor: theme.colors.background,
+              fontWeight: "bold",
+              marginVertical: 5,
+              marginLeft: 5,
+            }}
+          >
+            {number}
+          </Text>
+        </View>
         <Text
           variant="labelMedium"
           style={{

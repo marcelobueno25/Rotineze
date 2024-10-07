@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from "react";
 import { View, TouchableOpacity, Vibration } from "react-native";
 import { useTheme, IconButton, Text } from "react-native-paper";
 import moment from "moment";
+import { capitalizeFirstLetter } from "@utils/string";
 import MoodImage from "./MoodImage";
 
 const Header = React.memo(
@@ -16,6 +17,26 @@ const Header = React.memo(
           marginBottom: 10,
         }}
       >
+        <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
+          <Text
+            variant="titleLarge"
+            style={{
+              fontWeight: "bold",
+              color: theme.colors.onBackground,
+            }}
+          >
+            {capitalizeFirstLetter(currentMonth.format("MMMM"))}{" "}
+          </Text>
+          <Text
+            variant="bodyLarge"
+            style={{
+              fontWeight: "bold",
+              color: theme.colors.primary,
+            }}
+          >
+            {currentMonth.format("YYYY")}
+          </Text>
+        </View>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <IconButton
             icon="chevron-left"
@@ -26,19 +47,6 @@ const Header = React.memo(
               setCurrentMonth(currentMonth.clone().subtract(1, "month"));
             }}
           />
-        </View>
-
-        <Text
-          variant="titleMedium"
-          style={{
-            fontWeight: "bold",
-            color: theme.colors.onBackground,
-          }}
-        >
-          {currentMonth.format("MMMM YYYY")}
-        </Text>
-
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
           <IconButton
             icon="chevron-right"
             size={24}
@@ -48,8 +56,7 @@ const Header = React.memo(
               setCurrentMonth(currentMonth.clone().add(1, "month"));
             }}
           />
-
-          {showTodayButton && (
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <TouchableOpacity
               onPress={() => {
                 Vibration.vibrate(200);
@@ -61,7 +68,7 @@ const Header = React.memo(
                 Hoje
               </Text>
             </TouchableOpacity>
-          )}
+          </View>
         </View>
       </View>
     );

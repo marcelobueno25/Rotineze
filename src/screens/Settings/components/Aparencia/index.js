@@ -63,18 +63,6 @@ export function Aparencia() {
 
   return (
     <ScrollView style={{ flex: 1, paddingHorizontal: 25 }}>
-      <Text
-        style={{
-          fontSize: 14,
-          marginTop: 20,
-          marginBottom: 10,
-          fontWeight: "600",
-          color: theme.colors.outline,
-        }}
-      >
-        Aparência
-      </Text>
-
       <List.Item
         title="Tema"
         description={() => (

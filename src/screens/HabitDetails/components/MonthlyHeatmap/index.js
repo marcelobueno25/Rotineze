@@ -47,7 +47,7 @@ const MonthlyHeatmap = ({ habit, currentDate, initialDate, endDate }) => {
   };
 
   return (
-    <View style={{ padding: 5 }}>
+    <View>
       <View style={{ flexDirection: "row", marginBottom: 5 }}>
         {["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"].map((dayName) => (
           <View key={dayName} style={{ flex: 1, alignItems: "center" }}>
@@ -108,11 +108,12 @@ const MonthlyHeatmap = ({ habit, currentDate, initialDate, endDate }) => {
                       }}
                     >
                       <Text
+                        variant="labelMedium"
                         style={{
+                          fontWeight: "bold",
                           color: isCompleted
                             ? theme.colors.onPrimary
                             : theme.colors.onSurface,
-                          fontSize: 12,
                         }}
                       >
                         {day.date()}
@@ -130,9 +131,11 @@ const MonthlyHeatmap = ({ habit, currentDate, initialDate, endDate }) => {
                       }}
                     >
                       <Text
+                        variant="labelMedium"
                         style={{
+                          fontWeight: "bold",
+
                           color: theme.colors.onSurface,
-                          fontSize: 12,
                         }}
                       >
                         {day.date()}

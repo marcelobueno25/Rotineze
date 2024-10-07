@@ -53,7 +53,7 @@ const DateSelection = ({
             value={moment(initialDate).format("DD/MM/YYYY")}
             mode="outlined"
             editable={false}
-            style={{ backgroundColor: disabled ? "#f0f0f0" : "transparent" }}
+            style={{ backgroundColor: "transparent" }}
           />
           <DatePicker
             modal
@@ -85,7 +85,7 @@ const DateSelection = ({
               value={endDate ? moment(endDate).format("DD/MM/YYYY") : ""}
               mode="outlined"
               editable={false}
-              style={{ backgroundColor: disabled ? "#f0f0f0" : "transparent" }}
+              style={{ backgroundColor: "transparent" }}
             />
             <DatePicker
               modal
