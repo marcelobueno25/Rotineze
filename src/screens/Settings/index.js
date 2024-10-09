@@ -91,8 +91,8 @@ export function Settings({ navigation }) {
           )}
         </View> */}
         <Text
+          variant="labelLarge"
           style={{
-            fontSize: 14,
             marginTop: 20,
             marginBottom: 10,
             fontWeight: "600",
@@ -140,8 +140,8 @@ export function Settings({ navigation }) {
           }}
         /> */}
         <Text
+          variant="labelLarge"
           style={{
-            fontSize: 14,
             marginTop: 20,
             marginBottom: 10,
             fontWeight: "600",
@@ -181,8 +181,8 @@ export function Settings({ navigation }) {
           }
         />
         <Text
+          variant="labelLarge"
           style={{
-            fontSize: 14,
             marginTop: 20,
             marginBottom: 10,
             fontWeight: "600",

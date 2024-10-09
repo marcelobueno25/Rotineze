@@ -207,8 +207,8 @@ const HabitDetails = ({ route, navigation }) => {
               Porcentagem de Conclusão
             </Text>
             <Text
+              variant="bodyMedium"
               style={{
-                fontSize: 22,
                 fontWeight: "bold",
                 color: theme.colors.primary,
               }}
